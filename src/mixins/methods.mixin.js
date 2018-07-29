@@ -6,14 +6,24 @@ const methodsMixin = {
     return {
       methods: [
         {
+          icon: "near_me",
+          title: "Cursor",
+          id: 1
+        },
+        {
+          icon: "tab_unselected",
+          title: "Select",
+          id: 2
+        },
+        {
           icon: "scatter_plot",
           title: "Points",
-          id: 1
+          id: 3
         },
         {
           icon: "show_chart",
           title: "Line",
-          id: 2
+          id: 4
         }
       ]
     };
@@ -53,15 +63,38 @@ const methodsMixin = {
         false
       );
     },
+    handleSelect: function() {
+      const draw = new SvgHandler(this.svg);
+
+      ["mousedown", "mousemove", "mouseup"].forEach(ev =>
+        this.addEventListener(
+          ev,
+          function(e) {
+            draw.drawSelectionFromEvent(e);
+          },
+          false
+        )
+      );
+    },
     handleMethod: function(method) {
       this.clearEventListeners();
       switch (method) {
         case 1: {
+          console.log("Cursor");
+          this.handleCoursor();
+          break;
+        }
+        case 2: {
+          console.log("Select");
+          this.handleSelect();
+          break;
+        }
+        case 3: {
           console.log("Points");
           this.handlePoints();
           break;
         }
-        case 2: {
+        case 4: {
           console.log("Drawing");
           this.handleLines();
           break;

@@ -6,6 +6,7 @@ interface Point {
 export class SvgHandler {
   private svg: SVGElement;
   private prevPoint?: Point = undefined;
+  private prevSelection?: SVGRectElement = undefined;
 
   constructor(svg: SVGElement) {
     this.svg = svg;
@@ -75,6 +76,39 @@ export class SvgHandler {
       stroke: 'black',
     });
     return line;
+  }
+
+  public drawSelectionFromEvent(e: MouseEvent) {
+    const point = this.transformEventCoordinates(e);
+    if (e.type === 'mousedown' && this.prevSelection == null) {
+      this.prevPoint = point;
+      this.prevSelection = this.createSelection(this.prevPoint || point, point);
+      this.svg.appendChild(this.prevSelection);
+    }
+    if (e.type === 'mousemove' && this.prevSelection && this.prevPoint) {
+      const selection = this.createSelection(point, this.prevPoint);
+      this.svg.removeChild(this.prevSelection);
+      this.prevSelection = selection;
+      this.svg.appendChild(selection);
+    } else if (e.type === 'mouseup' && this.prevSelection && this.prevPoint) {
+      this.svg.removeChild(this.prevSelection);
+      this.prevSelection = undefined;
+    }
+  }
+
+  public createSelection(start: Point, end: Point): SVGRectElement {
+    const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect');
+    this.attachElementProperties(rect, {
+      x: Math.min(start.x, end.x).toString(),
+      y: Math.min(start.y, end.y).toString(),
+      width: (Math.max(start.x, end.x) - Math.min(start.x, end.x)).toString(),
+      height: (Math.max(start.y, end.y) - Math.min(start.y, end.y)).toString(),
+    });
+    rect.style.stroke = 'black';
+    rect.style.fill = 'rgb(120, 240, 230)';
+    rect.style.strokeDasharray = '3';
+    rect.style.fillOpacity = '0.2';
+    return rect;
   }
 
   private attachElementProperties(el: Element, args: { [k: string]: string }) {
