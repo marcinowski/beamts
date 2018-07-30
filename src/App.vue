@@ -34,9 +34,13 @@
       </v-btn>
     </v-toolbar>
     <v-content>
-      <draw
-        v-bind:method="method"
-      ></draw>
+      <div>
+        <!-- <draw
+          v-bind:method="method"
+        ></draw> -->
+        <svg-component>
+        </svg-component>
+      </div>
     </v-content>
     <v-navigation-drawer
       temporary
@@ -63,6 +67,7 @@
 <script>
 import Draw from "./components/Draw";
 import SideOptions from "./components/SideOptions";
+import SvgComponent from "./components/SvgComponent";
 
 export default {
   name: "App",
@@ -74,7 +79,7 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: "Vuetify.js",
+      title: "Beam",
       method: this.method
     };
   },
