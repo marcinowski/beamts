@@ -11,10 +11,8 @@
         <lines
           :key="line.id"
           v-bind:id="line.id"
-          v-bind:x1="line.x1"
-          v-bind:x2="line.x2"
-          v-bind:y1="line.y1"
-          v-bind:y2="line.y2"
+          v-bind:p1="line.p1"
+          v-bind:p2="line.p2"
         ></lines>
       </template>
       <template v-for="point in points">
@@ -42,7 +40,8 @@ export default Vue.component("SvgComponent", {
     points() {
       return this.$store.state.points;
     }
-  }
+  },
+  methods: {}
 });
 </script>
 
