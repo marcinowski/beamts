@@ -9,9 +9,7 @@
       fixed
       app
     >
-      <SideOptions
-        v-on:method="onMethod"
-      ></SideOptions>
+      <SideOptions></SideOptions>
     </v-navigation-drawer>
     <v-toolbar
       app
@@ -64,33 +62,27 @@
   </v-app>
 </template>
 
-<script>
-import Draw from "./components/Draw";
-import SideOptions from "./components/SideOptions";
-import SvgComponent from "./components/SvgComponent";
+<script lang="ts">
+import Vue from "vue";
+import Component from "vue-class-component";
+import { Prop } from "vue-property-decorator";
+import Draw from "./components/Draw.vue";
+import SideOptions from "./components/SideOptions.vue";
+import SvgComponent from "./components/SvgComponent.vue";
 
-export default {
-  name: "App",
+@Component({
   components: {
     SvgComponent,
     SideOptions
-  },
-  data() {
-    return {
-      clipped: false,
-      drawer: true,
-      fixed: false,
-      miniVariant: false,
-      right: true,
-      rightDrawer: false,
-      title: "Beam",
-      method: this.method
-    };
-  },
-  methods: {
-    onMethod(method) {
-      this.method = method;
-    }
   }
-};
+})
+export default class App extends Vue {
+  clipped = false;
+  drawer = true;
+  fixed = false;
+  miniVariant = false;
+  right = true;
+  rightDrawer = false;
+  title = "Beam";
+}
 </script>

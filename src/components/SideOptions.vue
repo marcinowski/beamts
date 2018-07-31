@@ -20,7 +20,6 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
-import methodsMixin from "@/mixins/methods.mixin";
 import { MethodTypes } from "@/types/types";
 
 interface Method {
