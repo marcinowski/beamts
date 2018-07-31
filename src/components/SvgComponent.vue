@@ -6,6 +6,7 @@
       width="600"
       height="600"
       style="border: 2px solid black;"
+      v-on:click="handleClick"
     >
       <template v-for="line in lines">
         <lines
@@ -31,8 +32,12 @@
 import Vue from "vue";
 import Lines from "./Lines";
 import Points from "./Points";
+import { MethodTypes } from "@/types/types";
 
 export default Vue.component("SvgComponent", {
+  mounted() {
+    this.svg = this.$refs.svg;
+  },
   computed: {
     lines() {
       return this.$store.state.lines;
@@ -41,7 +46,21 @@ export default Vue.component("SvgComponent", {
       return this.$store.state.points;
     }
   },
-  methods: {}
+  methods: {
+    handleClick(event) {
+      const method = this.$store.getters.getMethod;
+      switch (method) {
+        case MethodTypes.CURSOR:
+          break;
+        case MethodTypes.SELECTION:
+          break;
+        case MethodTypes.POINT:
+          break;
+        case MethodTypes.RECTANGLE:
+          break;
+      }
+    }
+  }
 });
 </script>
 

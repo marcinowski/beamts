@@ -1,15 +1,17 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import { Line, MethodTypes, Point } from './types/types';
 
 Vue.use(Vuex);
 
 export default new Vuex.Store({
   state: {
+    method: MethodTypes.CURSOR,
     lines: [
       {
         id: 0,
         p1: 1,
-        p2: 2,
+        p2: 2
       },
     ],
     points: [
@@ -26,39 +28,45 @@ export default new Vuex.Store({
     ],
   },
   getters: {
-    getPoints: (state) => (ids: number[]) =>
+    getMethod: (state): MethodTypes => state.method,
+    getPoints: (state) => (ids: number[]): ReadonlyArray<Point> =>
       state.points.filter((p) => ids.includes(p.id)),
-    getPoint: (state, getters) => (id: number) => getters.getPoints([id]).pop(),
-    getLines: (state) => (ids: number[]) =>
+    getPoint: (state, getters) => (id: number): Point =>
+      getters.getPoints([id]).pop(),
+    getLines: (state) => (ids: number[]): ReadonlyArray<Line> =>
       state.lines.filter((l) => ids.includes(l.id)),
-    getLine: (state, getters) => (id: number) => getters.getLines([id]).pop(),
-    getLinePoints: (state, getters) => (id: number) => {
+    getLine: (state, getters) => (id: number): Line =>
+      getters.getLines([id]).pop(),
+    getLinePoints: (state, getters) => (id: number): ReadonlyArray<Point> => {
       const line = getters.getLine(id);
       return getters.getPoints([line.p1, line.p2]);
     },
-    getLinesConnectedToPoint: (state) => (id: number) =>
+    getLinesConnectedToPoint: (state) => (id: number): ReadonlyArray<Line> =>
       state.lines.filter((l) => [l.p2, l.p1].includes(id)),
     getPointsInsideSelection: (state) => (
       x1: number,
       x2: number,
       y1: number,
       y2: number,
-    ) =>
+    ): ReadonlyArray<Point> =>
       state.points.filter(
         (p) => x1 <= p.cx && p.cx <= x2 && (y1 <= p.cy && p.cy <= y2),
       ),
   },
   mutations: {
-    addPoint(state, point) {
+    changeMethod(state, method: MethodTypes) {
+      state.method = method;
+    },
+    addPoint(state, point: Point) {
       state.points.push(point);
     },
-    addLine(state, line) {
+    addLine(state, line: Line) {
       state.lines.push(line);
     },
-    removeLine(state, line) {
+    removeLine(state, line: Line) {
       state.lines.splice(state.lines.map((l) => l.id).indexOf(line.id), 1);
     },
-    removePoint(state, point) {
+    removePoint(state, point: Point) {
       state.points.splice(state.points.map((l) => l.id).indexOf(point.id), 1);
     },
   },

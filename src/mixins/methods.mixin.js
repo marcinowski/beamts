@@ -2,32 +2,6 @@ import { SvgHandler } from "./svg.handler";
 // import { CanvasHandler } from "./canvas.handler";
 
 const methodsMixin = {
-  data: () => {
-    return {
-      methods: [
-        {
-          icon: "near_me",
-          title: "Cursor",
-          id: 1
-        },
-        {
-          icon: "tab_unselected",
-          title: "Select",
-          id: 2
-        },
-        {
-          icon: "scatter_plot",
-          title: "Points",
-          id: 3
-        },
-        {
-          icon: "show_chart",
-          title: "Line",
-          id: 4
-        }
-      ]
-    };
-  },
   methods: {
     addEventListener(name, f, prop) {
       this.svg.addEventListener(name, f, prop);
