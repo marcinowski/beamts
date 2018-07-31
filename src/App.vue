@@ -71,6 +71,10 @@ import SvgComponent from "./components/SvgComponent";
 
 export default {
   name: "App",
+  components: {
+    SvgComponent,
+    SideOptions
+  },
   data() {
     return {
       clipped: false,

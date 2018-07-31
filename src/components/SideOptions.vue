@@ -16,44 +16,48 @@
   </v-list>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
+import Component from "vue-class-component";
+import { Prop } from "vue-property-decorator";
 import methodsMixin from "@/mixins/methods.mixin";
 import { MethodTypes } from "@/types/types";
 
-export default Vue.component("SideOptions", {
-  methods: {
-    handleClick(item) {
-      this.$store.commit("changeMethod", item.type);
+interface Method {
+  icon: string;
+  title: string;
+  type: MethodTypes;
+}
+
+@Component({})
+export default class SideOptions extends Vue {
+  methods: Method[] = [
+    {
+      icon: "near_me",
+      title: "Cursor",
+      type: MethodTypes.CURSOR
+    },
+    {
+      icon: "tab_unselected",
+      title: "Select",
+      type: MethodTypes.SELECTION
+    },
+    {
+      icon: "scatter_plot",
+      title: "Points",
+      type: MethodTypes.POINT
+    },
+    {
+      icon: "show_chart",
+      title: "Line",
+      type: MethodTypes.RECTANGLE
     }
-  },
-  data() {
-    return {
-      methods: [
-        {
-          icon: "near_me",
-          title: "Cursor",
-          type: MethodTypes.CURSOR
-        },
-        {
-          icon: "tab_unselected",
-          title: "Select",
-          type: MethodTypes.SELECTION
-        },
-        {
-          icon: "scatter_plot",
-          title: "Points",
-          type: MethodTypes.POINT
-        },
-        {
-          icon: "show_chart",
-          title: "Line",
-          type: MethodTypes.RECTANGLE
-        }
-      ]
-    };
+  ];
+
+  handleClick(item: Method) {
+    this.$store.commit("changeMethod", item.type);
   }
-});
+}
 </script>
 
 <style lang="scss" scoped>

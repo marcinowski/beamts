@@ -9,35 +9,33 @@
   ></line>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
-import methodsMixin from "@/mixins/methods.mixin";
-import Lines from "./Lines";
+import Component from "vue-class-component";
+import { Prop } from "vue-property-decorator";
 
-export default Vue.component("Lines", {
-  props: ["id", "p1", "p2", "selected"],
-  data() {
-    return {
-      clicked: false
-    };
-  },
-  computed: {
-    start() {
-      return this.$store.getters.getPoint(this.p1);
-    },
-    end() {
-      return this.$store.getters.getPoint(this.p2);
-    },
-    isSelected() {
-      return this.selected || this.clicked;
-    }
-  },
-  methods: {
-    handleClick() {
-      this.clicked = !this.clicked;
-    }
+@Component({})
+export default class Lines extends Vue {
+  @Prop() id: number;
+  @Prop() p1: number;
+  @Prop() p2: number;
+  @Prop() selected: boolean;
+  clicked = false;
+
+  get start() {
+    return this.$store.getters.getPoint(this.p1);
   }
-});
+  get end() {
+    return this.$store.getters.getPoint(this.p2);
+  }
+  get isSelected() {
+    return this.selected || this.clicked;
+  }
+
+  handleClick() {
+    this.clicked = !this.clicked;
+  }
+}
 </script>
 
 <style lang="scss" scoped>

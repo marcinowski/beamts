@@ -8,29 +8,28 @@
   ></circle>
 </template>
 
-<script>
+<script lang="ts">
 import Vue from "vue";
-import methodsMixin from "@/mixins/methods.mixin";
-import Lines from "./Lines";
+import Component from "vue-class-component";
+import { Prop } from "vue-property-decorator";
 
-export default Vue.component("Points", {
-  props: ["id", "cx", "cy", "selected"],
-  data() {
-    return {
-      clicked: false
-    };
-  },
-  methods: {
-    handleClick() {
-      this.clicked = !this.clicked;
-    }
-  },
-  computed: {
-    isSelected() {
-      return this.selected || this.clicked;
-    }
+@Component({})
+export default class Points extends Vue {
+  @Prop() id: number;
+  @Prop() cx: number;
+  @Prop() cy: number;
+  @Prop() selected: boolean;
+
+  clicked = false;
+
+  get isSelected(): any {
+    return this.selected || this.clicked;
   }
-});
+
+  handleClick() {
+    this.clicked = !this.clicked;
+  }
+}
 </script>
 
 <style lang="scss" scoped>
