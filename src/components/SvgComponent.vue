@@ -36,7 +36,10 @@ import { MethodTypes } from "@/types/types";
 
 export default Vue.component("SvgComponent", {
   mounted() {
-    this.svg = this.$refs.svg;
+    const svg = this.$refs.svg;
+    const { left, top } = svg.getBoundingClientRect();
+    this.svgLeftOffset = left;
+    this.svgTopOffset = top;
   },
   computed: {
     lines() {
@@ -47,6 +50,13 @@ export default Vue.component("SvgComponent", {
     }
   },
   methods: {
+    transformEventToPoint(event) {
+      const rawX = event.clientX - this.svgLeftOffset;
+      const rawY = event.clientY - this.svgTopOffset;
+      const cx = rawX - rawX % 10;
+      const cy = rawY - rawY % 10;
+      return { cx, cy, id: event.timestamp };
+    },
     handleClick(event) {
       const method = this.$store.getters.getMethod;
       switch (method) {
@@ -55,6 +65,8 @@ export default Vue.component("SvgComponent", {
         case MethodTypes.SELECTION:
           break;
         case MethodTypes.POINT:
+          const point = this.transformEventToPoint(event);
+          this.$store.commit("addPoint", point);
           break;
         case MethodTypes.RECTANGLE:
           break;
