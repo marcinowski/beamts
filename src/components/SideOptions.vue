@@ -49,7 +49,7 @@ export default class SideOptions extends Vue {
     {
       icon: "show_chart",
       title: "Line",
-      type: MethodTypes.RECTANGLE
+      type: MethodTypes.LINE
     }
   ];
 

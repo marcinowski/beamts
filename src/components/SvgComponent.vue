@@ -23,18 +23,11 @@
         <Points
           :key="point.id"
           v-bind:id="point.id"
-          v-bind:cx="point.cx"
-          v-bind:cy="point.cy"
+          v-bind:x="point.x"
+          v-bind:y="point.y"
           v-bind:selected="point.selected"
         ></Points>
       </template>
-       <!-- <rect
-        ref="selection"
-        x="0"
-        y="0"
-        width="0"
-        height="0"
-      ></rect> -->
       <Selection></Selection>
     </svg>
   </v-container>
@@ -42,12 +35,13 @@
 
 <script lang="ts">
 import Vue from "vue";
+import { mapMutations } from "vuex";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
 import Lines from "./Lines.vue";
 import Points from "./Points.vue";
 import Selection from "./Selection.vue";
-import { Coordinates, MethodTypes } from "@/types/types";
+import { Coordinates, MethodTypes, Point } from "@/types/types";
 
 @Component({
   components: {
@@ -59,17 +53,17 @@ import { Coordinates, MethodTypes } from "@/types/types";
 export default class SvgComponent extends Vue {
   svgLeftOffset: number = 0;
   svgTopOffset: number = 0;
-  prevPoint?: Coordinates;
-  // selection: SVGRectElement;
+  prevPoint?: Point;
   isSelecting = false;
 
   mounted() {
     // FIXME: technically this should be checked whenever the position changes :(
-    // this.selection = this.$refs.selection as SVGRectElement;
-    const svg = this.$refs.svg as HTMLElement;
-    const { left, top } = svg.getBoundingClientRect();
-    this.svgLeftOffset = left;
-    this.svgTopOffset = top;
+    setTimeout(() => {
+      const svg = this.$refs.svg as HTMLElement;
+      const { left, top } = svg.getBoundingClientRect();
+      this.svgLeftOffset = left;
+      this.svgTopOffset = top;
+    }, 0);
   }
 
   get lines() {
@@ -86,25 +80,38 @@ export default class SvgComponent extends Vue {
     return { x, y };
   }
 
-  transformCoordinatesToPoint(point: Coordinates, event: MouseEvent) {
-    const cx = point.x - point.x % 10;
-    const cy = point.y - point.y % 10;
-    return { cx, cy, id: event.timeStamp };
+  transformCoordinatesToPoint(point: Coordinates, event: MouseEvent): Point {
+    const x = point.x - point.x % 10;
+    const y = point.y - point.y % 10;
+    return { x, y, id: event.timeStamp };
   }
 
   handleClick(event: MouseEvent) {
     const method = this.$store.getters.getMethod;
     const coordinates = this.transformEventToCoordinates(event);
+    const point = this.transformCoordinatesToPoint(coordinates, event);
+    this.$store.commit("deselectAllPoints");
     switch (method) {
       case MethodTypes.CURSOR:
         break;
       case MethodTypes.SELECTION:
         break;
       case MethodTypes.POINT:
-        const point = this.transformCoordinatesToPoint(coordinates, event);
         this.$store.commit("addPoint", point);
         break;
-      case MethodTypes.RECTANGLE:
+      case MethodTypes.LINE:
+        this.$store.commit("addPoint", point);
+        if (!this.prevPoint) {
+          this.prevPoint = point;
+          return;
+        }
+        const line = {
+          p1: this.prevPoint.id,
+          p2: point.id,
+          id: event.timeStamp + 1 // hack to distinguish from the point
+        };
+        this.$store.commit("addLine", line);
+        this.prevPoint = undefined;
         break;
     }
   }
@@ -112,19 +119,18 @@ export default class SvgComponent extends Vue {
   handleMouseDown(event: MouseEvent) {
     const method = this.$store.getters.getMethod;
     const coordinates = this.transformEventToCoordinates(event);
+    const point = this.transformCoordinatesToPoint(coordinates, event);
     switch (method) {
       case MethodTypes.CURSOR:
         break;
       case MethodTypes.SELECTION:
-        this.prevPoint = coordinates;
-        // this.selection.setAttribute("x", coordinates.x.toString());
-        // this.selection.setAttribute("y", coordinates.y.toString());
+        this.prevPoint = point;
         this.$store.commit("setSelectionOrigin", coordinates);
         break;
       case MethodTypes.POINT:
-        this.prevPoint = coordinates;
+        this.prevPoint = point;
         break;
-      case MethodTypes.RECTANGLE:
+      case MethodTypes.LINE:
         break;
     }
   }
@@ -141,13 +147,11 @@ export default class SvgComponent extends Vue {
         }
         const x = coordinates.x - this.prevPoint.x;
         const y = coordinates.y - this.prevPoint.y;
-        // this.selection.setAttribute("height", y.toString());
-        // this.selection.setAttribute("width", x.toString());
         this.$store.commit("setSelectionDimensions", { x, y });
         break;
       case MethodTypes.POINT:
         break;
-      case MethodTypes.RECTANGLE:
+      case MethodTypes.LINE:
         break;
     }
   }
@@ -162,21 +166,16 @@ export default class SvgComponent extends Vue {
         if (!this.prevPoint) {
           return;
         }
-        // this.selection.setAttribute("x", "0");
-        // this.selection.setAttribute("y", "0");
-        // this.selection.setAttribute("height", "0");
-        // this.selection.setAttribute("width", "0");
         this.$store.dispatch("selectPointsInRange", [
           this.prevPoint,
           coordinates
         ]);
-        // this.$store.commit("changeMethod", MethodTypes.CURSOR);
         this.prevPoint = undefined;
         this.$store.commit("clearSelection");
         break;
       case MethodTypes.POINT:
         break;
-      case MethodTypes.RECTANGLE:
+      case MethodTypes.LINE:
         break;
     }
   }

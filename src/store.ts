@@ -31,6 +31,8 @@ const store: StoreOptions<MyStore> = {
     },
   },
   getters: {
+    pointsCount: (state) => state.points.length,
+    linesCount: (state) => state.lines.length,
     getMethod: (state): MethodTypes => state.method,
     getPoints: (state) => (ids: number[]): ReadonlyArray<Point> =>
       state.points.filter((p) => ids.includes(p.id)),
@@ -53,7 +55,7 @@ const store: StoreOptions<MyStore> = {
       y2: number,
     ): ReadonlyArray<Point> =>
       state.points.filter(
-        (p) => x1 <= p.cx && p.cx <= x2 && (y1 <= p.cy && p.cy <= y2),
+        (p) => x1 <= p.x && p.x <= x2 && (y1 <= p.y && p.y <= y2),
       ),
   },
   mutations: {
@@ -89,7 +91,7 @@ const store: StoreOptions<MyStore> = {
       const selectedPoints = state.points.filter((p) => ids.includes(p.id));
       const otherPoints = state.points.filter((p) => !ids.includes(p.id));
       selectedPoints.forEach((p) => (p.selected = true));
-      state.points = [...otherPoints, ...selectedPoints];
+      state.points = [...otherPoints, ...selectedPoints]; // my fault :(
     },
     deselectAllPoints(state) {
       const points = state.points;

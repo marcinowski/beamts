@@ -1,8 +1,8 @@
 <template>
   <circle
     v-on:click="handleClick"
-    v-bind:cx="cx"
-    v-bind:cy="cy"
+    v-bind:cx="x"
+    v-bind:cy="y"
     v-bind:class="{selected: isSelected}"
     r="3"
   ></circle>
@@ -16,8 +16,8 @@ import { Prop } from "vue-property-decorator";
 @Component({})
 export default class Points extends Vue {
   @Prop() id: number;
-  @Prop() cx: number;
-  @Prop() cy: number;
+  @Prop() x: number;
+  @Prop() y: number;
   @Prop() selected: boolean;
 
   clicked = false;

@@ -1,10 +1,10 @@
 <template>
   <line
     v-on:click="handleClick"
-    v-bind:x1="start.cx"
-    v-bind:x2="end.cx"
-    v-bind:y1="start.cy"
-    v-bind:y2="end.cy"
+    v-bind:x1="start.x"
+    v-bind:x2="end.x"
+    v-bind:y1="start.y"
+    v-bind:y2="end.y"
     v-bind:class="{selected: isSelected}"
   ></line>
 </template>
