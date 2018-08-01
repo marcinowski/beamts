@@ -3,9 +3,6 @@
     <svg
       id="svg"
       ref="svg"
-      width="600"
-      height="600"
-      style="border: 2px solid black;"
       v-on:click="handleClick"
       v-on:mousedown="handleMouseDown"
       v-on:mousemove="handleMouseMove"
@@ -51,19 +48,11 @@ import { Coordinates, MethodTypes, Point } from "@/types/types";
   }
 })
 export default class SvgComponent extends Vue {
-  svgLeftOffset: number = 0;
-  svgTopOffset: number = 0;
   prevPoint?: Point;
-  isSelecting = false;
+  svg: SVGElement;
 
   mounted() {
-    // FIXME: technically this should be checked whenever the position changes :(
-    setTimeout(() => {
-      const svg = this.$refs.svg as HTMLElement;
-      const { left, top } = svg.getBoundingClientRect();
-      this.svgLeftOffset = left;
-      this.svgTopOffset = top;
-    }, 0);
+    this.svg = this.$refs.svg as SVGElement;
   }
 
   get lines() {
@@ -75,8 +64,9 @@ export default class SvgComponent extends Vue {
   }
 
   transformEventToCoordinates(event: MouseEvent, round: boolean = true) {
-    let x = event.clientX - this.svgLeftOffset;
-    let y = event.clientY - this.svgTopOffset;
+    const { left, top } = this.svg.getBoundingClientRect();
+    const x = event.clientX - left;
+    const y = event.clientY - top;
     return { x, y };
   }
 
@@ -184,6 +174,11 @@ export default class SvgComponent extends Vue {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+svg {
+  width: 100vw;
+  height: 100vh;
+  border: 2px solid black;
+}
 rect {
   stroke: black;
   fill: rgb(120, 240, 230);
