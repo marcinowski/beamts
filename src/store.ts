@@ -1,31 +1,34 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
-import { Line, MethodTypes, Point } from './types/types';
+import Vuex, { StoreOptions } from 'vuex';
+import {
+  Line,
+  MethodTypes,
+  Point,
+  Coordinates,
+  Selection,
+} from './types/types';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+interface MyStore {
+  method: MethodTypes;
+  lines: Line[];
+  points: Point[];
+  selection: Selection;
+}
+
+const store: StoreOptions<MyStore> = {
+  strict: true,
   state: {
     method: MethodTypes.CURSOR,
-    lines: [
-      {
-        id: 0,
-        p1: 1,
-        p2: 2
-      },
-    ],
-    points: [
-      {
-        id: 1,
-        cx: 300,
-        cy: 300,
-      },
-      {
-        id: 2,
-        cx: 200,
-        cy: 300,
-      },
-    ],
+    lines: [],
+    points: [],
+    selection: {
+      x: 0,
+      y: 0,
+      height: 0,
+      width: 0,
+    },
   },
   getters: {
     getMethod: (state): MethodTypes => state.method,
@@ -69,6 +72,40 @@ export default new Vuex.Store({
     removePoint(state, point: Point) {
       state.points.splice(state.points.map((l) => l.id).indexOf(point.id), 1);
     },
+    setSelectionOrigin(state, coords: Coordinates) {
+      state.selection = { ...state.selection, x: coords.x, y: coords.y };
+    },
+    setSelectionDimensions(state, coords: Coordinates) {
+      state.selection = {
+        ...state.selection,
+        width: coords.x,
+        height: coords.y,
+      };
+    },
+    clearSelection(state) {
+      state.selection = { x: 0, y: 0, height: 0, width: 0 };
+    },
+    selectPoints(state, ids: Array<Point['id']>) {
+      const selectedPoints = state.points.filter((p) => ids.includes(p.id));
+      const otherPoints = state.points.filter((p) => !ids.includes(p.id));
+      selectedPoints.forEach((p) => (p.selected = true));
+      state.points = [...otherPoints, ...selectedPoints];
+    },
+    deselectAllPoints(state) {
+      const points = state.points;
+      points.forEach((p) => Vue.set(p, 'selected', false));
+      state.points = [...points];
+    },
   },
-  actions: {},
-});
+  actions: {
+    selectPointsInRange(context, points: [Coordinates, Coordinates]) {
+      const [p1, p2] = points;
+      const selectedPoints = context.getters
+        .getPointsInsideSelection(p1.x, p2.x, p1.y, p2.y)
+        .map((p: Point) => p.id);
+      context.commit('selectPoints', selectedPoints);
+    },
+  },
+};
+
+export default new Vuex.Store<MyStore>(store);
