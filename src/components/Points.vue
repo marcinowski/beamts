@@ -1,8 +1,8 @@
 <template>
   <circle
-    v-on:click="handleClick"
-    v-bind:cx="x"
-    v-bind:cy="y"
+    v-on:click.stop="handleClick"
+    v-bind:cx="point.x"
+    v-bind:cy="point.y"
     v-bind:class="{selected: isSelected}"
     r="3"
   ></circle>
@@ -12,22 +12,19 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
+import { Point } from "@/types/types";
 
 @Component({})
 export default class Points extends Vue {
-  @Prop() id: number;
-  @Prop() x: number;
-  @Prop() y: number;
-  @Prop() selected: boolean;
-
-  clicked = false;
+  @Prop() point: Point;
 
   get isSelected(): any {
-    return this.selected || this.clicked;
+    return this.point.selected;
   }
 
-  handleClick() {
-    this.clicked = !this.clicked;
+  handleClick(event: Event) {
+    this.$store.commit("selectPoints", [this.point.id]);
+    this.$emit("selected-point", { event, point: this.point });
   }
 }
 </script>

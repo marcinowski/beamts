@@ -11,18 +11,14 @@
       <template v-for="line in lines">
         <Lines
           :key="line.id"
-          v-bind:id="line.id"
-          v-bind:p1="line.p1"
-          v-bind:p2="line.p2"
+          v-bind:line="line"
         ></Lines>
       </template>
       <template v-for="point in points">
         <Points
           :key="point.id"
-          v-bind:id="point.id"
-          v-bind:x="point.x"
-          v-bind:y="point.y"
-          v-bind:selected="point.selected"
+          v-bind:point="point"
+          v-on:selected-point="handleSelectedPoint"
         ></Points>
       </template>
       <Selection></Selection>
@@ -91,17 +87,7 @@ export default class SvgComponent extends Vue {
         break;
       case MethodTypes.LINE:
         this.$store.commit("addPoint", point);
-        if (!this.prevPoint) {
-          this.prevPoint = point;
-          return;
-        }
-        const line = {
-          p1: this.prevPoint.id,
-          p2: point.id,
-          id: event.timeStamp + 1 // hack to distinguish from the point
-        };
-        this.$store.commit("addLine", line);
-        this.prevPoint = undefined;
+        this.addLine(event, point);
         break;
     }
   }
@@ -118,7 +104,6 @@ export default class SvgComponent extends Vue {
         this.$store.commit("setSelectionOrigin", coordinates);
         break;
       case MethodTypes.POINT:
-        this.prevPoint = point;
         break;
       case MethodTypes.LINE:
         break;
@@ -168,6 +153,29 @@ export default class SvgComponent extends Vue {
       case MethodTypes.LINE:
         break;
     }
+  }
+
+  handleSelectedPoint(el: { event: Event; point: Point }) {
+    const method = this.$store.getters.getMethod;
+    switch (method) {
+      case MethodTypes.LINE:
+        this.addLine(el.event, el.point);
+        break;
+    }
+  }
+
+  addLine(event: Event, point: Point) {
+    if (!this.prevPoint) {
+      this.prevPoint = point;
+      return;
+    }
+    const line = {
+      p1: this.prevPoint.id,
+      p2: point.id,
+      id: event.timeStamp + 1 // hack to distinguish from the point
+    };
+    this.$store.commit("addLine", line);
+    this.prevPoint = undefined;
   }
 }
 </script>

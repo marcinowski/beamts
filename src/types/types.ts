@@ -1,8 +1,8 @@
 export enum MethodTypes {
-  CURSOR,
-  SELECTION,
-  POINT,
-  LINE,
+  CURSOR = 'cursor',
+  SELECTION = 'selection',
+  POINT = 'point',
+  LINE = 'line',
 }
 
 export interface Coordinates {
@@ -19,6 +19,7 @@ export interface Line {
   id: number;
   p1: Point['id'];
   p2: Point['id'];
+  selected: boolean;
 }
 
 export interface Selection {

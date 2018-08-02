@@ -13,27 +13,24 @@
 import Vue from "vue";
 import Component from "vue-class-component";
 import { Prop } from "vue-property-decorator";
+import { Line } from "@/types/types";
 
 @Component({})
 export default class Lines extends Vue {
-  @Prop() id: number;
-  @Prop() p1: number;
-  @Prop() p2: number;
-  @Prop() selected: boolean;
-  clicked = false;
+  @Prop() line: Line;
 
   get start() {
-    return this.$store.getters.getPoint(this.p1);
+    return this.$store.getters.getPoint(this.line.p1);
   }
   get end() {
-    return this.$store.getters.getPoint(this.p2);
+    return this.$store.getters.getPoint(this.line.p2);
   }
   get isSelected() {
-    return this.selected || this.clicked;
+    return this.line.selected;
   }
 
   handleClick() {
-    this.clicked = !this.clicked;
+    this.$store.commit("selectPoints", [this.line.p1, this.line.p2]);
   }
 }
 </script>
