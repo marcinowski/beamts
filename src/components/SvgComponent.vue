@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid>
+  <div class="SvgContainer">
     <svg
       id="svg"
       ref="svg"
@@ -23,8 +23,31 @@
       </template>
       <Selection></Selection>
     </svg>
-  </v-container>
+  </div>
 </template>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped>
+svg {
+  width: 100vw;
+  height: 100vh;
+  position: absolute;
+  background-color: white;
+}
+rect {
+  stroke: black;
+  fill: rgb(120, 240, 230);
+  stroke-dasharray: 3;
+  fill-opacity: 0.2;
+}
+.SvgContainer {
+  height: 100%;
+  width: 100%;
+  overflow: scroll;
+  border: 2px solid black;
+  background-color: grey;
+}
+</style>
 
 <script lang="ts">
 import Vue from "vue";
@@ -36,6 +59,10 @@ import Points from "./Points.vue";
 import Selection from "./Selection.vue";
 import { Coordinates, MethodTypes, Point } from "@/types/types";
 
+interface WindowCoordinates extends Coordinates {}
+interface SvgCoordinates extends Coordinates {}
+interface OriginCoordinates extends Coordinates {}
+
 @Component({
   components: {
     Lines,
@@ -45,10 +72,25 @@ import { Coordinates, MethodTypes, Point } from "@/types/types";
 })
 export default class SvgComponent extends Vue {
   prevPoint?: Point;
+  prevCoordinates?: WindowCoordinates;
   svg: SVGElement;
+  originSvgCoordinates: SvgCoordinates;
+  originWindowCoordinates: WindowCoordinates;
+  svgWindowCoordinates: WindowCoordinates;
+
+  update() {
+    this.updateSvgWindowCoordinates();
+    this.updateOriginWindowCoordinates();
+  }
 
   mounted() {
     this.svg = this.$refs.svg as SVGElement;
+    this.originSvgCoordinates = {
+      x: this.svg.clientWidth / 2,
+      y: this.svg.clientHeight / 2
+    };
+    this.updateSvgWindowCoordinates();
+    this.updateOriginWindowCoordinates();
   }
 
   get lines() {
@@ -59,10 +101,33 @@ export default class SvgComponent extends Vue {
     return this.$store.state.points;
   }
 
-  transformEventToCoordinates(event: MouseEvent, round: boolean = true) {
+  updateSvgWindowCoordinates() {
     const { left, top } = this.svg.getBoundingClientRect();
-    const x = event.clientX - left;
-    const y = event.clientY - top;
+    this.svgWindowCoordinates = {
+      x: left,
+      y: top
+    };
+  }
+
+  updateOriginWindowCoordinates() {
+    this.originWindowCoordinates = {
+      x: this.originSvgCoordinates.x + this.svgWindowCoordinates.x,
+      y: this.originSvgCoordinates.y + this.svgWindowCoordinates.y
+    };
+  }
+
+  getEventWindowCoordinates(event: MouseEvent): WindowCoordinates {
+    return {
+      x: event.clientX,
+      y: event.clientY
+    };
+  }
+
+  transformWindowToSvgCoordinates(
+    eventCoords: WindowCoordinates
+  ): SvgCoordinates {
+    const x = eventCoords.x - this.svgWindowCoordinates.x;
+    const y = eventCoords.y - this.svgWindowCoordinates.y;
     return { x, y };
   }
 
@@ -74,8 +139,9 @@ export default class SvgComponent extends Vue {
 
   handleClick(event: MouseEvent) {
     const method = this.$store.getters.getMethod;
-    const coordinates = this.transformEventToCoordinates(event);
-    const point = this.transformCoordinatesToPoint(coordinates, event);
+    const eventCoords = this.getEventWindowCoordinates(event);
+    const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
+    const point = this.transformCoordinatesToPoint(svgCoordinates, event);
     this.$store.commit("deselectAllPoints");
     switch (method) {
       case MethodTypes.CURSOR:
@@ -94,14 +160,15 @@ export default class SvgComponent extends Vue {
 
   handleMouseDown(event: MouseEvent) {
     const method = this.$store.getters.getMethod;
-    const coordinates = this.transformEventToCoordinates(event);
-    const point = this.transformCoordinatesToPoint(coordinates, event);
+    const eventCoords = this.getEventWindowCoordinates(event);
+    const svgCoordinates = this.transformWindowToSvgCoordinates(event);
     switch (method) {
       case MethodTypes.CURSOR:
+        this.prevCoordinates = eventCoords;
         break;
       case MethodTypes.SELECTION:
-        this.prevPoint = point;
-        this.$store.commit("setSelectionOrigin", coordinates);
+        this.prevCoordinates = svgCoordinates;
+        this.$store.commit("setSelectionOrigin", svgCoordinates);
         break;
       case MethodTypes.POINT:
         break;
@@ -112,16 +179,27 @@ export default class SvgComponent extends Vue {
 
   handleMouseMove(event: MouseEvent) {
     const method = this.$store.getters.getMethod;
-    const coordinates = this.transformEventToCoordinates(event);
+    const eventCoords = this.getEventWindowCoordinates(event);
+    const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     switch (method) {
       case MethodTypes.CURSOR:
+        if (this.prevCoordinates) {
+          const vector = {
+            x: eventCoords.x - this.prevCoordinates.x,
+            y: eventCoords.y - this.prevCoordinates.y
+          };
+          // this only works with this.svg position: absolute;
+          this.svg.style.top = `${0 + vector.y}px`;
+          this.svg.style.left = `${0 + vector.x}px`;
+          this.updateSvgWindowCoordinates();
+        }
         break;
       case MethodTypes.SELECTION:
-        if (!this.prevPoint) {
+        if (!this.prevCoordinates) {
           return;
         }
-        const x = coordinates.x - this.prevPoint.x;
-        const y = coordinates.y - this.prevPoint.y;
+        const x = svgCoordinates.x - this.prevCoordinates.x;
+        const y = svgCoordinates.y - this.prevCoordinates.y;
         this.$store.commit("setSelectionDimensions", { x, y });
         break;
       case MethodTypes.POINT:
@@ -133,19 +211,21 @@ export default class SvgComponent extends Vue {
 
   handleMouseUp(event: MouseEvent) {
     const method = this.$store.getters.getMethod;
-    const coordinates = this.transformEventToCoordinates(event);
+    const eventCoords = this.getEventWindowCoordinates(event);
+    const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     switch (method) {
       case MethodTypes.CURSOR:
+        this.prevCoordinates = undefined;
         break;
       case MethodTypes.SELECTION:
-        if (!this.prevPoint) {
+        if (!this.prevCoordinates) {
           return;
         }
         this.$store.dispatch("selectPointsInRange", [
-          this.prevPoint,
-          coordinates
+          this.prevCoordinates,
+          svgCoordinates
         ]);
-        this.prevPoint = undefined;
+        this.prevCoordinates = undefined;
         this.$store.commit("clearSelection");
         break;
       case MethodTypes.POINT:
@@ -179,18 +259,3 @@ export default class SvgComponent extends Vue {
   }
 }
 </script>
-
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
-svg {
-  width: 100vw;
-  height: 100vh;
-  border: 2px solid black;
-}
-rect {
-  stroke: black;
-  fill: rgb(120, 240, 230);
-  stroke-dasharray: 3;
-  fill-opacity: 0.2;
-}
-</style>
