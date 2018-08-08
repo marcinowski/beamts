@@ -10,10 +10,10 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
-import { Line } from "@/types/types";
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import { Prop } from 'vue-property-decorator';
+import { Line } from '@/types/types';
 
 @Component({})
 export default class Lines extends Vue {
@@ -30,7 +30,7 @@ export default class Lines extends Vue {
   }
 
   handleClick() {
-    this.$store.commit("selectPoints", [this.line.p1, this.line.p2]);
+    this.$store.commit('selectPoints', [this.line.p1, this.line.p2]);
   }
 }
 </script>

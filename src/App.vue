@@ -32,57 +32,42 @@
       </v-btn>
     </v-toolbar>
     <v-content>
-      <div>
-        <!-- <draw
-          v-bind:method="method"
-        ></draw> -->
-        <svg-component>
-        </svg-component>
-      </div>
+      <svg-component>
+      </svg-component>
     </v-content>
     <v-navigation-drawer
-      temporary
-      :right="right"
+      :right="true"
       v-model="rightDrawer"
       fixed
       app
     >
-      <v-list>
-        <v-list-tile @click="right = !right">
-          <v-list-tile-action>
-            <v-icon>compare_arrows</v-icon>
-          </v-list-tile-action>
-          <v-list-tile-title>Switch drawer (click me)</v-list-tile-title>
-        </v-list-tile>
-      </v-list>
+      <RightDrawer>
+      </RightDrawer>
     </v-navigation-drawer>
-    <v-footer :fixed="fixed" app>
-      <span>&copy; 2017</span>
-    </v-footer>
   </v-app>
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
-import Draw from "./components/Draw.vue";
-import SideOptions from "./components/SideOptions.vue";
-import SvgComponent from "./components/SvgComponent.vue";
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import { Prop } from 'vue-property-decorator';
+import SideOptions from './components/SideOptions.vue';
+import SvgComponent from './components/SvgComponent.vue';
+import RightDrawer from './components/RightDrawer.vue';
 
 @Component({
   components: {
     SvgComponent,
-    SideOptions
-  }
+    SideOptions,
+    RightDrawer,
+  },
 })
 export default class App extends Vue {
   clipped = false;
   drawer = true;
   fixed = false;
   miniVariant = false;
-  right = true;
   rightDrawer = false;
-  title = "Beam";
+  title = 'Beam';
 }
 </script>

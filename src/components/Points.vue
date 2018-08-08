@@ -9,10 +9,10 @@
 </template>
 
 <script lang="ts">
-import Vue from "vue";
-import Component from "vue-class-component";
-import { Prop } from "vue-property-decorator";
-import { Point } from "@/types/types";
+import Vue from 'vue';
+import Component from 'vue-class-component';
+import { Prop } from 'vue-property-decorator';
+import { Point } from '@/types/types';
 
 @Component({})
 export default class Points extends Vue {
@@ -23,8 +23,8 @@ export default class Points extends Vue {
   }
 
   handleClick(event: Event) {
-    this.$store.commit("selectPoints", [this.point.id]);
-    this.$emit("selected-point", { event, point: this.point });
+    this.$store.commit('selectPoints', [this.point.id]);
+    this.$emit('selected-point', { event, point: this.point });
   }
 }
 </script>

@@ -34,12 +34,12 @@ export class SvgHandler {
   public createPoint(point: Point): SVGCircleElement {
     const circle = document.createElementNS(
       'http://www.w3.org/2000/svg',
-      'circle'
+      'circle',
     );
     this.attachElementProperties(circle, {
       cx: point.x.toString(),
       cy: point.y.toString(),
-      r: '3'
+      r: '3',
     });
     circle.style.cursor = 'pointer';
     return circle;
