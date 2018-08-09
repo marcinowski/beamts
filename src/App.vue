@@ -31,10 +31,8 @@
         <v-icon>menu</v-icon>
       </v-btn>
     </v-toolbar>
-    <v-content>
-      <svg-component>
-      </svg-component>
-    </v-content>
+    <svg-component>
+    </svg-component>
     <v-navigation-drawer
       :right="true"
       v-model="rightDrawer"

@@ -1,34 +1,36 @@
 <template>
-  <div class="SvgContainer">
-    <svg
-      id="svg"
-      ref="svg"
-      v-on:click="handleClick"
-      v-on:mousedown="handleMouseDown"
-      v-on:mousemove="handleMouseMove"
-      v-on:mouseup="handleMouseUp"
-    >
-      <GridComponent
-        v-bind:unit="unit"
-        v-bind:svgHeight="svgHeight"
-        v-bind:svgWidth="svgWidth"
-      ></GridComponent>
-      <template v-for="line in lines">
-        <Lines
-          :key="line.id"
-          v-bind:line="line"
-        ></Lines>
-      </template>
-      <template v-for="point in points">
-        <Points
-          :key="point.id"
-          v-bind:point="point"
-          v-on:selected-point="handleSelectedPoint"
-        ></Points>
-      </template>
-      <Selection></Selection>
-    </svg>
-  </div>
+  <v-content class="SvgWindow">
+    <div class="SvgContainer">
+      <svg
+        id="svg"
+        ref="svg"
+        v-on:click="handleClick"
+        v-on:mousedown="handleMouseDown"
+        v-on:mousemove="handleMouseMove"
+        v-on:mouseup="handleMouseUp"
+      >
+        <template v-for="line in lines">
+          <Lines
+            :key="line.id"
+            v-bind:line="line"
+          ></Lines>
+        </template>
+        <template v-for="point in points">
+          <Points
+            :key="point.id"
+            v-bind:point="point"
+            v-on:selected-point="handleSelectedPoint"
+          ></Points>
+        </template>
+        <GridComponent
+          v-bind:unit="unit"
+          v-bind:svgHeight="svgHeight"
+          v-bind:svgWidth="svgWidth"
+        ></GridComponent>
+        <Selection></Selection>
+      </svg>
+    </div>
+  </v-content>
 </template>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
@@ -45,11 +47,12 @@ rect {
   stroke-dasharray: 3;
   fill-opacity: 0.2;
 }
+.SvgWindow {
+  overflow: scroll;
+}
 .SvgContainer {
   height: 100%;
   width: 100%;
-  overflow: scroll;
-  border: 2px solid black;
   background-color: grey;
 }
 </style>
@@ -62,7 +65,7 @@ import { Prop } from 'vue-property-decorator';
 import Lines from './Lines.vue';
 import Points from './Points.vue';
 import Selection from './Selection.vue';
-import GridComponent from './Grid.vue';
+import GridComponent from './GridComponent.vue';
 import { Coordinates, MethodTypes, Point } from '@/types/types';
 
 type WindowCoordinates = Coordinates;
@@ -71,6 +74,7 @@ type OriginCoordinates = Coordinates;
 
 @Component({
   components: {
+    GridComponent,
     Lines,
     Points,
     Selection,
@@ -83,7 +87,7 @@ export default class SvgComponent extends Vue {
   originSvgCoordinates: SvgCoordinates;
   originWindowCoordinates: WindowCoordinates;
   svgWindowCoordinates: WindowCoordinates;
-  unit = 10;
+  unit = 50;
   svgWidth: number = 0;
   svgHeight: number = 0;
 
