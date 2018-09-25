@@ -1,6 +1,6 @@
 <template>
   <v-content class="SvgWindow">
-    <div class="SvgContainer">
+    <div ref="container" class="SvgContainer">
       <svg
         id="svg"
         ref="svg"
@@ -28,6 +28,7 @@
           v-bind:svgWidth="svgWidth"
         ></GridComponent>
         <Selection></Selection>
+        <CrossComponent v-bind:origin="originSvgCoordinates"></CrossComponent>
       </svg>
     </div>
   </v-content>
@@ -66,6 +67,7 @@ import Lines from './Lines.vue';
 import Points from './Points.vue';
 import Selection from './Selection.vue';
 import GridComponent from './GridComponent.vue';
+import CrossComponent from './CrossComponent.vue';
 import { Coordinates, MethodTypes, Point } from '@/types/types';
 
 type WindowCoordinates = Coordinates;
@@ -74,6 +76,7 @@ type OriginCoordinates = Coordinates;
 
 @Component({
   components: {
+    CrossComponent,
     GridComponent,
     Lines,
     Points,
@@ -84,12 +87,18 @@ export default class SvgComponent extends Vue {
   prevPoint?: Point;
   prevCoordinates?: WindowCoordinates;
   svg: SVGElement;
+  container: HTMLElement;
   originSvgCoordinates: SvgCoordinates;
   originWindowCoordinates: WindowCoordinates;
   svgWindowCoordinates: WindowCoordinates;
-  unit = 50;
+  baseUnit = 5;
   svgWidth: number = 0;
   svgHeight: number = 0;
+  containerBounds: ClientRect;
+
+  get unit() {
+    return this.baseUnit * 10;
+  }
 
   update() {
     this.updateSvgWindowCoordinates();
@@ -98,6 +107,7 @@ export default class SvgComponent extends Vue {
 
   mounted() {
     this.svg = this.$refs.svg as SVGElement;
+    this.container = this.$refs.container as HTMLElement;
     this.originSvgCoordinates = {
       x: this.svg.clientWidth / 2,
       y: this.svg.clientHeight / 2,
@@ -115,6 +125,7 @@ export default class SvgComponent extends Vue {
   }
 
   updateSvgWindowCoordinates() {
+    this.containerBounds = this.container.getBoundingClientRect();
     const { left, top, width, height } = this.svg.getBoundingClientRect();
     this.svgWidth = width;
     this.svgHeight = height;
@@ -147,8 +158,8 @@ export default class SvgComponent extends Vue {
   }
 
   transformCoordinatesToPoint(point: Coordinates, event: MouseEvent): Point {
-    const x = point.x - point.x % this.unit;
-    const y = point.y - point.y % this.unit;
+    const x = point.x - point.x % this.baseUnit;
+    const y = point.y - point.y % this.baseUnit;
     return { x, y, id: event.timeStamp };
   }
 
@@ -204,8 +215,16 @@ export default class SvgComponent extends Vue {
             y: eventCoords.y - this.prevCoordinates.y,
           };
           // this only works with this.svg position: absolute;
-          this.svg.style.top = `${0 + vector.y}px`;
-          this.svg.style.left = `${0 + vector.x}px`;
+          const maxBottom = this.containerBounds.bottom - this.svgHeight;
+          const maxRight = this.containerBounds.right - this.svgWidth;
+          this.svg.style.top = `${Math.max(
+            Math.min(vector.y, 0),
+            maxBottom,
+          )}px`;
+          this.svg.style.left = `${Math.max(
+            Math.min(vector.x, 0),
+            maxRight,
+          )}px`;
           this.updateSvgWindowCoordinates();
         }
         break;
@@ -218,7 +237,12 @@ export default class SvgComponent extends Vue {
         this.$store.commit('setSelectionDimensions', { x, y });
         break;
       case MethodTypes.POINT:
-        break;
+        if (svgCoordinates.x % this.unit === 0) {
+          // draw vertical helper line
+        }
+        if (svgCoordinates.y % this.unit === 0) {
+          // draw horizontal helper line
+        }
       case MethodTypes.LINE:
         break;
     }
@@ -270,7 +294,7 @@ export default class SvgComponent extends Vue {
       id: event.timeStamp + 1, // hack to distinguish from the point
     };
     this.$store.commit('addLine', line);
-    this.prevPoint = undefined;
+    this.prevPoint = point;
   }
 }
 </script>

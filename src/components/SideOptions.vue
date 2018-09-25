@@ -14,6 +14,7 @@
           <v-list-tile-title v-text="item.title"></v-list-tile-title>
         </v-list-tile-content>
       </v-list-tile>
+      <v-divider></v-divider>
     </v-list>
     <span>&copy; 2018</span>
   </div>
