@@ -102,8 +102,11 @@ export default class SvgComponent extends Vue {
       x: this.svg.clientWidth / 2,
       y: this.svg.clientHeight / 2,
     };
-    this.updateSvgWindowCoordinates();
-    this.updateOriginWindowCoordinates();
+    setTimeout(() => {
+      // small hack to run the update as soon as possible
+      this.updateSvgWindowCoordinates();
+      this.updateOriginWindowCoordinates();
+    }, 0);
   }
 
   get lines() {
@@ -157,7 +160,7 @@ export default class SvgComponent extends Vue {
     const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     const point = this.transformCoordinatesToPoint(svgCoordinates, event);
-    this.$store.commit('deselectAllPoints');
+    this.$store.dispatch('deselectAll');
     switch (method) {
       case MethodTypes.CURSOR:
         break;
@@ -270,7 +273,7 @@ export default class SvgComponent extends Vue {
       id: event.timeStamp + 1, // hack to distinguish from the point
     };
     this.$store.commit('addLine', line);
-    this.prevPoint = undefined;
+    this.prevPoint = point;
   }
 }
 </script>

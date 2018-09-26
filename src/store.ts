@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex, { StoreOptions } from 'vuex';
+import Vuex, { StoreOptions, Store } from 'vuex';
 import {
   Line,
   MethodTypes,
@@ -10,11 +10,18 @@ import {
 
 Vue.use(Vuex);
 
+interface UndoAction {
+  action: string;
+  item?: Line[] | Point[] | Point | Line | { lines: Line[]; points: Point[] };
+  dispatch?: true;
+}
+
 interface MyStore {
   method: MethodTypes;
   lines: Line[];
   points: Point[];
   selection: Selection;
+  undoAction: UndoAction;
 }
 
 const store: StoreOptions<MyStore> = {
@@ -29,6 +36,7 @@ const store: StoreOptions<MyStore> = {
       height: 0,
       width: 0,
     },
+    undoAction: { action: 'removeAll' },
   },
   getters: {
     pointsCount: (state) => state.points.length,
@@ -63,6 +71,7 @@ const store: StoreOptions<MyStore> = {
       lines: getters.getSelectedLines,
       points: getters.getSelectedPoints,
     }),
+    getUndoAction: (state): UndoAction => state.undoAction,
   },
   mutations: {
     changeMethod(state, method: MethodTypes) {
@@ -70,15 +79,53 @@ const store: StoreOptions<MyStore> = {
     },
     addPoint(state, point: Point) {
       state.points.push(point);
+      state.undoAction = {
+        action: 'removePoint',
+        item: point,
+      };
     },
     addLine(state, line: Line) {
       state.lines.push(line);
+      state.undoAction = {
+        action: 'removeLine',
+        item: line,
+      };
     },
     removeLine(state, line: Line) {
-      state.lines.splice(state.lines.map((l) => l.id).indexOf(line.id), 1);
+      state.lines = [...state.lines.filter((l) => l.id !== line.id)];
+      state.undoAction = {
+        action: 'addLine',
+        item: line,
+      };
     },
     removePoint(state, point: Point) {
-      state.points.splice(state.points.map((l) => l.id).indexOf(point.id), 1);
+      state.points = [...state.points.filter((p) => p.id !== point.id)];
+      state.undoAction = {
+        action: 'removePoint',
+        item: point,
+      };
+    },
+    removeAll(state) {
+      state.undoAction = {
+        action: 'restoreAll',
+        item: {
+          lines: state.lines,
+          points: state.points,
+        },
+      };
+      state.points = [];
+      state.lines = [];
+    },
+    restoreAll(state) {
+      state.undoAction = { action: 'removeAll' };
+      state.points =
+        state.undoAction.item && 'points' in state.undoAction.item
+          ? state.undoAction.item.points
+          : [];
+      state.lines =
+        state.undoAction.item && 'lines' in state.undoAction.item
+          ? state.undoAction.item.lines
+          : [];
     },
     setSelectionOrigin(state, coords: Coordinates) {
       state.selection = { ...state.selection, x: coords.x, y: coords.y };
@@ -93,36 +140,99 @@ const store: StoreOptions<MyStore> = {
     clearSelection(state) {
       state.selection = { x: 0, y: 0, height: 0, width: 0 };
     },
-    selectPoints(state, ids: Array<Point['id']>) {
-      const selectedPoints = state.points.filter((p) => ids.includes(p.id));
+    changeSelectionStatePoints(
+      state,
+      {
+        ids,
+        selected,
+      }: {
+        ids: Array<Point['id']>;
+        selected: boolean;
+      },
+    ) {
+      const selectedPoints = state.points
+        .filter((p) => ids.includes(p.id))
+        .map((p) => ({ ...p, selected }));
       const otherPoints = state.points.filter((p) => !ids.includes(p.id));
-      selectedPoints.forEach((p) => (p.selected = true));
       state.points = [...otherPoints, ...selectedPoints]; // my fault :(
-      const selectedLines = state.lines.filter(
-        (l) => ids.includes(l.p1) && ids.includes(l.p2),
-      );
+    },
+    changeSelectionStateLines(
+      state,
+      {
+        ids,
+        selected,
+      }: {
+        ids: Array<Point['id']>;
+        selected: boolean;
+      },
+    ) {
+      const selectedLines = state.lines
+        .filter((l) => ids.includes(l.p1) && ids.includes(l.p2))
+        .map((l) => ({ ...l, selected }));
       const otherLines = state.lines.filter(
         (l) => !ids.includes(l.p1) || !ids.includes(l.p2),
       );
-      selectedLines.forEach((l) => (l.selected = true));
       state.lines = [...selectedLines, ...otherLines];
     },
-    deselectAllPoints(state) {
-      const points = state.points;
-      points.forEach((p) => Vue.set(p, 'selected', false));
-      state.points = [...points];
-      const lines = state.lines;
-      lines.forEach((l) => (l.selected = false));
-      state.lines = [...lines];
+    changeSelectionStateAllPoints(state, selected: boolean) {
+      state.points = [...state.points.map((p) => ({ ...p, selected }))];
+    },
+    changeSelectionStateAllLines(state, selected: boolean) {
+      state.lines = [...state.lines.map((l) => ({ ...l, selected }))];
     },
   },
   actions: {
+    selectPoints(context, ids: Array<Point['id']>) {
+      context.commit('changeSelectionStatePoints', { ids, selected: true });
+    },
+    deselectPoints(context, ids: Array<Point['id']>) {
+      context.commit('changeSelectionStatePoints', { ids, selected: true });
+    },
+    selectLines(context, ids: Array<Point['id']>) {
+      context.commit('changeSelectionStateLines', { ids, selected: true });
+    },
+    deselectLines(context, ids: Array<Point['id']>) {
+      context.commit('changeSelectionStateLines', { ids, selected: false });
+    },
+    selectObjects(context, ids: Array<Point['id']>) {
+      context.dispatch('selectPoints', ids);
+      context.dispatch('selectLines', ids);
+    },
+    deselectObjects(context, ids: Array<Point['id']>) {
+      context.dispatch('deselectPoints', ids);
+      context.dispatch('deselectLines', ids);
+    },
     selectPointsInRange(context, points: [Coordinates, Coordinates]) {
       const [p1, p2] = points;
       const selectedPoints = context.getters
         .getPointsInsideSelection(p1.x, p2.x, p1.y, p2.y)
         .map((p: Point) => p.id);
-      context.commit('selectPoints', selectedPoints);
+      context.dispatch('selectPoints', selectedPoints);
+    },
+    deselectPointsInRange(context, points: [Coordinates, Coordinates]) {
+      const [p1, p2] = points;
+      const selectedPoints = context.getters
+        .getPointsInsideSelection(p1.x, p2.x, p1.y, p2.y)
+        .map((p: Point) => p.id);
+      context.dispatch('deselectPoints', selectedPoints);
+    },
+    changeSelectionStateAll(context, selected: boolean) {
+      context.commit('changeSelectionStateAllPoints', selected);
+      context.commit('changeSelectionStateAllLines', selected);
+    },
+    selectAll(context) {
+      context.dispatch('changeSelectionStateAll', true);
+    },
+    deselectAll(context) {
+      context.dispatch('changeSelectionStateAll', false);
+    },
+    undo(context) {
+      const action = context.getters.getUndoAction;
+      if (action.dispatch) {
+        context.dispatch(action.action, action.item);
+      } else {
+        context.commit(action.action, action.item);
+      }
     },
   },
 };

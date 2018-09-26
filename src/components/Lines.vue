@@ -30,7 +30,7 @@ export default class Lines extends Vue {
   }
 
   handleClick() {
-    this.$store.commit('selectPoints', [this.line.p1, this.line.p2]);
+    this.$store.dispatch('selectLines', [this.line.p1, this.line.p2]);
   }
 }
 </script>
