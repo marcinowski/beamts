@@ -23,7 +23,7 @@ export default class Points extends Vue {
   }
 
   handleClick(event: Event) {
-    this.$store.commit('selectPoints', [this.point.id]);
+    this.$store.dispatch('selectPoints', [this.point.id]);
     this.$emit('selected-point', { event, point: this.point });
   }
 }
