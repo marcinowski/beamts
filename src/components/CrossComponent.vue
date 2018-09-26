@@ -1,12 +1,19 @@
 <template>
-  <!-- <line
-    v-bind:x1="start.x"
-    v-bind:x2="end.x"
-    v-bind:y1="start.y"
-    v-bind:y2="end.y"
-    v-bind:class="{selected: isSelected}"
-  ></line> -->
-  <circle v-bind:x="cross.x" v-bind:y="cross.y" v-bind:r="3"></circle>
+  <g>
+    <line
+      v-bind:x1="0"
+      v-bind:x2="10000"
+      v-bind:y1="origin.y"
+      v-bind:y2="origin.y"
+    ></line>
+    <line
+      v-bind:x1="origin.x"
+      v-bind:x2="origin.x"
+      v-bind:y1="0"
+      v-bind:y2="10000"
+    ></line>
+    <circle v-bind:cx="cross.x" v-bind:cy="cross.y" v-bind:r="3"></circle>
+  </g>
 </template>
 
 <script lang="ts">
@@ -18,9 +25,6 @@ import { Coordinates } from '@/types/types';
 @Component({})
 export default class Lines extends Vue {
   @Prop() origin: Coordinates;
-  // @Prop() unit: number;
-  // @Prop() svgWidth: number;
-  // @Prop() svgHeight: number;
   get cross() {
     return this.origin;
   }
@@ -29,13 +33,13 @@ export default class Lines extends Vue {
 
 <style lang="scss" scoped>
 line {
-  stroke: black;
+  stroke: darkgray;
   cursor: pointer;
   &.selected {
     stroke: green;
   }
 }
 circle {
-  stroke: red;
+  stroke: darkgray;
 }
 </style>

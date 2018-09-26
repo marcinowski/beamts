@@ -88,7 +88,7 @@ export default class SvgComponent extends Vue {
   prevCoordinates?: WindowCoordinates;
   svg: SVGElement;
   container: HTMLElement;
-  originSvgCoordinates: SvgCoordinates;
+  originSvgCoordinates: SvgCoordinates = {x: 0, y: 0};
   originWindowCoordinates: WindowCoordinates;
   svgWindowCoordinates: WindowCoordinates;
   baseUnit = 5;
@@ -109,8 +109,8 @@ export default class SvgComponent extends Vue {
     this.svg = this.$refs.svg as SVGElement;
     this.container = this.$refs.container as HTMLElement;
     this.originSvgCoordinates = {
-      x: this.svg.clientWidth / 2,
-      y: this.svg.clientHeight / 2,
+      x: (window.innerWidth / 2) - (window.innerWidth / 2) % this.unit,
+      y: (window.innerHeight / 2) - (window.innerHeight / 2) % this.unit,
     };
     setTimeout(() => {
       // small hack to run the update as soon as possible

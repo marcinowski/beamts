@@ -92,8 +92,8 @@ export default class SideOptions extends Vue {
       icon: 'undo',
       title: 'Undo',
       onClick: () => {
-        this.$store.dispatch('undo')
-      }
+        this.$store.dispatch('undo');
+      },
     },
     {
       icon: 'delete_forever',

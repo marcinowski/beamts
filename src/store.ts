@@ -117,15 +117,15 @@ const store: StoreOptions<MyStore> = {
       state.lines = [];
     },
     restoreAll(state) {
-      state.undoAction = { action: 'removeAll' };
       state.points =
         state.undoAction.item && 'points' in state.undoAction.item
-          ? state.undoAction.item.points
+          ? [...state.undoAction.item.points]
           : [];
       state.lines =
         state.undoAction.item && 'lines' in state.undoAction.item
-          ? state.undoAction.item.lines
+          ? [...state.undoAction.item.lines]
           : [];
+      state.undoAction = { action: 'removeAll' };
     },
     setSelectionOrigin(state, coords: Coordinates) {
       state.selection = { ...state.selection, x: coords.x, y: coords.y };
