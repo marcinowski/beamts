@@ -1,6 +1,6 @@
 <template>
   <v-content class="SvgWindow">
-    <div ref="container" class="SvgContainer">
+    <div class="SvgContainer">
       <svg
         id="svg"
         ref="svg"
@@ -92,7 +92,6 @@ export default class SvgComponent extends Vue {
   baseUnit = 5;
   svgWidth: number = 0;
   svgHeight: number = 0;
-  containerBounds: ClientRect;
 
   get unit() {
     return this.baseUnit * 10;
@@ -101,9 +100,8 @@ export default class SvgComponent extends Vue {
   mounted() {
     this.svg = this.$refs.svg as SVGElement;
     this.svg.addEventListener('scroll', () => console.log('SCROOOOL'));
-    this.container = this.$refs.container as HTMLElement;
     setTimeout(() => {
-      // small hack to run the update as soon as possible
+      // small hack to run the update as late as possible
       this.updateSvgWindowCoordinates();
     }, 0);
   }
@@ -117,7 +115,6 @@ export default class SvgComponent extends Vue {
   }
 
   updateSvgWindowCoordinates() {
-    this.containerBounds = this.container.getBoundingClientRect();
     const { left, top, width, height } = this.svg.getBoundingClientRect();
     this.svgWidth = width;
     this.svgHeight = height;
@@ -203,12 +200,7 @@ export default class SvgComponent extends Vue {
         this.$store.commit('setSelectionDimensions', { x, y });
         break;
       case MethodTypes.POINT:
-        if (svgCoordinates.x % this.unit === 0) {
-          // draw vertical helper line
-        }
-        if (svgCoordinates.y % this.unit === 0) {
-          // draw horizontal helper line
-        }
+        break;
       case MethodTypes.LINE:
         break;
     }
