@@ -28,7 +28,7 @@
           v-bind:svgWidth="svgWidth"
         ></GridComponent>
         <Selection></Selection>
-        <CrossComponent v-bind:origin="originSvgCoordinates"></CrossComponent>
+        <CrossComponent v-bind:svgWidth="svgWidth" v-bind:svgHeight="svgHeight" v-bind:unit="unit"></CrossComponent>
       </svg>
     </div>
   </v-content>
@@ -37,8 +37,8 @@
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
 svg {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   position: absolute;
   background-color: white;
 }
@@ -49,7 +49,7 @@ rect {
   fill-opacity: 0.2;
 }
 .SvgWindow {
-  overflow: scroll;
+  /* overflow: scroll; */
 }
 .SvgContainer {
   height: 100%;
@@ -88,8 +88,6 @@ export default class SvgComponent extends Vue {
   prevCoordinates?: WindowCoordinates;
   svg: SVGElement;
   container: HTMLElement;
-  originSvgCoordinates: SvgCoordinates = {x: 0, y: 0};
-  originWindowCoordinates: WindowCoordinates;
   svgWindowCoordinates: WindowCoordinates;
   baseUnit = 5;
   svgWidth: number = 0;
@@ -100,22 +98,13 @@ export default class SvgComponent extends Vue {
     return this.baseUnit * 10;
   }
 
-  update() {
-    this.updateSvgWindowCoordinates();
-    this.updateOriginWindowCoordinates();
-  }
-
   mounted() {
     this.svg = this.$refs.svg as SVGElement;
+    this.svg.addEventListener('scroll', () => console.log('SCROOOOL'));
     this.container = this.$refs.container as HTMLElement;
-    this.originSvgCoordinates = {
-      x: (window.innerWidth / 2) - (window.innerWidth / 2) % this.unit,
-      y: (window.innerHeight / 2) - (window.innerHeight / 2) % this.unit,
-    };
     setTimeout(() => {
       // small hack to run the update as soon as possible
       this.updateSvgWindowCoordinates();
-      this.updateOriginWindowCoordinates();
     }, 0);
   }
 
@@ -135,13 +124,6 @@ export default class SvgComponent extends Vue {
     this.svgWindowCoordinates = {
       x: left,
       y: top,
-    };
-  }
-
-  updateOriginWindowCoordinates() {
-    this.originWindowCoordinates = {
-      x: this.originSvgCoordinates.x + this.svgWindowCoordinates.x,
-      y: this.originSvgCoordinates.y + this.svgWindowCoordinates.y,
     };
   }
 
@@ -193,7 +175,6 @@ export default class SvgComponent extends Vue {
     const svgCoordinates = this.transformWindowToSvgCoordinates(event);
     switch (method) {
       case MethodTypes.CURSOR:
-        this.prevCoordinates = eventCoords;
         break;
       case MethodTypes.SELECTION:
         this.prevCoordinates = svgCoordinates;
@@ -212,24 +193,6 @@ export default class SvgComponent extends Vue {
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     switch (method) {
       case MethodTypes.CURSOR:
-        if (this.prevCoordinates) {
-          const vector = {
-            x: eventCoords.x - this.prevCoordinates.x,
-            y: eventCoords.y - this.prevCoordinates.y,
-          };
-          // this only works with this.svg position: absolute;
-          const maxBottom = this.containerBounds.bottom - this.svgHeight;
-          const maxRight = this.containerBounds.right - this.svgWidth;
-          this.svg.style.top = `${Math.max(
-            Math.min(vector.y, 0),
-            maxBottom,
-          )}px`;
-          this.svg.style.left = `${Math.max(
-            Math.min(vector.x, 0),
-            maxRight,
-          )}px`;
-          this.updateSvgWindowCoordinates();
-        }
         break;
       case MethodTypes.SELECTION:
         if (!this.prevCoordinates) {
@@ -257,7 +220,6 @@ export default class SvgComponent extends Vue {
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     switch (method) {
       case MethodTypes.CURSOR:
-        this.prevCoordinates = undefined;
         break;
       case MethodTypes.SELECTION:
         if (!this.prevCoordinates) {

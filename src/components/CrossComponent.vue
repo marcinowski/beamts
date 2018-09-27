@@ -2,17 +2,17 @@
   <g>
     <line
       v-bind:x1="0"
-      v-bind:x2="10000"
-      v-bind:y1="origin.y"
-      v-bind:y2="origin.y"
+      v-bind:x2="svgWidth"
+      v-bind:y1="yOrigin"
+      v-bind:y2="yOrigin"
     ></line>
     <line
-      v-bind:x1="origin.x"
-      v-bind:x2="origin.x"
+      v-bind:x1="xOrigin"
+      v-bind:x2="xOrigin"
       v-bind:y1="0"
-      v-bind:y2="10000"
+      v-bind:y2="svgHeight"
     ></line>
-    <circle v-bind:cx="cross.x" v-bind:cy="cross.y" v-bind:r="3"></circle>
+    <circle v-bind:cx="xOrigin" v-bind:cy="yOrigin" v-bind:r="3"></circle>
   </g>
 </template>
 
@@ -24,9 +24,16 @@ import { Coordinates } from '@/types/types';
 
 @Component({})
 export default class Lines extends Vue {
-  @Prop() origin: Coordinates;
-  get cross() {
-    return this.origin;
+  @Prop() svgHeight: number;
+  @Prop() svgWidth: number;
+  @Prop() unit: number;
+
+  get xOrigin() {
+    return this.svgWidth / 2 - (this.svgWidth / 2) % this.unit;
+  }
+
+  get yOrigin() {
+    return this.svgHeight / 2 - (this.svgHeight / 2) % this.unit;
   }
 }
 </script>
