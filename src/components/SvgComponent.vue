@@ -217,7 +217,7 @@ export default class SvgComponent extends Vue {
         if (!this.prevCoordinates) {
           return;
         }
-        this.$store.dispatch('selectPointsInRange', [
+        this.$store.dispatch('selectObjectsInRange', [
           this.prevCoordinates,
           svgCoordinates,
         ]);

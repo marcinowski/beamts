@@ -7,12 +7,19 @@ import {
   Coordinates,
   Selection,
 } from './types/types';
+import { access } from 'fs';
 
 Vue.use(Vuex);
 
 interface UndoAction {
   action: string;
-  item?: Line[] | Point[] | Point | Line | { lines: Line[]; points: Point[] };
+  item?:
+    | Array<Point['id']>
+    | Line[]
+    | Point[]
+    | Point
+    | Line
+    | { lines: Line[]; points: Point[] };
   dispatch?: true;
 }
 
@@ -56,15 +63,50 @@ const store: StoreOptions<MyStore> = {
     },
     getLinesConnectedToPoint: (state) => (id: number): ReadonlyArray<Line> =>
       state.lines.filter((l) => [l.p2, l.p1].includes(id)),
-    getPointsInsideSelection: (state) => (
+    checkPointInsideSelection: () => (
+      x1: number,
+      x2: number,
+      y1: number,
+      y2: number,
+      x: number,
+      y: number,
+    ): boolean => x1 <= x && x <= x2 && y1 <= y && y <= y2,
+    getPointsInsideSelection: (state, getters) => (
       x1: number,
       x2: number,
       y1: number,
       y2: number,
     ): ReadonlyArray<Point> =>
-      state.points.filter(
-        (p) => x1 <= p.x && p.x <= x2 && (y1 <= p.y && p.y <= y2),
+      state.points.filter((p) =>
+        getters.checkPointInsideSelection(x1, x2, y1, y2, p.x, p.y),
       ),
+    getLinesInsideSelection: (state, getters) => (
+      x1: number,
+      x2: number,
+      y1: number,
+      y2: number,
+    ): ReadonlyArray<Line> =>
+      state.lines.filter((line) => {
+        const points = getters.getPoints([line.p1, line.p2]);
+        return (
+          getters.checkPointInsideSelection(
+            x1,
+            x2,
+            y1,
+            y2,
+            points[0].x,
+            points[0].y,
+          ) &&
+          getters.checkPointInsideSelection(
+            x1,
+            x2,
+            y1,
+            y2,
+            points[1].x,
+            points[1].y,
+          )
+        );
+      }),
     getSelectedPoints: (state) => state.points.filter((p) => p.selected),
     getSelectedLines: (state) => state.lines.filter((l) => l.selected),
     getSelectedElements: (state, getters) => ({
@@ -90,6 +132,9 @@ const store: StoreOptions<MyStore> = {
         action: 'removeLine',
         item: line,
       };
+    },
+    addUndoAction(state, undoAction: UndoAction) {
+      state.undoAction = undoAction;
     },
     removeLine(state, line: Line) {
       state.lines = [...state.lines.filter((l) => l.id !== line.id)];
@@ -180,6 +225,45 @@ const store: StoreOptions<MyStore> = {
     changeSelectionStateAllLines(state, selected: boolean) {
       state.lines = [...state.lines.map((l) => ({ ...l, selected }))];
     },
+    removeSelectedPoints(state, ids: Array<Point['id']>) {
+      const selectedPoints = state.points.filter((p) => ids.includes(p.id));
+      const otherPoints = state.points.filter((p) => !ids.includes(p.id));
+      state.points = [...otherPoints];
+      state.undoAction = {
+        action: 'addPoints',
+        item: selectedPoints,
+      };
+    },
+    removeSelectedLines(state, ids: Array<Point['id']>) {
+      const selectedLines = state.lines.filter(
+        (l) => ids.includes(l.p1) && ids.includes(l.p2),
+      );
+      const otherLines = state.lines.filter(
+        (l) => !ids.includes(l.p1) || !ids.includes(l.p2),
+      );
+      state.lines = [...otherLines];
+      state.undoAction = {
+        action: 'addLines',
+        item: selectedLines,
+      };
+    },
+    restorePoints(state, points: Point[]) {
+      state.points = [...state.points, ...points];
+      state.undoAction = {
+        action: 'removeSelectedPoints',
+        item: points.map((p) => p.id),
+      };
+    },
+    restoreLines(state, lines: Line[]) {
+      state.lines = [...state.lines, ...lines];
+      const points = lines
+        .map((l: Line) => [l.p1, l.p2])
+        .reduce((acc: number[], val: number[]) => acc.concat(val), []);
+      state.undoAction = {
+        action: 'removeSelectedLines',
+        item: [...points],
+      };
+    },
   },
   actions: {
     selectPoints(context, ids: Array<Point['id']>) {
@@ -216,6 +300,18 @@ const store: StoreOptions<MyStore> = {
         .map((p: Point) => p.id);
       context.dispatch('deselectPoints', selectedPoints);
     },
+    selectLinesInRange(context, points: [Coordinates, Coordinates]) {
+      const [p1, p2] = points;
+      const selectedPoints = context.getters
+        .getLinesInsideSelection(p1.x, p2.x, p1.y, p2.y)
+        .map((l: Line) => [l.p1, l.p2])
+        .reduce((acc: number[], val: number[]) => acc.concat(val), []);
+      context.dispatch('selectLines', selectedPoints);
+    },
+    selectObjectsInRange(context, points: [Coordinates, Coordinates]) {
+      context.dispatch('selectPointsInRange', points);
+      context.dispatch('selectLinesInRange', points);
+    },
     changeSelectionStateAll(context, selected: boolean) {
       context.commit('changeSelectionStateAllPoints', selected);
       context.commit('changeSelectionStateAllLines', selected);
@@ -225,6 +321,38 @@ const store: StoreOptions<MyStore> = {
     },
     deselectAll(context) {
       context.dispatch('changeSelectionStateAll', false);
+    },
+    restoreSelected(
+      context,
+      { points, lines }: { points: Point[]; lines: Line[] },
+    ) {
+      context.commit('restoreLines', lines);
+      context.commit('restorePoints', points);
+      const undoAction = {
+        action: 'removeSelected',
+        dispatch: true,
+      };
+      context.commit('addUndoAction', undoAction);
+    },
+    removeSelected(context) {
+      const lines = context.getters.getSelectedLines;
+      context.commit(
+        'removeSelectedLines',
+        lines
+          .map((l: Line) => [l.p1, l.p2])
+          .reduce((acc: number[], val: number[]) => acc.concat(val), []),
+      );
+      const points = context.getters.getSelectedPoints.filter(
+        (point: Point) =>
+          context.getters.getLinesConnectedToPoint(point.id).length === 0,
+      );
+      context.commit('removeSelectedPoints', points.map((p: Point) => p.id));
+      const undoAction = {
+        action: 'restoreSelected',
+        item: { points, lines },
+        dispatch: true,
+      };
+      context.commit('addUndoAction', undoAction);
     },
     undo(context) {
       const action = context.getters.getUndoAction;

@@ -97,7 +97,14 @@ export default class SideOptions extends Vue {
     },
     {
       icon: 'delete_forever',
-      title: 'Clear',
+      title: 'Clear Selected',
+      onClick: () => {
+        this.$store.dispatch('removeSelected');
+      },
+    },
+    {
+      icon: 'delete_forever',
+      title: 'Clear All',
       onClick: () => {
         this.$store.commit('removeAll');
       },
