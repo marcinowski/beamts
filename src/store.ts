@@ -1,25 +1,19 @@
 import Vue from 'vue';
 import Vuex, { StoreOptions, Store } from 'vuex';
 import {
+  Coordinates,
   Line,
   MethodTypes,
   Point,
-  Coordinates,
   Selection,
+  Vector,
 } from './types/types';
-import { access } from 'fs';
 
 Vue.use(Vuex);
 
 interface UndoAction {
   action: string;
-  item?:
-    | Array<Point['id']>
-    | Line[]
-    | Point[]
-    | Point
-    | Line
-    | { lines: Line[]; points: Point[] };
+  item?: any;
   dispatch?: true;
 }
 
@@ -264,6 +258,27 @@ const store: StoreOptions<MyStore> = {
         item: [...points],
       };
     },
+    moveSelectedPoints(
+      state,
+      { points, vector }: { points: Point[]; vector: Vector },
+    ) {
+      const selectedIds = points.map((p) => p.id);
+      const otherPoints = state.points.filter((p) => !selectedIds.includes(p.id));
+      const transformedPoints = points.map((p) => ({
+        ...p,
+        x: p.x + vector.x,
+        y: p.y + vector.y,
+      }));
+      state.points = [...otherPoints, ...transformedPoints];
+      const undoAction = {
+        action: 'moveSelectedPoints',
+        item: {
+          points: transformedPoints,
+          vector: { x: -vector.x, y: -vector.y },
+        },
+      };
+      state.undoAction = undoAction;
+    },
   },
   actions: {
     selectPoints(context, ids: Array<Point['id']>) {
@@ -353,6 +368,10 @@ const store: StoreOptions<MyStore> = {
         dispatch: true,
       };
       context.commit('addUndoAction', undoAction);
+    },
+    moveSelectedPoints(context, vector: Vector) {
+      const selectedPoints = context.getters.getSelectedPoints;
+      context.commit('moveSelectedPoints', { points: selectedPoints, vector });
     },
     undo(context) {
       const action = context.getters.getUndoAction;

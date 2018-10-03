@@ -39,7 +39,6 @@
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  // flex: 1 1 100%;
   height: 100%;
 }
 </style>
@@ -69,6 +68,11 @@ export default class SideOptions extends Vue {
       icon: 'near_me',
       title: 'Cursor',
       type: MethodTypes.CURSOR,
+    },
+    {
+      icon: 'open_with',
+      title: 'Move',
+      type: MethodTypes.MOVE,
     },
     {
       icon: 'tab_unselected',

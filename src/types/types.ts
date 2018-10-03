@@ -1,11 +1,17 @@
 export enum MethodTypes {
   CURSOR = 'cursor',
-  SELECTION = 'selection',
-  POINT = 'point',
   LINE = 'line',
+  MOVE = 'move',
+  POINT = 'point',
+  SELECTION = 'selection',
 }
 
 export interface Coordinates {
+  x: number;
+  y: number;
+}
+
+export interface Vector {
   x: number;
   y: number;
 }

@@ -68,7 +68,7 @@ import Points from './Points.vue';
 import Selection from './Selection.vue';
 import GridComponent from './GridComponent.vue';
 import CrossComponent from './CrossComponent.vue';
-import { Coordinates, MethodTypes, Point } from '@/types/types';
+import { Coordinates, MethodTypes, Point, Vector } from '@/types/types';
 
 type WindowCoordinates = Coordinates;
 type SvgCoordinates = Coordinates;
@@ -163,6 +163,8 @@ export default class SvgComponent extends Vue {
         this.$store.commit('addPoint', point);
         this.addLine(event, point);
         break;
+      case MethodTypes.MOVE:
+        break;
     }
   }
 
@@ -181,6 +183,8 @@ export default class SvgComponent extends Vue {
         break;
       case MethodTypes.LINE:
         break;
+      case MethodTypes.MOVE:
+        this.prevCoordinates = svgCoordinates;
     }
   }
 
@@ -202,6 +206,8 @@ export default class SvgComponent extends Vue {
       case MethodTypes.POINT:
         break;
       case MethodTypes.LINE:
+        break;
+      case MethodTypes.MOVE:
         break;
     }
   }
@@ -228,6 +234,13 @@ export default class SvgComponent extends Vue {
         break;
       case MethodTypes.LINE:
         break;
+      case MethodTypes.MOVE:
+        if (!this.prevCoordinates) {
+          return;
+        }
+        const vector = this.getVector(this.prevCoordinates, svgCoordinates);
+        this.$store.dispatch('moveSelectedPoints', vector);
+        this.prevCoordinates = undefined;
     }
   }
 
@@ -252,6 +265,13 @@ export default class SvgComponent extends Vue {
     };
     this.$store.commit('addLine', line);
     this.prevPoint = point;
+  }
+
+  getVector(start: Coordinates, end: Coordinates): Vector {
+    return {
+      x: end.x - start.x,
+      y: end.y - start.y,
+    };
   }
 }
 </script>
