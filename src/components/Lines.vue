@@ -5,7 +5,7 @@
     v-bind:x2="end.x"
     v-bind:y1="start.y"
     v-bind:y2="end.y"
-    v-bind:class="{selected: isSelected}"
+    v-bind:class="{selected: line.selected}"
   ></line>
 </template>
 
@@ -20,17 +20,14 @@ export default class Lines extends Vue {
   @Prop() line: Line;
 
   get start() {
-    return this.$store.getters.getPoint(this.line.p1);
+    return this.$store.getters['svg/getPoint'](this.line.p1);
   }
   get end() {
-    return this.$store.getters.getPoint(this.line.p2);
-  }
-  get isSelected() {
-    return this.line.selected;
+    return this.$store.getters['svg/getPoint'](this.line.p2);
   }
 
   handleClick() {
-    this.$store.dispatch('selectLines', [this.line.p1, this.line.p2]);
+    this.$store.dispatch('svg/selectLines', [this.line.p1, this.line.p2]);
   }
 }
 </script>

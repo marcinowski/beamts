@@ -99,7 +99,6 @@ export default class SvgComponent extends Vue {
 
   mounted() {
     this.svg = this.$refs.svg as SVGElement;
-    this.svg.addEventListener('scroll', () => console.log('SCROOOOL'));
     setTimeout(() => {
       // small hack to run the update as late as possible
       this.updateSvgWindowCoordinates();
@@ -107,11 +106,11 @@ export default class SvgComponent extends Vue {
   }
 
   get lines() {
-    return this.$store.state.lines;
+    return this.$store.getters['svg/getAllLines'];
   }
 
   get points() {
-    return this.$store.state.points;
+    return this.$store.getters['svg/getAllPoints'];
   }
 
   updateSvgWindowCoordinates() {
@@ -150,17 +149,17 @@ export default class SvgComponent extends Vue {
     const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     const point = this.transformCoordinatesToPoint(svgCoordinates, event);
-    this.$store.dispatch('deselectAll');
+    this.$store.dispatch('svg/deselectAll');
     switch (method) {
       case MethodTypes.CURSOR:
         break;
       case MethodTypes.SELECTION:
         break;
       case MethodTypes.POINT:
-        this.$store.commit('addPoint', point);
+        this.$store.commit('svg/addPoint', point);
         break;
       case MethodTypes.LINE:
-        this.$store.commit('addPoint', point);
+        this.$store.commit('svg/addPoint', point);
         this.addLine(event, point);
         break;
       case MethodTypes.MOVE:
@@ -177,7 +176,7 @@ export default class SvgComponent extends Vue {
         break;
       case MethodTypes.SELECTION:
         this.prevCoordinates = svgCoordinates;
-        this.$store.commit('setSelectionOrigin', svgCoordinates);
+        this.$store.commit('svg/setSelectionOrigin', svgCoordinates);
         break;
       case MethodTypes.POINT:
         break;
@@ -201,7 +200,7 @@ export default class SvgComponent extends Vue {
         }
         const x = svgCoordinates.x - this.prevCoordinates.x;
         const y = svgCoordinates.y - this.prevCoordinates.y;
-        this.$store.commit('setSelectionDimensions', { x, y });
+        this.$store.commit('svg/setSelectionDimensions', { x, y });
         break;
       case MethodTypes.POINT:
         break;
@@ -223,12 +222,12 @@ export default class SvgComponent extends Vue {
         if (!this.prevCoordinates) {
           return;
         }
-        this.$store.dispatch('selectObjectsInRange', [
+        this.$store.dispatch('svg/selectObjectsInRange', [
           this.prevCoordinates,
           svgCoordinates,
         ]);
         this.prevCoordinates = undefined;
-        this.$store.commit('clearSelection');
+        this.$store.commit('svg/clearSelection');
         break;
       case MethodTypes.POINT:
         break;
@@ -239,7 +238,7 @@ export default class SvgComponent extends Vue {
           return;
         }
         const vector = this.getVector(this.prevCoordinates, svgCoordinates);
-        this.$store.dispatch('moveSelectedPoints', vector);
+        this.$store.dispatch('svg/moveSelectedPoints', vector);
         this.prevCoordinates = undefined;
     }
   }
@@ -263,7 +262,7 @@ export default class SvgComponent extends Vue {
       p2: point.id,
       id: event.timeStamp + 1, // hack to distinguish from the point
     };
-    this.$store.commit('addLine', line);
+    this.$store.commit('svg/addLine', line);
     this.prevPoint = point;
   }
 

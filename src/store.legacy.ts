@@ -7,7 +7,7 @@ import {
   Point,
   Selection,
   Vector,
-} from './types/types';
+} from '@/types/types';
 
 Vue.use(Vuex);
 
@@ -42,6 +42,9 @@ const store: StoreOptions<MyStore> = {
   getters: {
     pointsCount: (state) => state.points.length,
     linesCount: (state) => state.lines.length,
+    getSelection: (state) => state.selection,
+    getAllPoints: (state) => state.points,
+    getAllLines: (state) => state.lines,
     getMethod: (state): MethodTypes => state.method,
     getPoints: (state) => (ids: number[]): ReadonlyArray<Point> =>
       state.points.filter((p) => ids.includes(p.id)),

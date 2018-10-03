@@ -3,7 +3,7 @@
     v-on:click.stop="handleClick"
     v-bind:cx="point.x"
     v-bind:cy="point.y"
-    v-bind:class="{selected: isSelected}"
+    v-bind:class="{selected: point.selected}"
     r="3"
   ></circle>
 </template>
@@ -18,12 +18,8 @@ import { Point } from '@/types/types';
 export default class Points extends Vue {
   @Prop() point: Point;
 
-  get isSelected(): any {
-    return this.point.selected;
-  }
-
   handleClick(event: Event) {
-    this.$store.dispatch('selectPoints', [this.point.id]);
+    this.$store.dispatch('svg/selectPoints', [this.point.id]);
     this.$emit('selected-point', { event, point: this.point });
   }
 }

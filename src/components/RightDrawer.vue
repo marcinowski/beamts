@@ -24,11 +24,11 @@ import { MethodTypes } from '@/types/types';
 @Component({})
 export default class RightDrawer extends Vue {
   get lines() {
-    return this.$store.getters.getSelectedLines;
+    return this.$store.getters['svg/getSelectedLines'];
   }
 
   get points() {
-    return this.$store.getters.getSelectedPoints;
+    return this.$store.getters['svg/getSelectedPoints'];
   }
 }
 </script>

@@ -15,8 +15,7 @@ import { Prop, Watch } from 'vue-property-decorator';
 @Component({})
 export default class Points extends Vue {
   get selection() {
-    const s = this.$store.state.selection;
-    return s;
+    return this.$store.getters['svg/getSelection'];
   }
 }
 </script>
