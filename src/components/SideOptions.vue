@@ -117,7 +117,8 @@ export default class SideOptions extends Vue {
       icon: 'check',
       title: 'Check',
       onClick: () => {
-        console.log('Check');
+        const result = this.check();
+        console.log('Valid: ', result);
       },
     },
     {
@@ -142,6 +143,12 @@ export default class SideOptions extends Vue {
       },
     },
   ];
+
+  check() {
+    const points = this.$store.getters['svg/pointsCount'];
+    const lines = this.$store.getters['svg/linesCount'];
+    return lines >= points - 1;
+  }
 
   handleMethodClick(item: Method) {
     this.$store.commit('changeMethod', item.type);

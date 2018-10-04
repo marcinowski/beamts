@@ -152,6 +152,7 @@ export default class SvgComponent extends Vue {
     this.$store.dispatch('svg/deselectAll');
     switch (method) {
       case MethodTypes.CURSOR:
+        this.prevPoint = undefined; // resetting the line
         break;
       case MethodTypes.SELECTION:
         break;
