@@ -1,34 +1,31 @@
 <template>
   <div class="SideOptions">
     <v-list>
-      <v-list-tile
-        value="true"
-        v-for="item in methods"
-        :key="item.type"
-        @click="handleMethodClick(item)"
+      <v-list-group
+        v-for="group in groups"
+        v-model="group.active"
+        :key="group.title"
+        :prepend-icon="group.icon"
+        no-action
       >
-        <v-list-tile-action>
-          <v-icon v-html="item.icon"></v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title v-text="item.title"></v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
-    </v-list>
-    <v-list>
-      <v-list-tile
-        value="true"
-        v-for="item in clicks"
-        :key="item.string"
-        @click="item.onClick()"
-      >
-        <v-list-tile-action>
-          <v-icon v-html="item.icon"></v-icon>
-        </v-list-tile-action>
-        <v-list-tile-content>
-          <v-list-tile-title v-text="item.title"></v-list-tile-title>
-        </v-list-tile-content>
-      </v-list-tile>
+        <v-list-tile slot="activator">
+          <v-list-tile-content>
+            <v-list-tile-title>{{ group.title }}</v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+        <v-list-tile
+          v-for="item in group.actions"
+          :key="item.title"
+          @click="item.onClick()"
+        >
+          <v-list-tile-action>
+            <v-icon v-html="item.icon"></v-icon>
+          </v-list-tile-action>
+          <v-list-tile-content>
+            <v-list-tile-title v-text="item.title"></v-list-tile-title>
+          </v-list-tile-content>
+        </v-list-tile>
+      </v-list-group>
     </v-list>
     <span>&copy; 2018</span>
   </div>
@@ -52,12 +49,6 @@ import { MethodTypes } from '@/types/types';
 interface Method {
   icon: string;
   title: string;
-  type: MethodTypes;
-}
-
-interface Click {
-  icon: string;
-  title: string;
   onClick: () => void;
 }
 
@@ -67,31 +58,31 @@ export default class SideOptions extends Vue {
     {
       icon: 'near_me',
       title: 'Cursor',
-      type: MethodTypes.CURSOR,
+      onClick: () => this.handleMethodClick(MethodTypes.CURSOR),
     },
     {
       icon: 'open_with',
       title: 'Move',
-      type: MethodTypes.MOVE,
+      onClick: () => this.handleMethodClick(MethodTypes.MOVE),
     },
     {
       icon: 'tab_unselected',
       title: 'Select',
-      type: MethodTypes.SELECTION,
+      onClick: () => this.handleMethodClick(MethodTypes.SELECTION),
     },
     {
       icon: 'scatter_plot',
       title: 'Points',
-      type: MethodTypes.POINT,
+      onClick: () => this.handleMethodClick(MethodTypes.POINT),
     },
     {
       icon: 'show_chart',
       title: 'Line',
-      type: MethodTypes.LINE,
+      onClick: () => this.handleMethodClick(MethodTypes.LINE),
     },
   ];
 
-  clicks: Click[] = [
+  actions: Method[] = [
     {
       icon: 'undo',
       title: 'Undo',
@@ -144,14 +135,29 @@ export default class SideOptions extends Vue {
     },
   ];
 
+  groups = [
+    {
+      icon: 'edit',
+      title: 'Draw',
+      active: true,
+      actions: this.methods,
+    },
+    {
+      icon: 'assessment',
+      title: 'Actions',
+      active: false,
+      actions: this.actions,
+    },
+  ];
+
   check() {
     const points = this.$store.getters['svg/pointsCount'];
     const lines = this.$store.getters['svg/linesCount'];
     return lines >= points - 1;
   }
 
-  handleMethodClick(item: Method) {
-    this.$store.commit('changeMethod', item.type);
+  handleMethodClick(methodType: MethodTypes) {
+    this.$store.commit('changeMethod', methodType);
   }
 }
 </script>
