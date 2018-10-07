@@ -80,29 +80,74 @@ export default class SideOptions extends Vue {
       title: 'Line',
       onClick: () => this.handleMethodClick(MethodTypes.LINE),
     },
+    {
+      icon: 'straighten',
+      title: 'Measure',
+      onClick: () => console.log('Measure'),
+    },
+  ];
+
+  loads: Method[] = [
+    {
+      icon: 'vertical_align_bottom',
+      title: 'Force',
+      onClick: () => console.log('force'),
+    },
+    {
+      icon: 'replay',
+      title: 'Momentum',
+      onClick: () => console.log('momentum'),
+    },
+    {
+      icon: 'power_input',
+      title: 'Load',
+      onClick: () => console.log('load'),
+    },
+  ];
+
+  bearings: Method[] = [
+    {
+      icon: 'center_focus_strong',
+      title: 'Full',
+      onClick: () => console.log('Full Bearing'),
+    },
+    {
+      icon: 'center_focus_weak',
+      title: 'Bearing',
+      onClick: () => console.log('Bearing'),
+    },
+    {
+      icon: 'keyboard_capslock',
+      title: 'Loose Bearing',
+      onClick: () => console.log('Loose Bearing'),
+    },
+    {
+      icon: 'category',
+      title: 'Custom',
+      onClick: () => console.log('Custom Bearing'),
+    },
   ];
 
   actions: Method[] = [
     {
+      icon: 'edit',
+      title: 'Edit',
+      onClick: () => console.log('Edit'),
+    },
+    {
       icon: 'undo',
       title: 'Undo',
-      onClick: () => {
-        this.$store.dispatch('svg/undo');
-      },
+      onClick: () => this.$store.dispatch('svg/undo'),
     },
     {
       icon: 'delete_forever',
       title: 'Clear Selected',
-      onClick: () => {
-        this.$store.dispatch('svg/removeSelected');
-      },
+      onClick: () => this.$store.dispatch('svg/removeSelected'),
     },
     {
       icon: 'delete_forever',
       title: 'Clear All',
-      onClick: () => {
-        this.$store.commit('svg/removeAll');
-      },
+      onClick: () => this.$store.commit('svg/removeAll'),
     },
     {
       icon: 'check',
@@ -115,23 +160,17 @@ export default class SideOptions extends Vue {
     {
       icon: 'perm_data_settings',
       title: 'Calculate',
-      onClick: () => {
-        console.log('Calculate');
-      },
+      onClick: () => console.log('Calculate'),
     },
     {
       icon: 'backup',
       title: 'Save',
-      onClick: () => {
-        console.log('Save');
-      },
+      onClick: () => console.log('Save'),
     },
     {
       icon: 'adjust',
       title: 'Center',
-      onClick: () => {
-        console.log('Center');
-      },
+      onClick: () => console.log('Center'),
     },
   ];
 
@@ -143,9 +182,18 @@ export default class SideOptions extends Vue {
       actions: this.methods,
     },
     {
-      icon: 'assessment',
+      icon: 'fitness_center',
+      title: 'Loads',
+      actions: this.loads,
+    },
+    {
+      icon: 'eject',
+      title: 'Bearings',
+      actions: this.bearings,
+    },
+    {
+      icon: 'bar_chart',
       title: 'Actions',
-      active: false,
       actions: this.actions,
     },
   ];
