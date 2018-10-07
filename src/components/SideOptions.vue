@@ -61,16 +61,6 @@ export default class SideOptions extends Vue {
       onClick: () => this.handleMethodClick(MethodTypes.CURSOR),
     },
     {
-      icon: 'open_with',
-      title: 'Move',
-      onClick: () => this.handleMethodClick(MethodTypes.MOVE),
-    },
-    {
-      icon: 'tab_unselected',
-      title: 'Select',
-      onClick: () => this.handleMethodClick(MethodTypes.SELECTION),
-    },
-    {
       icon: 'scatter_plot',
       title: 'Points',
       onClick: () => this.handleMethodClick(MethodTypes.POINT),
@@ -79,6 +69,26 @@ export default class SideOptions extends Vue {
       icon: 'show_chart',
       title: 'Line',
       onClick: () => this.handleMethodClick(MethodTypes.LINE),
+    },
+    {
+      icon: 'tab_unselected',
+      title: 'Select',
+      onClick: () => this.handleMethodClick(MethodTypes.SELECTION),
+    },
+    {
+      icon: 'open_with',
+      title: 'Move',
+      onClick: () => this.handleMethodClick(MethodTypes.MOVE),
+    },
+    {
+      icon: 'rotate_right',
+      title: 'Rotate',
+      onClick: () => console.log('Rotate'),
+    },
+    {
+      icon: 'flip',
+      title: 'Flip',
+      onClick: () => console.log('Flip'),
     },
     {
       icon: 'straighten',
@@ -112,12 +122,12 @@ export default class SideOptions extends Vue {
       onClick: () => console.log('Full Bearing'),
     },
     {
-      icon: 'center_focus_weak',
+      icon: 'change_history',
       title: 'Bearing',
       onClick: () => console.log('Bearing'),
     },
     {
-      icon: 'keyboard_capslock',
+      icon: 'eject',
       title: 'Loose Bearing',
       onClick: () => console.log('Loose Bearing'),
     },
@@ -128,6 +138,37 @@ export default class SideOptions extends Vue {
     },
   ];
 
+  calculations: Method[] = [
+    {
+      icon: 'check',
+      title: 'Check',
+      onClick: () => this.check(),
+    },
+    {
+      icon: 'perm_data_settings',
+      title: 'Calculate',
+      onClick: () => console.log('Calculate'),
+    },
+  ];
+
+  visuals: Method[] = [
+    {
+      icon: 'adjust',
+      title: 'Center',
+      onClick: () => console.log('Center'),
+    },
+    {
+      icon: 'zoom_in',
+      title: 'Zoom in',
+      onClick: () => console.log('Zoom in'),
+    },
+    {
+      icon: 'zoom_out',
+      title: 'Zoom out',
+      onClick: () => console.log('Zoom out'),
+    },
+  ];
+
   actions: Method[] = [
     {
       icon: 'edit',
@@ -135,12 +176,27 @@ export default class SideOptions extends Vue {
       onClick: () => console.log('Edit'),
     },
     {
+      icon: 'group_work',
+      title: 'Group',
+      onClick: () => console.log('Group'),
+    },
+    {
+      icon: 'file_copy',
+      title: 'Copy',
+      onClick: () => console.log('Copy'),
+    },
+    {
+      icon: 'insert_drive_file',
+      title: 'Paste',
+      onClick: () => console.log('Paste'),
+    },
+    {
       icon: 'undo',
       title: 'Undo',
       onClick: () => this.$store.dispatch('svg/undo'),
     },
     {
-      icon: 'delete_forever',
+      icon: 'clear',
       title: 'Clear Selected',
       onClick: () => this.$store.dispatch('svg/removeSelected'),
     },
@@ -150,27 +206,9 @@ export default class SideOptions extends Vue {
       onClick: () => this.$store.commit('svg/removeAll'),
     },
     {
-      icon: 'check',
-      title: 'Check',
-      onClick: () => {
-        const result = this.check();
-        console.log('Valid: ', result);
-      },
-    },
-    {
-      icon: 'perm_data_settings',
-      title: 'Calculate',
-      onClick: () => console.log('Calculate'),
-    },
-    {
       icon: 'backup',
       title: 'Save',
       onClick: () => console.log('Save'),
-    },
-    {
-      icon: 'adjust',
-      title: 'Center',
-      onClick: () => console.log('Center'),
     },
   ];
 
@@ -192,6 +230,16 @@ export default class SideOptions extends Vue {
       actions: this.bearings,
     },
     {
+      icon: 'computer',
+      title: 'Computations',
+      actions: this.calculations,
+    },
+    {
+      icon: 'visibility',
+      title: 'Visuals',
+      actions: this.visuals,
+    },
+    {
       icon: 'bar_chart',
       title: 'Actions',
       actions: this.actions,
@@ -201,7 +249,8 @@ export default class SideOptions extends Vue {
   check() {
     const points = this.$store.getters['svg/pointsCount'];
     const lines = this.$store.getters['svg/linesCount'];
-    return lines >= points - 1;
+    const result = lines >= points - 1;
+    console.log('Valid: ', result);
   }
 
   handleMethodClick(methodType: MethodTypes) {

@@ -8,6 +8,7 @@
         v-on:mousedown="handleMouseDown"
         v-on:mousemove="handleMouseMove"
         v-on:mouseup="handleMouseUp"
+        v-on:mouseover="handleHover"
       >
         <template v-for="line in lines">
           <Lines
@@ -242,6 +243,12 @@ export default class SvgComponent extends Vue {
         this.$store.dispatch('svg/moveSelectedPoints', vector);
         this.prevCoordinates = undefined;
     }
+  }
+
+  handleHover(event: MouseEvent) {
+    const eventCoords = this.getEventWindowCoordinates(event);
+    const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
+    console.log(svgCoordinates);
   }
 
   handleSelectedPoint(el: { event: Event; point: Point }) {
