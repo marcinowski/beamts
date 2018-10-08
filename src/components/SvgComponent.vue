@@ -31,6 +31,9 @@
         <Selection></Selection>
         <CrossComponent v-bind:svgWidth="svgWidth" v-bind:svgHeight="svgHeight" v-bind:unit="unit"></CrossComponent>
       </svg>
+      <div class="SvgMouseSvgCoordinates">
+        {{ unitMouseCoordinates.x }}, {{ unitMouseCoordinates.y }}
+      </div>
     </div>
   </v-content>
 </template>
@@ -56,6 +59,12 @@ rect {
   height: 100%;
   width: 100%;
   background-color: grey;
+}
+.SvgMouseSvgCoordinates {
+  background-color: grey;
+  bottom: 0;
+  left: 0;
+  position: absolute;
 }
 </style>
 
@@ -89,13 +98,15 @@ export default class SvgComponent extends Vue {
   prevCoordinates?: WindowCoordinates;
   svg: SVGElement;
   container: HTMLElement;
-  svgWindowCoordinates: WindowCoordinates;
+  svgWindowCoordinates: WindowCoordinates = { x: 0, y: 0 };
+  unitMouseCoordinates = { x: 0.0, y: 0.0 };
   baseUnit = 5;
+  scale = 10;
   svgWidth: number = 0;
   svgHeight: number = 0;
 
   get unit() {
-    return this.baseUnit * 10;
+    return this.baseUnit * this.scale;
   }
 
   mounted() {
@@ -137,6 +148,16 @@ export default class SvgComponent extends Vue {
     const x = eventCoords.x - this.svgWindowCoordinates.x;
     const y = eventCoords.y - this.svgWindowCoordinates.y;
     return { x, y };
+  }
+
+  transformSvgToUnitCoordinates(svgCoords: SvgCoordinates): Coordinates {
+    const x = this.roundUnitCoordinates(svgCoords.x / this.unit);
+    const y = this.roundUnitCoordinates(svgCoords.y / this.unit);
+    return { x, y };
+  }
+
+  roundUnitCoordinates(n: number): number {
+    return parseFloat((Math.ceil(n * this.scale) / this.scale).toFixed(2));
   }
 
   transformCoordinatesToPoint(point: Coordinates, event: MouseEvent): Point {
@@ -248,7 +269,9 @@ export default class SvgComponent extends Vue {
   handleHover(event: MouseEvent) {
     const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    console.log(svgCoordinates);
+    this.unitMouseCoordinates = this.transformSvgToUnitCoordinates(
+      svgCoordinates,
+    );
   }
 
   handleSelectedPoint(el: { event: Event; point: Point }) {
