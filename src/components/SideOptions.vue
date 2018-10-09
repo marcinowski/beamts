@@ -83,7 +83,7 @@ export default class SideOptions extends Vue {
     {
       icon: 'rotate_right',
       title: 'Rotate',
-      onClick: () => console.log('Rotate'),
+      onClick: () => this.handleMethodClick(MethodTypes.ROTATE),
     },
     {
       icon: 'flip',

@@ -78,7 +78,13 @@ import Points from './Points.vue';
 import Selection from './Selection.vue';
 import GridComponent from './GridComponent.vue';
 import CrossComponent from './CrossComponent.vue';
-import { Coordinates, MethodTypes, Point, Vector } from '@/types/types';
+import {
+  Coordinates,
+  MethodTypes,
+  Point,
+  Vector,
+  Rotation,
+} from '@/types/types';
 
 @Component({
   components: {
@@ -170,8 +176,6 @@ export default class SvgComponent extends Vue {
       case MethodTypes.CURSOR:
         this.prevPoint = undefined; // resetting the line
         break;
-      case MethodTypes.SELECTION:
-        break;
       case MethodTypes.POINT:
         this.$store.commit('svg/addPoint', point);
         break;
@@ -179,7 +183,7 @@ export default class SvgComponent extends Vue {
         this.$store.commit('svg/addPoint', point);
         this.addLine(event, point);
         break;
-      case MethodTypes.MOVE:
+      default:
         break;
     }
   }
@@ -189,18 +193,15 @@ export default class SvgComponent extends Vue {
     const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(event);
     switch (method) {
-      case MethodTypes.CURSOR:
-        break;
       case MethodTypes.SELECTION:
         this.prevCoordinates = svgCoordinates;
         this.$store.commit('svg/setSelectionOrigin', svgCoordinates);
         break;
-      case MethodTypes.POINT:
-        break;
-      case MethodTypes.LINE:
-        break;
       case MethodTypes.MOVE:
+      case MethodTypes.ROTATE:
         this.prevCoordinates = svgCoordinates;
+      default:
+        break;
     }
   }
 
@@ -209,8 +210,6 @@ export default class SvgComponent extends Vue {
     const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     switch (method) {
-      case MethodTypes.CURSOR:
-        break;
       case MethodTypes.SELECTION:
         if (!this.prevCoordinates) {
           return;
@@ -219,11 +218,7 @@ export default class SvgComponent extends Vue {
         const y = svgCoordinates.y - this.prevCoordinates.y;
         this.$store.commit('svg/setSelectionDimensions', { x, y });
         break;
-      case MethodTypes.POINT:
-        break;
-      case MethodTypes.LINE:
-        break;
-      case MethodTypes.MOVE:
+      default:
         break;
     }
   }
@@ -233,8 +228,6 @@ export default class SvgComponent extends Vue {
     const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     switch (method) {
-      case MethodTypes.CURSOR:
-        break;
       case MethodTypes.SELECTION:
         if (!this.prevCoordinates) {
           return;
@@ -246,10 +239,6 @@ export default class SvgComponent extends Vue {
         this.prevCoordinates = undefined;
         this.$store.commit('svg/clearSelection');
         break;
-      case MethodTypes.POINT:
-        break;
-      case MethodTypes.LINE:
-        break;
       case MethodTypes.MOVE:
         if (!this.prevCoordinates) {
           return;
@@ -257,6 +246,16 @@ export default class SvgComponent extends Vue {
         const vector = this.getVector(this.prevCoordinates, svgCoordinates);
         this.$store.dispatch('svg/moveSelectedPoints', vector);
         this.prevCoordinates = undefined;
+      case MethodTypes.ROTATE:
+        if (!this.prevCoordinates) {
+          return;
+        }
+        const angle = this.getAngle(this.prevCoordinates, svgCoordinates);
+        const rotation: Rotation = { angle, origin: this.prevCoordinates };
+        this.$store.dispatch('svg/rotateSelectedPoints', rotation);
+        this.prevCoordinates = undefined;
+      default:
+        break;
     }
   }
 
@@ -297,6 +296,10 @@ export default class SvgComponent extends Vue {
       x: end.x - start.x,
       y: end.y - start.y,
     };
+  }
+
+  getAngle(start: Coordinates, end: Coordinates): number {
+    return Math.atan2(end.y - start.y, end.x - start.x);
   }
 }
 </script>

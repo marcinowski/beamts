@@ -3,6 +3,7 @@ export enum MethodTypes {
   LINE = 'line',
   MOVE = 'move',
   POINT = 'point',
+  ROTATE = 'rotate',
   SELECTION = 'selection',
 }
 
@@ -14,6 +15,11 @@ export interface Coordinates {
 export interface Vector {
   x: number;
   y: number;
+}
+
+export interface Rotation {
+  origin: Coordinates;
+  angle: number;
 }
 
 export interface Point extends Coordinates {
