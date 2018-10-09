@@ -80,10 +80,6 @@ import GridComponent from './GridComponent.vue';
 import CrossComponent from './CrossComponent.vue';
 import { Coordinates, MethodTypes, Point, Vector } from '@/types/types';
 
-type WindowCoordinates = Coordinates;
-type SvgCoordinates = Coordinates;
-type OriginCoordinates = Coordinates;
-
 @Component({
   components: {
     CrossComponent,
@@ -95,10 +91,10 @@ type OriginCoordinates = Coordinates;
 })
 export default class SvgComponent extends Vue {
   prevPoint?: Point;
-  prevCoordinates?: WindowCoordinates;
+  prevCoordinates?: Coordinates;
   svg: SVGElement;
   container: HTMLElement;
-  svgWindowCoordinates: WindowCoordinates = { x: 0, y: 0 };
+  svgWindowCoordinates: Coordinates = { x: 0, y: 0 };
   unitMouseCoordinates = { x: 0.0, y: 0.0 };
   baseUnit = 5;
   scale = 10;
@@ -135,22 +131,20 @@ export default class SvgComponent extends Vue {
     };
   }
 
-  getEventWindowCoordinates(event: MouseEvent): WindowCoordinates {
+  getEventWindowCoordinates(event: MouseEvent): Coordinates {
     return {
       x: event.clientX,
       y: event.clientY,
     };
   }
 
-  transformWindowToSvgCoordinates(
-    eventCoords: WindowCoordinates,
-  ): SvgCoordinates {
+  transformWindowToSvgCoordinates(eventCoords: Coordinates): Coordinates {
     const x = eventCoords.x - this.svgWindowCoordinates.x;
     const y = eventCoords.y - this.svgWindowCoordinates.y;
     return { x, y };
   }
 
-  transformSvgToUnitCoordinates(svgCoords: SvgCoordinates): Coordinates {
+  transformSvgToUnitCoordinates(svgCoords: Coordinates): Coordinates {
     const x = this.roundUnitCoordinates(svgCoords.x / this.unit);
     const y = this.roundUnitCoordinates(svgCoords.y / this.unit);
     return { x, y };
