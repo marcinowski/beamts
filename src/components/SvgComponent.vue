@@ -29,7 +29,7 @@
           v-bind:svgWidth="svgWidth"
         ></GridComponent>
         <Selection></Selection>
-        <CrossComponent v-bind:svgWidth="svgWidth" v-bind:svgHeight="svgHeight" v-bind:unit="unit"></CrossComponent>
+        <!-- <CrossComponent v-bind:svgWidth="svgWidth" v-bind:svgHeight="svgHeight" v-bind:unit="unit"></CrossComponent> -->
       </svg>
       <div class="SvgMouseSvgCoordinates">
         {{ unitMouseCoordinates.x }}, {{ unitMouseCoordinates.y }}
@@ -269,9 +269,10 @@ export default class SvgComponent extends Vue {
   handleHover(event: MouseEvent) {
     const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    this.unitMouseCoordinates = this.transformSvgToUnitCoordinates(
-      svgCoordinates,
-    );
+    this.unitMouseCoordinates = this.transformSvgToUnitCoordinates({
+      x: svgCoordinates.x,
+      y: this.svgHeight - svgCoordinates.y,
+    });
   }
 
   handleSelectedPoint(el: { event: Event; point: Point }) {
