@@ -1,7 +1,14 @@
 import { ActionTree } from 'vuex';
 import { SvgState } from './types';
 import { RootState } from '../types';
-import { Point, Coordinates, Line, Rotation, Vector } from '@/types/types';
+import {
+  Point,
+  Coordinates,
+  Line,
+  Rotation,
+  Vector,
+  LineCoordinates,
+} from '@/types/types';
 
 export const actions: ActionTree<SvgState, RootState> = {
   selectPoints(context, ids: Array<Point['id']>) {
@@ -99,6 +106,10 @@ export const actions: ActionTree<SvgState, RootState> = {
   rotateSelectedPoints(context, rotation: Rotation) {
     const points = context.getters.getSelectedPoints;
     context.commit('rotateSelectedPoints', { points, rotation });
+  },
+  flipSelectedPoints(context, line: LineCoordinates) {
+    const points = context.getters.getSelectedPoints;
+    context.commit('flipSelectedPoints', { points, line });
   },
   undo(context) {
     const action = context.getters.getUndoAction;

@@ -84,6 +84,7 @@ import {
   Point,
   Vector,
   Rotation,
+  LineCoordinates,
 } from '@/types/types';
 
 @Component({
@@ -197,6 +198,7 @@ export default class SvgComponent extends Vue {
         this.prevCoordinates = svgCoordinates;
         this.$store.commit('svg/setSelectionOrigin', svgCoordinates);
         break;
+      case MethodTypes.FLIP:
       case MethodTypes.MOVE:
       case MethodTypes.ROTATE:
         this.prevCoordinates = svgCoordinates;
@@ -253,6 +255,16 @@ export default class SvgComponent extends Vue {
         const angle = this.getAngle(this.prevCoordinates, svgCoordinates);
         const rotation: Rotation = { angle, origin: this.prevCoordinates };
         this.$store.dispatch('svg/rotateSelectedPoints', rotation);
+        this.prevCoordinates = undefined;
+      case MethodTypes.FLIP:
+        if (!this.prevCoordinates) {
+          return;
+        }
+        const line: LineCoordinates = {
+          start: this.prevCoordinates,
+          end: svgCoordinates,
+        };
+        this.$store.dispatch('svg/flipSelectedPoints', line);
         this.prevCoordinates = undefined;
       default:
         break;

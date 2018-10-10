@@ -1,5 +1,6 @@
 export enum MethodTypes {
   CURSOR = 'cursor',
+  FLIP = 'flip',
   LINE = 'line',
   MOVE = 'move',
   POINT = 'point',
@@ -25,6 +26,11 @@ export interface Rotation {
 export interface Point extends Coordinates {
   id: number;
   selected?: boolean;
+}
+
+export interface LineCoordinates {
+  start: Coordinates;
+  end: Coordinates;
 }
 
 export interface Line {

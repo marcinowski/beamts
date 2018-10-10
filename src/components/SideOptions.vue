@@ -88,7 +88,7 @@ export default class SideOptions extends Vue {
     {
       icon: 'flip',
       title: 'Flip',
-      onClick: () => console.log('Flip'),
+      onClick: () => this.handleMethodClick(MethodTypes.FLIP),
     },
     {
       icon: 'straighten',

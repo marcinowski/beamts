@@ -1,6 +1,13 @@
 import { MutationTree } from 'vuex';
 import { SvgState, UndoAction } from './types';
-import { Point, Coordinates, Line, Vector, Rotation } from '@/types/types';
+import {
+  Point,
+  Coordinates,
+  Line,
+  Vector,
+  Rotation,
+  LineCoordinates,
+} from '@/types/types';
 
 export const mutations: MutationTree<SvgState> = {
   addPoint(state, point: Point) {
@@ -192,6 +199,32 @@ export const mutations: MutationTree<SvgState> = {
       item: {
         points: transformedPoints,
         rotation: { ...rotation, angle: -rotation.angle },
+      },
+    };
+    state.undoAction = undoAction;
+  },
+  flipSelectedPoints(
+    state,
+    { points, line }: { points: Point[]; line: LineCoordinates },
+  ) {
+    const selectedIds = points.map((p) => p.id);
+    const otherPoints = state.points.filter((p) => !selectedIds.includes(p.id));
+    const a = (line.start.y - line.end.y) / (line.start.x - line.end.x); // add check for 0
+    const b = line.start.y - a * line.start.x;
+    const transformedPoints = points.map((p) => {
+      const d = (p.x + (p.y - b) * a) / (1 + a * a);
+      return {
+        ...p,
+        x: 2 * d - p.x,
+        y: 2 * d * a - p.y + 2 * b,
+      };
+    });
+    state.points = [...otherPoints, ...transformedPoints];
+    const undoAction = {
+      action: 'flipSelectedPoints',
+      item: {
+        points: transformedPoints,
+        line,
       },
     };
     state.undoAction = undoAction;
