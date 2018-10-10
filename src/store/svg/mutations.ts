@@ -209,16 +209,24 @@ export const mutations: MutationTree<SvgState> = {
   ) {
     const selectedIds = points.map((p) => p.id);
     const otherPoints = state.points.filter((p) => !selectedIds.includes(p.id));
-    const a = (line.start.y - line.end.y) / (line.start.x - line.end.x); // add check for 0
-    const b = line.start.y - a * line.start.x;
-    const transformedPoints = points.map((p) => {
-      const d = (p.x + (p.y - b) * a) / (1 + a * a);
-      return {
+    let transformedPoints;
+    if (line.start.x === line.end.x) {
+      transformedPoints = points.map((p) => ({
         ...p,
-        x: 2 * d - p.x,
-        y: 2 * d * a - p.y + 2 * b,
-      };
-    });
+        x: 2 * line.start.x - p.x,
+      }));
+    } else {
+      const a = (line.start.y - line.end.y) / (line.start.x - line.end.x);
+      const b = line.start.y - a * line.start.x;
+      transformedPoints = points.map((p) => {
+        const d = (p.x + (p.y - b) * a) / (1 + a * a);
+        return {
+          ...p,
+          x: 2 * d - p.x,
+          y: 2 * d * a - p.y + 2 * b,
+        };
+      });
+    }
     state.points = [...otherPoints, ...transformedPoints];
     const undoAction = {
       action: 'flipSelectedPoints',
