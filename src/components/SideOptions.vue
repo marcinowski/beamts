@@ -97,6 +97,32 @@ export default class SideOptions extends Vue {
     },
   ];
 
+  sections: Method[] = [
+    {
+      icon: 'spellcheck',
+      title: 'Assign Section',
+      onClick: () => console.log('sections'),
+    },
+    {
+      icon: 'edit',
+      title: 'Edit Sections',
+      onClick: () => console.log('edit sections'),
+    },
+  ];
+
+  materials: Method[] = [
+    {
+      icon: 'check_circle',
+      title: 'Assign Material',
+      onClick: () => console.log('materials'),
+    },
+    {
+      icon: 'edit',
+      title: 'Edit Materials',
+      onClick: () => console.log('edit materials'),
+    },
+  ];
+
   loads: Method[] = [
     {
       icon: 'vertical_align_bottom',
@@ -223,6 +249,16 @@ export default class SideOptions extends Vue {
       icon: 'fitness_center',
       title: 'Loads',
       actions: this.loads,
+    },
+    {
+      icon: 'font_download',
+      title: 'Sections',
+      actions: this.sections,
+    },
+    {
+      icon: 'waves',
+      title: 'Materials',
+      actions: this.materials,
     },
     {
       icon: 'eject',
