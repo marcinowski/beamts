@@ -71,6 +71,11 @@ export default class SideOptions extends Vue {
       onClick: () => this.handleMethodClick(MethodTypes.LINE),
     },
     {
+      icon: 'wifi_tethering',
+      title: 'Arc',
+      onClick: () => this.handleMethodClick(MethodTypes.ARC),
+    },
+    {
       icon: 'tab_unselected',
       title: 'Select',
       onClick: () => this.handleMethodClick(MethodTypes.SELECTION),

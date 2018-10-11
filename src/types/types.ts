@@ -1,4 +1,5 @@
 export enum MethodTypes {
+  ARC = 'arc',
   CURSOR = 'cursor',
   FLIP = 'flip',
   LINE = 'line',
@@ -38,6 +39,10 @@ export interface Line {
   p1: Point['id'];
   p2: Point['id'];
   selected: boolean;
+}
+
+export interface Arc extends Line {
+  radius: number;
 }
 
 export interface Selection {

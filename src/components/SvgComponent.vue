@@ -10,6 +10,12 @@
         v-on:mouseup="handleMouseUp"
         v-on:mouseover="handleHover"
       >
+        <template v-for="arc in arcs">
+          <Arcs
+            :key="arc.id"
+            v-bind:arc="arc"
+          ></Arcs>
+        </template>
         <template v-for="line in lines">
           <Lines
             :key="line.id"
@@ -73,6 +79,7 @@ import Vue from 'vue';
 import { mapMutations } from 'vuex';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
+import Arcs from './Arcs.vue';
 import Lines from './Lines.vue';
 import Points from './Points.vue';
 import Selection from './Selection.vue';
@@ -85,12 +92,14 @@ import {
   Vector,
   Rotation,
   LineCoordinates,
+  Arc,
 } from '@/types/types';
 
 @Component({
   components: {
     CrossComponent,
     GridComponent,
+    Arcs,
     Lines,
     Points,
     Selection,
@@ -118,6 +127,10 @@ export default class SvgComponent extends Vue {
       // small hack to run the update as late as possible
       this.updateSvgWindowCoordinates();
     }, 0);
+  }
+
+  get arcs() {
+    return this.$store.getters['svg/getAllArcs'];
   }
 
   get lines() {
@@ -184,6 +197,9 @@ export default class SvgComponent extends Vue {
         this.$store.commit('svg/addPoint', point);
         this.addLine(event, point);
         break;
+      case MethodTypes.ARC:
+        this.$store.commit('svg/addPoint', point);
+        this.addArc(event, point, svgCoordinates);
       default:
         break;
     }
@@ -280,12 +296,36 @@ export default class SvgComponent extends Vue {
     });
   }
 
-  handleSelectedPoint(el: { event: Event; point: Point }) {
+  handleSelectedPoint(el: { event: MouseEvent; point: Point }) {
     const method = this.$store.getters.getMethod;
+    const eventCoords = this.getEventWindowCoordinates(el.event);
+    const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     switch (method) {
       case MethodTypes.LINE:
         this.addLine(el.event, el.point);
         break;
+      case MethodTypes.ARC:
+        this.addArc(el.event, el.point, svgCoordinates);
+    }
+  }
+
+  addArc(event: Event, point: Point, svgCoordinates: Coordinates) {
+    if (!this.prevCoordinates || !this.prevPoint) {
+      this.prevPoint = point;
+      this.prevCoordinates = svgCoordinates;
+    } else {
+      const vector = this.getVector(this.prevCoordinates, svgCoordinates);
+      const radius = Math.sqrt(vector.x * vector.x + vector.y * vector.y);
+      const arc: Arc = {
+        id: event.timeStamp + 2,
+        radius,
+        p1: this.prevPoint.id,
+        p2: point.id,
+        selected: false,
+      };
+      this.$store.commit('svg/addArc', arc);
+      this.prevPoint = undefined;
+      this.prevCoordinates = undefined;
     }
   }
 

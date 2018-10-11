@@ -10,8 +10,9 @@ export const getters: GetterTree<SvgState, RootState> = {
   pointsCount: (state) => state.points.length,
   linesCount: (state) => state.lines.length,
   getSelection: (state) => state.selection,
-  getAllPoints: (state) => state.points,
+  getAllArcs: (state) => state.arcs,
   getAllLines: (state) => state.lines,
+  getAllPoints: (state) => state.points,
   getPoints: (state) => (ids: number[]): ReadonlyArray<Point> =>
     state.points.filter((p) => ids.includes(p.id)),
   getPoint: (state, self) => (id: number): Point => self.getPoints([id]).pop(),

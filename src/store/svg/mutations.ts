@@ -7,6 +7,7 @@ import {
   Vector,
   Rotation,
   LineCoordinates,
+  Arc,
 } from '@/types/types';
 
 export const mutations: MutationTree<SvgState> = {
@@ -24,6 +25,13 @@ export const mutations: MutationTree<SvgState> = {
       item: line,
     };
   },
+  addArc(state, arc: Arc) {
+    state.arcs.push(arc);
+    state.undoAction = {
+      action: 'removeArc',
+      item: arc,
+    };
+  },
   addUndoAction(state, undoAction: UndoAction) {
     state.undoAction = undoAction;
   },
@@ -37,8 +45,15 @@ export const mutations: MutationTree<SvgState> = {
   removePoint(state, point: Point) {
     state.points = [...state.points.filter((p) => p.id !== point.id)];
     state.undoAction = {
-      action: 'removePoint',
+      action: 'addPoint',
       item: point,
+    };
+  },
+  removeArc(state, arc: Arc) {
+    state.arcs = [...state.arcs.filter((a) => a.id !== arc.id)];
+    state.undoAction = {
+      action: 'addArc',
+      item: arc,
     };
   },
   removeAll(state) {

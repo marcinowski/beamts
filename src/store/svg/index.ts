@@ -6,6 +6,7 @@ import { SvgState } from './types';
 import { RootState } from '../types';
 
 export const state: SvgState = {
+  arcs: [],
   lines: [],
   points: [],
   selection: {
