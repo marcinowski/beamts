@@ -1,7 +1,7 @@
 import { GetterTree } from 'vuex';
 import { SvgState, UndoAction } from './types';
 import { RootState } from '../types';
-import { Point, Line } from '@/types/types';
+import { Point, Line, LineCoordinates, Coordinates, Arc } from '@/types/types';
 
 /**
  * Note that 'self' is just a self reference to 'getters' object
@@ -26,40 +26,40 @@ export const getters: GetterTree<SvgState, RootState> = {
   getLinesConnectedToPoint: (state) => (id: number): ReadonlyArray<Line> =>
     state.lines.filter((l) => [l.p2, l.p1].includes(id)),
   checkPointInsideSelection: () => (
-    x1: number,
-    x2: number,
-    y1: number,
-    y2: number,
-    x: number,
-    y: number,
-  ): boolean => x1 <= x && x <= x2 && y1 <= y && y <= y2,
+    s: LineCoordinates,
+    c: Coordinates,
+  ): boolean =>
+    s.start.x <= c.x && c.x <= s.end.x && s.start.y <= c.y && c.y <= s.end.y,
   getPointsInsideSelection: (state, self) => (
-    x1: number,
-    x2: number,
-    y1: number,
-    y2: number,
+    s: LineCoordinates,
   ): ReadonlyArray<Point> =>
     state.points.filter((p) =>
-      self.checkPointInsideSelection(x1, x2, y1, y2, p.x, p.y),
+      self.checkPointInsideSelection(s, { x: p.x, y: p.y }),
     ),
   getLinesInsideSelection: (state, self) => (
-    x1: number,
-    x2: number,
-    y1: number,
-    y2: number,
+    s: LineCoordinates,
   ): ReadonlyArray<Line> =>
     state.lines.filter((line) => {
       const points = self.getPoints([line.p1, line.p2]);
       return (
-        self.checkPointInsideSelection(
-          x1,
-          x2,
-          y1,
-          y2,
-          points[0].x,
-          points[0].y,
-        ) &&
-        self.checkPointInsideSelection(x1, x2, y1, y2, points[1].x, points[1].y)
+        self.checkPointInsideSelection(s, {
+          x: points[0].x,
+          y: points[0].y,
+        }) &&
+        self.checkPointInsideSelection(s, { x: points[1].x, y: points[1].y })
+      );
+    }),
+  getArcsInsideSelection: (state, self) => (
+    s: LineCoordinates,
+  ): ReadonlyArray<Arc> =>
+    state.arcs.filter((arc) => {
+      const points = self.getPoints([arc.p1, arc.p2]);
+      return (
+        self.checkPointInsideSelection(s, {
+          x: points[0].x,
+          y: points[0].y,
+        }) &&
+        self.checkPointInsideSelection(s, { x: points[1].x, y: points[1].y })
       );
     }),
   getSelectedPoints: (state) => state.points.filter((p) => p.selected),

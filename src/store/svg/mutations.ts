@@ -119,23 +119,40 @@ export const mutations: MutationTree<SvgState> = {
       ids,
       selected,
     }: {
-      ids: Array<Point['id']>;
+      ids: Array<Line['id']>;
       selected: boolean;
     },
   ) {
     const selectedLines = state.lines
-      .filter((l) => ids.includes(l.p1) && ids.includes(l.p2))
+      .filter((l) => ids.includes(l.id))
       .map((l) => ({ ...l, selected }));
-    const otherLines = state.lines.filter(
-      (l) => !ids.includes(l.p1) || !ids.includes(l.p2),
-    );
+    const otherLines = state.lines.filter((l) => !ids.includes(l.id));
     state.lines = [...selectedLines, ...otherLines];
   },
+  changeSelectionStateArcs(
+    state,
+    {
+      ids,
+      selected,
+    }: {
+      ids: Array<Arc['id']>;
+      selected: boolean;
+    },
+  ) {
+    const selectedArcs = state.arcs
+      .filter((a) => ids.includes(a.id))
+      .map((a) => ({ ...a, selected }));
+    const otherArcs = state.arcs.filter((l) => !ids.includes(l.id));
+    state.arcs = [...otherArcs, ...selectedArcs];
+  }, // FIXME: this is so repeatable, but would require stronger typing on the store side to make it more generic
   changeSelectionStateAllPoints(state, selected: boolean) {
     state.points = [...state.points.map((p) => ({ ...p, selected }))];
   },
   changeSelectionStateAllLines(state, selected: boolean) {
     state.lines = [...state.lines.map((l) => ({ ...l, selected }))];
+  },
+  changeSelectionStateAllArcs(state, selected: boolean) {
+    state.arcs = [...state.arcs.map((a) => ({ ...a, selected }))];
   },
   removeSelectedPoints(state, ids: Array<Point['id']>) {
     const selectedPoints = state.points.filter((p) => ids.includes(p.id));
@@ -146,13 +163,10 @@ export const mutations: MutationTree<SvgState> = {
       item: selectedPoints,
     };
   },
-  removeSelectedLines(state, ids: Array<Point['id']>) {
-    const selectedLines = state.lines.filter(
-      (l) => ids.includes(l.p1) && ids.includes(l.p2),
-    );
-    const otherLines = state.lines.filter(
-      (l) => !ids.includes(l.p1) || !ids.includes(l.p2),
-    );
+  removeSelectedLines(state, lines: Line[]) {
+    const ids = lines.map((l) => l.id);
+    const selectedLines = state.lines.filter((l) => ids.includes(l.id));
+    const otherLines = state.lines.filter((l) => !ids.includes(l.id));
     state.lines = [...otherLines];
     state.undoAction = {
       action: 'restoreLines',
@@ -178,12 +192,9 @@ export const mutations: MutationTree<SvgState> = {
   },
   restoreLines(state, lines: Line[]) {
     state.lines = [...state.lines, ...lines];
-    const points = lines
-      .map((l: Line) => [l.p1, l.p2])
-      .reduce((acc: number[], val: number[]) => acc.concat(val), []);
     state.undoAction = {
       action: 'removeSelectedLines',
-      item: [...points],
+      item: lines,
     };
   },
   restoreArcs(state, arcs: Arc[]) {

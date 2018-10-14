@@ -8,6 +8,7 @@ import {
   Rotation,
   Vector,
   LineCoordinates,
+  Arc,
 } from '@/types/types';
 
 export const actions: ActionTree<SvgState, RootState> = {
@@ -17,49 +18,60 @@ export const actions: ActionTree<SvgState, RootState> = {
   deselectPoints(context, ids: Array<Point['id']>) {
     context.commit('changeSelectionStatePoints', { ids, selected: true });
   },
-  selectLines(context, ids: Array<Point['id']>) {
+  selectLines(context, ids: Array<Line['id']>) {
     context.commit('changeSelectionStateLines', { ids, selected: true });
   },
-  deselectLines(context, ids: Array<Point['id']>) {
+  deselectLines(context, ids: Array<Line['id']>) {
     context.commit('changeSelectionStateLines', { ids, selected: false });
+  },
+  selectArcs(context, ids: Array<Arc['id']>) {
+    context.commit('changeSelectionStateArcs', { ids, selected: true });
+  },
+  deselectArcs(context, ids: Array<Arc['id']>) {
+    context.commit('changeSelectionStateArcs', { ids, selected: false });
   },
   selectObjects(context, ids: Array<Point['id']>) {
     context.dispatch('selectPoints', ids);
     context.dispatch('selectLines', ids);
+    context.dispatch('selectArcs', ids);
   },
   deselectObjects(context, ids: Array<Point['id']>) {
     context.dispatch('deselectPoints', ids);
     context.dispatch('deselectLines', ids);
   },
-  selectPointsInRange(context, points: [Coordinates, Coordinates]) {
-    const [p1, p2] = points;
+  selectPointsInRange(context, points: LineCoordinates) {
     const selectedPoints = context.getters
-      .getPointsInsideSelection(p1.x, p2.x, p1.y, p2.y)
+      .getPointsInsideSelection(points)
       .map((p: Point) => p.id);
     context.dispatch('selectPoints', selectedPoints);
   },
-  deselectPointsInRange(context, points: [Coordinates, Coordinates]) {
-    const [p1, p2] = points;
+  deselectPointsInRange(context, points: LineCoordinates) {
     const selectedPoints = context.getters
-      .getPointsInsideSelection(p1.x, p2.x, p1.y, p2.y)
+      .getPointsInsideSelection(points)
       .map((p: Point) => p.id);
     context.dispatch('deselectPoints', selectedPoints);
   },
-  selectLinesInRange(context, points: [Coordinates, Coordinates]) {
-    const [p1, p2] = points;
-    const selectedPoints = context.getters
-      .getLinesInsideSelection(p1.x, p2.x, p1.y, p2.y)
-      .map((l: Line) => [l.p1, l.p2])
-      .reduce((acc: number[], val: number[]) => acc.concat(val), []);
-    context.dispatch('selectLines', selectedPoints);
+  selectLinesInRange(context, points: LineCoordinates) {
+    const selectedLines = context.getters
+      .getLinesInsideSelection(points)
+      .map((l: Line) => l.id);
+    context.dispatch('selectLines', selectedLines);
   },
-  selectObjectsInRange(context, points: [Coordinates, Coordinates]) {
-    context.dispatch('selectPointsInRange', points);
+  selectArcsInRange(context, points: LineCoordinates) {
+    const selectedArcs = context.getters
+      .getArcsInsideSelection(points)
+      .map((a: Arc) => a.id);
+    context.dispatch('selectArcs', selectedArcs);
+  },
+  selectObjectsInRange(context, points: LineCoordinates) {
+    context.dispatch('selectArcsInRange', points);
     context.dispatch('selectLinesInRange', points);
+    context.dispatch('selectPointsInRange', points);
   },
   changeSelectionStateAll(context, selected: boolean) {
     context.commit('changeSelectionStateAllPoints', selected);
     context.commit('changeSelectionStateAllLines', selected);
+    context.commit('changeSelectionStateAllArcs', selected);
   },
   selectAll(context) {
     context.dispatch('changeSelectionStateAll', true);
@@ -69,12 +81,13 @@ export const actions: ActionTree<SvgState, RootState> = {
   },
   restoreSelected(
     context,
-    { points, lines }: { points: Point[]; lines: Line[] },
+    { arcs, lines, points }: { arcs: Arc[]; points: Point[]; lines: Line[] },
   ) {
     context.commit('restoreLines', lines);
     context.commit('restorePoints', points);
+    context.commit('restoreArcs', arcs);
     const undoAction = {
-      action: 'removeSelected',
+      action: 'removeSelected', // not atomic, this should be more stateless
       dispatch: true,
     };
     context.commit('addUndoAction', undoAction);
@@ -83,12 +96,7 @@ export const actions: ActionTree<SvgState, RootState> = {
     const arcs = context.getters.getSelectedArcs;
     context.commit('removeSelectedArcs', arcs);
     const lines = context.getters.getSelectedLines;
-    context.commit(
-      'removeSelectedLines',
-      lines
-        .map((l: Line) => [l.p1, l.p2])
-        .reduce((acc: number[], val: number[]) => acc.concat(val), []),
-    );
+    context.commit('removeSelectedLines', lines);
     const points = context.getters.getSelectedPoints.filter(
       (point: Point) =>
         context.getters.getLinesConnectedToPoint(point.id).length === 0,
@@ -96,7 +104,7 @@ export const actions: ActionTree<SvgState, RootState> = {
     context.commit('removeSelectedPoints', points.map((p: Point) => p.id));
     const undoAction = {
       action: 'restoreSelected',
-      item: { points, lines },
+      item: { arcs, lines, points },
       dispatch: true,
     };
     context.commit('addUndoAction', undoAction);

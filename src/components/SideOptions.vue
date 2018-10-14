@@ -207,6 +207,11 @@ export default class SideOptions extends Vue {
       onClick: () => console.log('Edit'),
     },
     {
+      icon: 'done_all',
+      title: 'Select All',
+      onClick: () => this.$store.dispatch('svg/selectAll'),
+    },
+    {
       icon: 'group_work',
       title: 'Group',
       onClick: () => console.log('Group'),
