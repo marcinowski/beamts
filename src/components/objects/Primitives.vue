@@ -53,7 +53,10 @@ export default class PrimitivesComponent extends Vue
   implements EventBasedComponent {
   prevPoint?: Point;
   prevCoordinates?: Coordinates;
-  baseUnit = 5;
+
+  get baseUnit() {
+    return this.$store.getters['config/getBaseUnit'];
+  }
 
   get arcs() {
     return this.$store.getters['svg/getAllArcs'];

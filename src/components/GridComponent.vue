@@ -38,9 +38,12 @@ interface Line {
 
 @Component({})
 export default class GridComponent extends Vue {
-  @Prop() unit: number;
   @Prop() svgWidth: number;
   @Prop() svgHeight: number;
+
+  get unit() {
+    return this.$store.getters['config/getUnit'];
+  }
 
   boldConst = 5; // bold each xth line
 

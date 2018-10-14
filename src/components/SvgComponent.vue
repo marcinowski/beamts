@@ -13,7 +13,6 @@
         <PrimitivesComponent ref="primitives"></PrimitivesComponent>
         <SelectionComponent ref="selection"></SelectionComponent>
         <GridComponent
-          v-bind:unit="unit"
           v-bind:svgHeight="svgHeight"
           v-bind:svgWidth="svgWidth"
         ></GridComponent>
@@ -85,13 +84,14 @@ export default class SvgComponent extends Vue {
   container: HTMLElement;
   svgWindowCoordinates: Coordinates = { x: 0, y: 0 };
   unitMouseCoordinates = { x: 0.0, y: 0.0 };
-  baseUnit = 5;
-  scale = 10;
   svgWidth: number = 0;
   svgHeight: number = 0;
 
   get unit() {
-    return this.baseUnit * this.scale;
+    return this.$store.getters['config/getUnit'];
+  }
+  get scale() {
+    return this.$store.getters['config/getScale'];
   }
 
   mounted() {

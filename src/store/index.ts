@@ -3,6 +3,7 @@ import Vuex, { StoreOptions } from 'vuex';
 import { RootState } from './types';
 import { svg } from './svg/index';
 import { selection } from './selection/index';
+import { config } from './config/index';
 import { MethodTypes } from '@/types/types';
 
 Vue.use(Vuex);
@@ -14,6 +15,7 @@ const store: StoreOptions<RootState> = {
   modules: {
     svg,
     selection,
+    config,
   },
   getters: {
     getMethod: (state): MethodTypes => state.method,
