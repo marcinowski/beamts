@@ -2,8 +2,10 @@ import Vue from 'vue';
 import Vuex, { StoreOptions } from 'vuex';
 import { RootState } from './types';
 import { svg } from './svg/index';
-import { selection } from './selection/index';
 import { config } from './config/index';
+import { sections } from './sections/index';
+import { selection } from './selection/index';
+import { materials } from './materials/index';
 import { MethodTypes } from '@/types/types';
 
 Vue.use(Vuex);
@@ -13,9 +15,11 @@ const store: StoreOptions<RootState> = {
     method: MethodTypes.CURSOR,
   },
   modules: {
-    svg,
-    selection,
     config,
+    materials,
+    sections,
+    selection,
+    svg,
   },
   getters: {
     getMethod: (state): MethodTypes => state.method,

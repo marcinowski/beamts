@@ -52,6 +52,18 @@ export interface Selection {
   width: number;
 }
 
+export interface Section {
+  id: number;
+  area: number;
+  inertia: Coordinates;
+}
+
+export interface Material {
+  id: number;
+  young: number;
+  poisson: number;
+}
+
 export interface EventBasedComponent {
   handleClick(event: MouseEvent, svgCoordinates: Coordinates): void;
   handleMouseDown(event: MouseEvent, svgCoordinates: Coordinates): void;
