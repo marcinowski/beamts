@@ -84,19 +84,6 @@ export const mutations: MutationTree<SvgState> = {
         : [];
     state.undoAction = { action: 'removeAll' };
   },
-  setSelectionOrigin(state, coords: Coordinates) {
-    state.selection = { ...state.selection, x: coords.x, y: coords.y };
-  },
-  setSelectionDimensions(state, coords: Coordinates) {
-    state.selection = {
-      ...state.selection,
-      width: coords.x,
-      height: coords.y,
-    };
-  },
-  clearSelection(state) {
-    state.selection = { x: 0, y: 0, height: 0, width: 0 };
-  },
   changeSelectionStatePoints(
     state,
     {

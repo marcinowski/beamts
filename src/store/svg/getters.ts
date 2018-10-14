@@ -9,7 +9,6 @@ import { Point, Line, LineCoordinates, Coordinates, Arc } from '@/types/types';
 export const getters: GetterTree<SvgState, RootState> = {
   pointsCount: (state) => state.points.length,
   linesCount: (state) => state.lines.length,
-  getSelection: (state) => state.selection,
   getAllArcs: (state) => state.arcs,
   getAllLines: (state) => state.lines,
   getAllPoints: (state) => state.points,
@@ -26,15 +25,15 @@ export const getters: GetterTree<SvgState, RootState> = {
   getLinesConnectedToPoint: (state) => (id: number): ReadonlyArray<Line> =>
     state.lines.filter((l) => [l.p2, l.p1].includes(id)),
   checkPointInsideSelection: () => (
-    s: LineCoordinates,
     c: Coordinates,
+    s: LineCoordinates,
   ): boolean =>
     s.start.x <= c.x && c.x <= s.end.x && s.start.y <= c.y && c.y <= s.end.y,
   getPointsInsideSelection: (state, self) => (
     s: LineCoordinates,
   ): ReadonlyArray<Point> =>
     state.points.filter((p) =>
-      self.checkPointInsideSelection(s, { x: p.x, y: p.y }),
+      self.checkPointInsideSelection({ x: p.x, y: p.y }, s),
     ),
   getLinesInsideSelection: (state, self) => (
     s: LineCoordinates,
@@ -42,11 +41,14 @@ export const getters: GetterTree<SvgState, RootState> = {
     state.lines.filter((line) => {
       const points = self.getPoints([line.p1, line.p2]);
       return (
-        self.checkPointInsideSelection(s, {
-          x: points[0].x,
-          y: points[0].y,
-        }) &&
-        self.checkPointInsideSelection(s, { x: points[1].x, y: points[1].y })
+        self.checkPointInsideSelection(
+          {
+            x: points[0].x,
+            y: points[0].y,
+          },
+          s,
+        ) &&
+        self.checkPointInsideSelection({ x: points[1].x, y: points[1].y }, s)
       );
     }),
   getArcsInsideSelection: (state, self) => (
@@ -59,7 +61,7 @@ export const getters: GetterTree<SvgState, RootState> = {
           x: points[0].x,
           y: points[0].y,
         }) &&
-        self.checkPointInsideSelection(s, { x: points[1].x, y: points[1].y })
+        self.checkPointInsideSelection({ x: points[1].x, y: points[1].y }, s)
       );
     }),
   getSelectedPoints: (state) => state.points.filter((p) => p.selected),

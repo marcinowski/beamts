@@ -212,7 +212,7 @@ export default class SvgComponent extends Vue {
     switch (method) {
       case MethodTypes.SELECTION:
         this.prevCoordinates = svgCoordinates;
-        this.$store.commit('svg/setSelectionOrigin', svgCoordinates);
+        this.$store.commit('selection/setSelectionOrigin', svgCoordinates);
         break;
       case MethodTypes.FLIP:
       case MethodTypes.MOVE:
@@ -234,7 +234,7 @@ export default class SvgComponent extends Vue {
         }
         const x = svgCoordinates.x - this.prevCoordinates.x;
         const y = svgCoordinates.y - this.prevCoordinates.y;
-        this.$store.commit('svg/setSelectionDimensions', { x, y });
+        this.$store.commit('selection/setSelectionDimensions', { x, y });
         break;
       default:
         break;
@@ -256,7 +256,7 @@ export default class SvgComponent extends Vue {
         };
         this.$store.dispatch('svg/selectObjectsInRange', lineCoordinates);
         this.prevCoordinates = undefined;
-        this.$store.commit('svg/clearSelection');
+        this.$store.commit('selection/clearSelection');
         break;
       case MethodTypes.MOVE:
         if (!this.prevCoordinates) {
