@@ -1,6 +1,6 @@
 import { Module } from 'vuex';
 import { actions } from './actions';
-import { getters } from './getters';
+import { svgGetters } from './getters';
 import { mutations } from './mutations';
 import { SvgState } from './types';
 import { RootState } from '../types';
@@ -23,7 +23,7 @@ const namespaced: boolean = true;
 export const svg: Module<SvgState, RootState> = {
   namespaced,
   state,
-  getters,
+  getters: svgGetters,
   actions,
   mutations,
 };
