@@ -80,6 +80,8 @@ export const actions: ActionTree<SvgState, RootState> = {
     context.commit('addUndoAction', undoAction);
   },
   removeSelected(context) {
+    const arcs = context.getters.getSelectedArcs;
+    context.commit('removeSelectedArcs', arcs);
     const lines = context.getters.getSelectedLines;
     context.commit(
       'removeSelectedLines',

@@ -60,12 +60,14 @@ export const mutations: MutationTree<SvgState> = {
     state.undoAction = {
       action: 'restoreAll',
       item: {
+        arcs: state.arcs,
         lines: state.lines,
         points: state.points,
       },
     };
-    state.points = [];
+    state.arcs = [];
     state.lines = [];
+    state.points = [];
   },
   restoreAll(state) {
     state.points =
@@ -75,6 +77,10 @@ export const mutations: MutationTree<SvgState> = {
     state.lines =
       state.undoAction.item && 'lines' in state.undoAction.item
         ? [...state.undoAction.item.lines]
+        : [];
+    state.arcs =
+      state.undoAction.item && 'arcs' in state.undoAction.item
+        ? [...state.undoAction.item.arcs]
         : [];
     state.undoAction = { action: 'removeAll' };
   },
@@ -136,7 +142,7 @@ export const mutations: MutationTree<SvgState> = {
     const otherPoints = state.points.filter((p) => !ids.includes(p.id));
     state.points = [...otherPoints];
     state.undoAction = {
-      action: 'addPoints',
+      action: 'restorePoints',
       item: selectedPoints,
     };
   },
@@ -149,8 +155,18 @@ export const mutations: MutationTree<SvgState> = {
     );
     state.lines = [...otherLines];
     state.undoAction = {
-      action: 'addLines',
+      action: 'restoreLines',
       item: selectedLines,
+    };
+  },
+  removeSelectedArcs(state, arcs: Arc[]) {
+    const ids = arcs.map((a) => a.id);
+    const selectedArcs = state.arcs.filter((a) => ids.includes(a.id));
+    const otherArcs = state.arcs.filter((a) => !ids.includes(a.id));
+    state.arcs = [...otherArcs];
+    state.undoAction = {
+      action: 'restoreArcs',
+      item: selectedArcs,
     };
   },
   restorePoints(state, points: Point[]) {
@@ -168,6 +184,13 @@ export const mutations: MutationTree<SvgState> = {
     state.undoAction = {
       action: 'removeSelectedLines',
       item: [...points],
+    };
+  },
+  restoreArcs(state, arcs: Arc[]) {
+    state.arcs = [...state.arcs, ...arcs];
+    state.undoAction = {
+      action: 'removeSelectedArcs',
+      item: arcs,
     };
   },
   moveSelectedPoints(

@@ -64,6 +64,7 @@ export const getters: GetterTree<SvgState, RootState> = {
     }),
   getSelectedPoints: (state) => state.points.filter((p) => p.selected),
   getSelectedLines: (state) => state.lines.filter((l) => l.selected),
+  getSelectedArcs: (state) => state.arcs.filter((a) => a.selected),
   getSelectedElements: (state, self) => ({
     lines: self.getSelectedLines,
     points: self.getSelectedPoints,
