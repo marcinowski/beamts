@@ -11,12 +11,12 @@
         v-on:mouseover="handleHover"
       >
         <PrimitivesComponent ref="primitives"></PrimitivesComponent>
+        <SelectionComponent ref="selection"></SelectionComponent>
         <GridComponent
           v-bind:unit="unit"
           v-bind:svgHeight="svgHeight"
           v-bind:svgWidth="svgWidth"
         ></GridComponent>
-        <Selection></Selection>
       </svg>
       <div class="SvgMouseSvgCoordinates">
         {{ unitMouseCoordinates.x }}, {{ unitMouseCoordinates.y }}
@@ -58,10 +58,10 @@ rect {
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-import Selection from './Selection.vue';
 import GridComponent from './GridComponent.vue';
 import CrossComponent from './CrossComponent.vue';
 import PrimitivesComponent from './objects/Primitives.vue';
+import SelectionComponent from './Selection.vue';
 import {
   Coordinates,
   MethodTypes,
@@ -77,11 +77,10 @@ import {
     PrimitivesComponent,
     CrossComponent,
     GridComponent,
-    Selection,
+    SelectionComponent,
   },
 })
 export default class SvgComponent extends Vue {
-  prevCoordinates?: Coordinates;
   svg: SVGElement;
   container: HTMLElement;
   svgWindowCoordinates: Coordinates = { x: 0, y: 0 };
@@ -140,8 +139,11 @@ export default class SvgComponent extends Vue {
     const method = this.$store.getters.getMethod;
     const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    this.$store.dispatch('svg/deselectAll');
     (this.$refs.primitives as PrimitivesComponent).handleClick(
+      event,
+      svgCoordinates,
+    );
+    (this.$refs.selection as SelectionComponent).handleClick(
       event,
       svgCoordinates,
     );
@@ -159,11 +161,11 @@ export default class SvgComponent extends Vue {
       event,
       svgCoordinates,
     );
+    (this.$refs.selection as SelectionComponent).handleMouseDown(
+      event,
+      svgCoordinates,
+    );
     switch (method) {
-      case MethodTypes.SELECTION:
-        this.prevCoordinates = svgCoordinates;
-        this.$store.commit('selection/setSelectionOrigin', svgCoordinates);
-        break;
       default:
         break;
     }
@@ -177,15 +179,11 @@ export default class SvgComponent extends Vue {
       event,
       svgCoordinates,
     );
+    (this.$refs.selection as SelectionComponent).handleMouseMove(
+      event,
+      svgCoordinates,
+    );
     switch (method) {
-      case MethodTypes.SELECTION:
-        if (!this.prevCoordinates) {
-          return;
-        }
-        const x = svgCoordinates.x - this.prevCoordinates.x;
-        const y = svgCoordinates.y - this.prevCoordinates.y;
-        this.$store.commit('selection/setSelectionDimensions', { x, y });
-        break;
       default:
         break;
     }
@@ -199,19 +197,11 @@ export default class SvgComponent extends Vue {
       event,
       svgCoordinates,
     );
+    (this.$refs.selection as SelectionComponent).handleMouseUp(
+      event,
+      svgCoordinates,
+    );
     switch (method) {
-      case MethodTypes.SELECTION:
-        if (!this.prevCoordinates) {
-          return;
-        }
-        const lineCoordinates: LineCoordinates = {
-          start: this.prevCoordinates,
-          end: svgCoordinates,
-        };
-        this.$store.dispatch('svg/selectObjectsInRange', lineCoordinates);
-        this.prevCoordinates = undefined;
-        this.$store.commit('selection/clearSelection');
-        break;
       default:
         break;
     }

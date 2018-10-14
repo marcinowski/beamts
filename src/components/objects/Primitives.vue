@@ -39,6 +39,7 @@ import {
   Rotation,
   LineCoordinates,
   Arc,
+  EventBasedComponent,
 } from '@/types/types';
 
 @Component({
@@ -48,11 +49,11 @@ import {
     Points,
   },
 })
-export default class PrimitivesComponent extends Vue {
+export default class PrimitivesComponent extends Vue
+  implements EventBasedComponent {
   prevPoint?: Point;
   prevCoordinates?: Coordinates;
   baseUnit = 5;
-  scale = 10;
 
   get arcs() {
     return this.$store.getters['svg/getAllArcs'];
