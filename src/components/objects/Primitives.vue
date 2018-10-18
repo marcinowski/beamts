@@ -77,78 +77,82 @@ export default class PrimitivesComponent extends Vue
   }
 
   handleClick(event: MouseEvent, svgCoordinates: Coordinates) {
-    const method = this.$store.getters.getMethod;
-    const point = this.transformCoordinatesToPoint(svgCoordinates, event);
-    switch (method) {
-      case MethodTypes.CURSOR:
-        this.prevPoint = undefined; // resetting the line
-        break;
-      case MethodTypes.POINT:
-        this.$store.commit('svg/addPoint', point);
-        break;
-      case MethodTypes.LINE:
-        this.$store.commit('svg/addPoint', point);
-        this.addLine(event, point);
-        break;
-      case MethodTypes.ARC:
-        this.$store.commit('svg/addPoint', point);
-        this.addArc(event, point);
-      default:
-        break;
-    }
+    return;
+    // const method = this.$store.getters.getMethod;
+    // const point = this.transformCoordinatesToPoint(svgCoordinates, event);
+    // switch (method) {
+    //   case MethodTypes.CURSOR:
+    //     this.prevPoint = undefined; // resetting the line
+    //     break;
+    //   case MethodTypes.POINT:
+    //     this.$store.commit('svg/addPoint', point);
+    //     break;
+    //   case MethodTypes.LINE:
+    //     this.$store.commit('svg/addPoint', point);
+    //     this.addLine(event, point);
+    //     break;
+    //   case MethodTypes.ARC:
+    //     this.$store.commit('svg/addPoint', point);
+    //     this.addArc(event, point);
+    //   default:
+    //     break;
+    // }
   }
 
   handleMouseDown(event: MouseEvent, svgCoordinates: Coordinates) {
-    const method = this.$store.getters.getMethod;
-    switch (method) {
-      case MethodTypes.FLIP:
-      case MethodTypes.MOVE:
-      case MethodTypes.ROTATE:
-        this.prevCoordinates = svgCoordinates;
-      default:
-        break;
-    }
+    return;
+    // const method = this.$store.getters.getMethod;
+    // switch (method) {
+    //   case MethodTypes.FLIP:
+    //   case MethodTypes.MOVE:
+    //   case MethodTypes.ROTATE:
+    //     this.prevCoordinates = svgCoordinates;
+    //   default:
+    //     break;
+    // }
   }
 
   handleMouseMove(event: MouseEvent, svgCoordinates: Coordinates) {
-    const method = this.$store.getters.getMethod;
-    switch (method) {
-      default:
-        break;
-    }
+    return;
+    // const method = this.$store.getters.getMethod;
+    // switch (method) {
+    //   default:
+    //     break;
+    // }
   }
 
   handleMouseUp(event: MouseEvent, svgCoordinates: Coordinates) {
-    const method = this.$store.getters.getMethod;
-    switch (method) {
-      case MethodTypes.MOVE:
-        if (!this.prevCoordinates) {
-          return;
-        }
-        const vector = this.getVector(this.prevCoordinates, svgCoordinates);
-        this.$store.dispatch('svg/moveSelectedPoints', vector);
-        this.prevCoordinates = undefined;
-      case MethodTypes.ROTATE:
-        if (!this.prevCoordinates) {
-          return;
-        }
-        const angle = this.getAngle(this.prevCoordinates, svgCoordinates);
-        const rotation: Rotation = { angle, origin: this.prevCoordinates };
-        this.$store.dispatch('svg/rotateSelectedPoints', rotation);
-        this.prevCoordinates = undefined;
-      case MethodTypes.FLIP:
-        if (!this.prevCoordinates) {
-          return;
-        }
-        const line: LineCoordinates = {
-          start: this.prevCoordinates,
-          end: svgCoordinates,
-        };
-        this.$store.dispatch('svg/flipSelectedPoints', line);
-        this.prevCoordinates = undefined;
-      default:
-        break;
-    }
+    return;
+    // const method = this.$store.getters.getMethod;
+    // switch (method) {
+    //   case MethodTypes.MOVE:
+    //     if (!this.prevCoordinates) {
+    //       return;
+    //     }
+    //     const vector = this.getVector(this.prevCoordinates, svgCoordinates);
+    //     this.$store.dispatch('svg/moveSelectedPoints', vector);
+    //     this.prevCoordinates = undefined;
+    //   case MethodTypes.ROTATE:
+    //     if (!this.prevCoordinates) {
+    //       return;
+    //     }
+    //     const angle = this.getAngle(this.prevCoordinates, svgCoordinates);
+    //     const rotation: Rotation = { angle, origin: this.prevCoordinates };
+    //     this.$store.dispatch('svg/rotateSelectedPoints', rotation);
+    //     this.prevCoordinates = undefined;
+    //   case MethodTypes.FLIP:
+    //     if (!this.prevCoordinates) {
+    //       return;
+    //     }
+    //     const line: LineCoordinates = {
+    //       start: this.prevCoordinates,
+    //       end: svgCoordinates,
+    //     };
+    //     this.$store.dispatch('svg/flipSelectedPoints', line);
+    //     this.prevCoordinates = undefined;
+    //   default:
+    //     break;
+    // }
   }
 
   handleSelectedPoint(el: { event: MouseEvent; point: Point }) {

@@ -61,6 +61,7 @@ import GridComponent from './GridComponent.vue';
 import CrossComponent from './CrossComponent.vue';
 import PrimitivesComponent from './objects/Primitives.vue';
 import SelectionComponent from './Selection.vue';
+import { EventHandler } from '@/event-handlers/event-handler';
 import {
   Coordinates,
   MethodTypes,
@@ -80,8 +81,9 @@ import {
   },
 })
 export default class SvgComponent extends Vue {
-  svg: SVGElement;
   container: HTMLElement;
+  eventHandler: EventHandler;
+  svg: SVGElement;
   svgWindowCoordinates: Coordinates = { x: 0, y: 0 };
   unitMouseCoordinates = { x: 0.0, y: 0.0 };
   svgWidth: number = 0;
@@ -92,6 +94,11 @@ export default class SvgComponent extends Vue {
   }
   get scale() {
     return this.$store.getters['config/getScale'];
+  }
+
+  constructor() {
+    super();
+    this.eventHandler = new EventHandler(this.$store);
   }
 
   mounted() {
@@ -135,76 +142,87 @@ export default class SvgComponent extends Vue {
     return parseFloat((Math.ceil(n * this.scale) / this.scale).toFixed(2));
   }
 
-  handleClick(event: MouseEvent) {
-    const method = this.$store.getters.getMethod;
+  handleEvent(event: MouseEvent) {
     const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    (this.$refs.primitives as PrimitivesComponent).handleClick(
-      event,
-      svgCoordinates,
-    );
-    (this.$refs.selection as SelectionComponent).handleClick(
-      event,
-      svgCoordinates,
-    );
-    switch (method) {
-      default:
-        break;
-    }
+    this.eventHandler.handleEvent(event, svgCoordinates);
+  }
+
+  handleClick(event: MouseEvent) {
+    this.handleEvent(event);
+    // const method = this.$store.getters.getMethod;
+    // const eventCoords = this.getEventWindowCoordinates(event);
+    // const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
+    // this.eventHandler.handleEvent(event);
+    // (this.$refs.primitives as PrimitivesComponent).handleClick(
+    //   event,
+    //   svgCoordinates,
+    // );
+    // (this.$refs.selection as SelectionComponent).handleClick(
+    //   event,
+    //   svgCoordinates,
+    // );
+    // switch (method) {
+    //   default:
+    //     break;
+    // }
   }
 
   handleMouseDown(event: MouseEvent) {
-    const method = this.$store.getters.getMethod;
-    const eventCoords = this.getEventWindowCoordinates(event);
-    const svgCoordinates = this.transformWindowToSvgCoordinates(event);
-    (this.$refs.primitives as PrimitivesComponent).handleMouseDown(
-      event,
-      svgCoordinates,
-    );
-    (this.$refs.selection as SelectionComponent).handleMouseDown(
-      event,
-      svgCoordinates,
-    );
-    switch (method) {
-      default:
-        break;
-    }
+    this.handleEvent(event);
+    // const method = this.$store.getters.getMethod;
+    // const eventCoords = this.getEventWindowCoordinates(event);
+    // const svgCoordinates = this.transformWindowToSvgCoordinates(event);
+    // (this.$refs.primitives as PrimitivesComponent).handleMouseDown(
+    //   event,
+    //   svgCoordinates,
+    // );
+    // (this.$refs.selection as SelectionComponent).handleMouseDown(
+    //   event,
+    //   svgCoordinates,
+    // );
+    // switch (method) {
+    //   default:
+    //     break;
+    // }
   }
 
   handleMouseMove(event: MouseEvent) {
-    const method = this.$store.getters.getMethod;
-    const eventCoords = this.getEventWindowCoordinates(event);
-    const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    (this.$refs.primitives as PrimitivesComponent).handleMouseMove(
-      event,
-      svgCoordinates,
-    );
-    (this.$refs.selection as SelectionComponent).handleMouseMove(
-      event,
-      svgCoordinates,
-    );
-    switch (method) {
-      default:
-        break;
-    }
+    this.handleEvent(event);
+    // const method = this.$store.getters.getMethod;
+    // const eventCoords = this.getEventWindowCoordinates(event);
+    // const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
+    // (this.$refs.primitives as PrimitivesComponent).handleMouseMove(
+    //   event,
+    //   svgCoordinates,
+    // );
+    // (this.$refs.selection as SelectionComponent).handleMouseMove(
+    //   event,
+    //   svgCoordinates,
+    // );
+    // switch (method) {
+    //   default:
+    //     break;
+    // }
   }
 
   handleMouseUp(event: MouseEvent) {
-    const method = this.$store.getters.getMethod;
-    const eventCoords = this.getEventWindowCoordinates(event);
-    const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    (this.$refs.primitives as PrimitivesComponent).handleMouseUp(
-      event,
-      svgCoordinates,
-    );
-    (this.$refs.selection as SelectionComponent).handleMouseUp(
-      event,
-      svgCoordinates,
-    );
-    switch (method) {
-      default:
-        break;
-    }
+    this.handleEvent(event);
+    // const method = this.$store.getters.getMethod;
+    // const eventCoords = this.getEventWindowCoordinates(event);
+    // const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
+    // (this.$refs.primitives as PrimitivesComponent).handleMouseUp(
+    //   event,
+    //   svgCoordinates,
+    // );
+    // (this.$refs.selection as SelectionComponent).handleMouseUp(
+    //   event,
+    //   svgCoordinates,
+    // );
+    // switch (method) {
+    //   default:
+    //     break;
+    // }
   }
 
   handleHover(event: MouseEvent) {
