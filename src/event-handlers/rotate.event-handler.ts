@@ -12,15 +12,15 @@ enum States {
 export class RotateEventHandler implements EventHandlerInterface {
   private $store: Store<RootState>;
   private baseCoordinates?: Coordinates;
-  private currentPhase: States;
+  private currentState: States;
 
   constructor(store: Store<RootState>) {
     this.$store = store;
-    this.currentPhase = States.BASE;
+    this.currentState = States.BASE;
   }
 
   handleEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    switch (this.currentPhase) {
+    switch (this.currentState) {
       case States.BASE:
         this.handleBaseEvent(event, svgCoordinates);
         return;
@@ -32,17 +32,17 @@ export class RotateEventHandler implements EventHandlerInterface {
 
   handleBaseEvent(event: MouseEvent, svgCoordinates: Coordinates) {
     if (
-      this.currentPhase !== States.BASE ||
+      this.currentState !== States.BASE ||
       event.type !== EventTypes.MOUSEDOWN
     ) {
       return;
     }
     this.baseCoordinates = svgCoordinates;
-    this.currentPhase = States.END;
+    this.currentState = States.END;
   }
 
   handleEndEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (this.currentPhase !== States.END || event.type !== EventTypes.CLICK) {
+    if (this.currentState !== States.END || event.type !== EventTypes.CLICK) {
       return;
     }
     if (!this.baseCoordinates) {
@@ -52,6 +52,6 @@ export class RotateEventHandler implements EventHandlerInterface {
     const rotation: Rotation = { angle, origin: this.baseCoordinates };
     this.$store.dispatch('svg/rotateSelectedPoints', rotation);
     this.baseCoordinates = undefined;
-    this.currentPhase = States.BASE;
+    this.currentState = States.BASE;
   }
 }

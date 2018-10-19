@@ -11,15 +11,15 @@ enum States {
 export class FlipEventHandler implements EventHandlerInterface {
   private $store: Store<RootState>;
   private baseCoordinates?: Coordinates;
-  private currentPhase: States;
+  private currentState: States;
 
   constructor(store: Store<RootState>) {
     this.$store = store;
-    this.currentPhase = States.BASE;
+    this.currentState = States.BASE;
   }
 
   handleEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    switch (this.currentPhase) {
+    switch (this.currentState) {
       case States.BASE:
         this.handleBaseEvent(event, svgCoordinates);
         return;
@@ -30,15 +30,15 @@ export class FlipEventHandler implements EventHandlerInterface {
   }
 
   handleBaseEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (this.currentPhase !== States.BASE || event.type !== EventTypes.CLICK) {
+    if (this.currentState !== States.BASE || event.type !== EventTypes.CLICK) {
       return;
     }
     this.baseCoordinates = svgCoordinates;
-    this.currentPhase = States.END;
+    this.currentState = States.END;
   }
 
   handleEndEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (this.currentPhase !== States.END || event.type !== EventTypes.CLICK) {
+    if (this.currentState !== States.END || event.type !== EventTypes.CLICK) {
       return;
     }
     if (!this.baseCoordinates) {
@@ -50,6 +50,6 @@ export class FlipEventHandler implements EventHandlerInterface {
     };
     this.$store.dispatch('svg/flipSelectedPoints', line);
     this.baseCoordinates = undefined;
-    this.currentPhase = States.BASE;
+    this.currentState = States.BASE;
   }
 }
