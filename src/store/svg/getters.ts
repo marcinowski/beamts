@@ -56,10 +56,13 @@ export const svgGetters: GetterTree<SvgState, RootState> = {
     state.arcs.filter((arc) => {
       const points = getters.getPoints([arc.p1, arc.p2]);
       return (
-        getters.checkPointInsideSelection(s, {
-          x: points[0].x,
-          y: points[0].y,
-        }) &&
+        getters.checkPointInsideSelection(
+          {
+            x: points[0].x,
+            y: points[0].y,
+          },
+          s,
+        ) &&
         getters.checkPointInsideSelection({ x: points[1].x, y: points[1].y }, s)
       );
     }),
