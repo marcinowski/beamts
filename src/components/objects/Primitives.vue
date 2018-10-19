@@ -16,7 +16,7 @@
       <Points
         :key="point.id"
         v-bind:point="point"
-        v-on:selected-point="handleSelectedPoint"
+        v-on:selected-point="handleSelectedObject"
       ></Points>
     </template>
   </g>
@@ -31,15 +31,7 @@ import Component from 'vue-class-component';
 import Arcs from './Arcs.vue';
 import Lines from './Lines.vue';
 import Points from './Points.vue';
-import {
-  Coordinates,
-  MethodTypes,
-  Point,
-  Vector,
-  Rotation,
-  LineCoordinates,
-  Arc,
-} from '@/types/types';
+import { CustomEvent } from '@/types/types';
 
 @Component({
   components: {
@@ -49,8 +41,6 @@ import {
   },
 })
 export default class PrimitivesComponent extends Vue {
-  prevPoint?: Point;
-
   get arcs() {
     return this.$store.getters['svg/getAllArcs'];
   }
@@ -63,46 +53,8 @@ export default class PrimitivesComponent extends Vue {
     return this.$store.getters['svg/getAllPoints'];
   }
 
-  handleSelectedPoint(el: { event: MouseEvent; point: Point }) {
-    const method = this.$store.getters.getMethod;
-    switch (method) {
-      case MethodTypes.LINE:
-        this.addLine(el.event, el.point);
-        break;
-      case MethodTypes.ARC:
-        this.addArc(el.event, el.point);
-    }
-  }
-
-  addArc(event: Event, point: Point) {
-    if (!this.prevPoint) {
-      this.prevPoint = point;
-    } else {
-      const radius = 10; // FIXME: allow specification of the radius somehow
-      const arc: Arc = {
-        id: event.timeStamp + 2,
-        radius,
-        p1: this.prevPoint.id,
-        p2: point.id,
-        selected: false,
-      };
-      this.$store.commit('svg/addArc', arc);
-      this.prevPoint = undefined;
-    }
-  }
-
-  addLine(event: Event, point: Point) {
-    if (!this.prevPoint) {
-      this.prevPoint = point;
-      return;
-    }
-    const line = {
-      p1: this.prevPoint.id,
-      p2: point.id,
-      id: event.timeStamp + 1, // hack to distinguish from the point
-    };
-    this.$store.commit('svg/addLine', line);
-    this.prevPoint = point;
+  handleSelectedObject(event: CustomEvent) {
+    this.$emit('selected-object', event);
   }
 }
 </script>

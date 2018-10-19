@@ -12,15 +12,21 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-import { Point } from '@/types/types';
+import { Point, CustomEvent, ObjectTypes, EventTypes } from '@/types/types';
 
 @Component({})
 export default class Points extends Vue {
   @Prop() point: Point;
 
-  handleClick(event: Event) {
+  handleClick(event: MouseEvent) {
     this.$store.dispatch('svg/selectPoints', [this.point.id]);
-    this.$emit('selected-point', { event, point: this.point });
+    const customEvent: CustomEvent = {
+      originalEvent: event,
+      sourceId: this.point.id,
+      sourceObject: ObjectTypes.POINT,
+      customType: EventTypes.SELECTED_OBJECT,
+    };
+    this.$emit('selected-point', customEvent);
   }
 }
 </script>

@@ -1,7 +1,7 @@
-import { EventHandlerInterface, EventTypes } from '@/event-handlers/types';
+import { EventHandlerInterface } from './types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
-import { Coordinates } from '@/types/types';
+import { Coordinates, EventTypes, CustomEvent } from '@/types/types';
 
 export class CursorEventHandler implements EventHandlerInterface {
   private $store: Store<RootState>;
@@ -10,8 +10,8 @@ export class CursorEventHandler implements EventHandlerInterface {
     this.$store = store;
   }
 
-  handleEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    switch (event.type) {
+  handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    switch (event.originalEvent.type) {
       case EventTypes.CLICK:
         this.$store.dispatch('svg/deselectAll');
     }

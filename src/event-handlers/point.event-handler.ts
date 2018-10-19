@@ -1,7 +1,13 @@
-import { EventHandlerInterface, EventTypes } from '@/event-handlers/types';
+import { EventHandlerInterface } from './types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
-import { Coordinates, Point } from '@/types/types';
+import {
+  Coordinates,
+  Point,
+  EventTypes,
+  CustomEvent,
+  ObjectTypes,
+} from '@/types/types';
 import { getPointIdFromEvent } from '@/helpers/helpers';
 
 export class PointEventHandler implements EventHandlerInterface {
@@ -15,18 +21,22 @@ export class PointEventHandler implements EventHandlerInterface {
     return this.$store.getters['config/getBaseUnit'];
   }
 
-  transformCoordinatesToPoint(point: Coordinates, event: MouseEvent): Point {
+  transformCoordinatesToPoint(point: Coordinates, event: CustomEvent): Point {
     const x = point.x - (point.x % this.baseUnit);
     const y = point.y - (point.y % this.baseUnit);
-    const id = getPointIdFromEvent(event);
+    const id = getPointIdFromEvent(event.originalEvent);
     return { x, y, id };
   }
 
-  handleEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    switch (event.type) {
-      case EventTypes.CLICK:
-        const point = this.transformCoordinatesToPoint(svgCoordinates, event);
-        this.$store.commit('svg/addPoint', point);
+  handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    if (
+      event.customType === EventTypes.SELECTED_OBJECT &&
+      event.sourceObject === ObjectTypes.POINT
+    ) {
+      return;
+    } else if (event.originalEvent.type === EventTypes.CLICK) {
+      const point = this.transformCoordinatesToPoint(svgCoordinates, event);
+      this.$store.commit('svg/addPoint', point);
     }
   }
 }

@@ -9,6 +9,12 @@ export enum MethodTypes {
   SELECTION = 'selection',
 }
 
+export enum ObjectTypes {
+  POINT = 'point',
+  LINE = 'line',
+  ARC = 'arc',
+}
+
 export interface Coordinates {
   x: number;
   y: number;
@@ -62,4 +68,20 @@ export interface Material {
   id: number;
   young: number;
   poisson: number;
+}
+
+export enum EventTypes {
+  CLICK = 'click',
+  MOUSEUP = 'mouseup',
+  MOUSEDOWN = 'mousedown',
+  MOUSEMOVE = 'mousemove',
+  // Custom events
+  SELECTED_OBJECT = 'selectedobject',
+}
+
+export interface CustomEvent {
+  originalEvent: MouseEvent;
+  sourceObject?: ObjectTypes;
+  sourceId?: number;
+  customType?: EventTypes;
 }

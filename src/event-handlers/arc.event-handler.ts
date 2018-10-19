@@ -1,7 +1,14 @@
-import { EventHandlerInterface, EventTypes } from '@/event-handlers/types';
+import { EventHandlerInterface } from './types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
-import { Coordinates, Point, Arc } from '@/types/types';
+import {
+  Coordinates,
+  Point,
+  Arc,
+  EventTypes,
+  CustomEvent,
+  ObjectTypes,
+} from '@/types/types';
 import { PointEventHandler } from '@/event-handlers/point.event-handler';
 import {
   getVector,
@@ -31,7 +38,7 @@ export class ArcEventHandler implements EventHandlerInterface {
     this.currentState = States.BASE;
   }
 
-  handleEvent(event: MouseEvent, svgCoordinates: Coordinates) {
+  handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     switch (this.currentState) {
       case States.BASE:
         this.handleBaseEvent(event, svgCoordinates);
@@ -48,28 +55,52 @@ export class ArcEventHandler implements EventHandlerInterface {
     }
   }
 
-  handleBaseEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.BASE || event.type !== EventTypes.CLICK) {
+  handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    if (this.currentState !== States.BASE) {
       return;
     }
-    this.pointHandler.handleEvent(event, svgCoordinates);
-    this.baseId = getPointIdFromEvent(event);
+    if (
+      event.customType === EventTypes.SELECTED_OBJECT &&
+      event.sourceObject === ObjectTypes.POINT &&
+      event.sourceId
+    ) {
+      this.baseId = event.sourceId;
+    } else if (event.originalEvent.type === EventTypes.CLICK) {
+      this.pointHandler.handleEvent(event, svgCoordinates);
+      this.baseId = getPointIdFromEvent(event.originalEvent);
+    } else {
+      return;
+    }
     this.currentState = States.END;
   }
 
-  handleEndEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.END || event.type !== EventTypes.CLICK) {
+  handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    if (this.currentState !== States.END) {
       return;
     }
-    this.pointHandler.handleEvent(event, svgCoordinates);
-    this.endId = getPointIdFromEvent(event);
+    if (!this.baseId) {
+      this.currentState = States.BASE;
+      return;
+    }
+    if (
+      event.customType === EventTypes.SELECTED_OBJECT &&
+      event.sourceObject === ObjectTypes.POINT &&
+      event.sourceId
+    ) {
+      this.endId = event.sourceId;
+    } else if (event.originalEvent.type === EventTypes.CLICK) {
+      this.pointHandler.handleEvent(event, svgCoordinates);
+      this.endId = getPointIdFromEvent(event.originalEvent);
+    } else {
+      return;
+    }
     this.currentState = States.BASEARC;
   }
 
-  handleBaseArcEvent(event: MouseEvent, svgCoordinates: Coordinates) {
+  handleBaseArcEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     if (
       this.currentState !== States.BASEARC ||
-      event.type !== EventTypes.MOUSEDOWN
+      event.originalEvent.type !== EventTypes.MOUSEDOWN
     ) {
       return;
     }
@@ -77,10 +108,10 @@ export class ArcEventHandler implements EventHandlerInterface {
     this.currentState = States.ENDARC;
   }
 
-  handleEndArcEvent(event: MouseEvent, svgCoordinates: Coordinates) {
+  handleEndArcEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     if (
       this.currentState !== States.ENDARC ||
-      event.type !== EventTypes.MOUSEUP
+      event.originalEvent.type !== EventTypes.MOUSEUP
     ) {
       // FIXME: There's an issue that the `click` event is immediately after
       // MOUSEUP, so the phase1 gets triggered immediately as well
@@ -92,7 +123,7 @@ export class ArcEventHandler implements EventHandlerInterface {
     const vector = getVector(this.arcStart, svgCoordinates);
     const radius = getVectorLength(vector);
     const arc: Arc = {
-      id: getArcIdFromEvent(event),
+      id: getArcIdFromEvent(event.originalEvent),
       radius,
       p1: this.baseId,
       p2: this.endId,

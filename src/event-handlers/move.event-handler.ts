@@ -1,7 +1,7 @@
-import { EventHandlerInterface, EventTypes } from '@/event-handlers/types';
+import { EventHandlerInterface } from './types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
-import { Coordinates } from '@/types/types';
+import { Coordinates, EventTypes, CustomEvent } from '@/types/types';
 import { getVector } from '@/helpers/helpers';
 
 enum States {
@@ -19,7 +19,7 @@ export class MoveEventHandler implements EventHandlerInterface {
     this.currentState = States.BASE;
   }
 
-  handleEvent(event: MouseEvent, svgCoordinates: Coordinates) {
+  handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     switch (this.currentState) {
       case States.BASE:
         this.handleBaseEvent(event, svgCoordinates);
@@ -30,10 +30,10 @@ export class MoveEventHandler implements EventHandlerInterface {
     }
   }
 
-  handleBaseEvent(event: MouseEvent, svgCoordinates: Coordinates) {
+  handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     if (
       this.currentState !== States.BASE ||
-      event.type !== EventTypes.MOUSEDOWN
+      event.originalEvent.type !== EventTypes.MOUSEDOWN
     ) {
       return;
     }
@@ -41,8 +41,8 @@ export class MoveEventHandler implements EventHandlerInterface {
     this.currentState = States.END;
   }
 
-  handleEndEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.END || event.type !== EventTypes.CLICK) {
+  handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    if (this.currentState !== States.END || event.originalEvent.type !== EventTypes.CLICK) {
       return;
     }
     if (!this.baseCoordinates) {

@@ -1,8 +1,15 @@
-import { EventHandlerInterface, EventTypes } from '@/event-handlers/types';
+import { EventHandlerInterface } from './types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
-import { Coordinates, Point, Line } from '@/types/types';
-import { PointEventHandler } from '@/event-handlers/point.event-handler';
+import {
+  Coordinates,
+  Point,
+  Line,
+  EventTypes,
+  CustomEvent,
+  ObjectTypes,
+} from '@/types/types';
+import { PointEventHandler } from './point.event-handler';
 import { getPointIdFromEvent, getLineIdFromEvent } from '@/helpers/helpers';
 
 enum States {
@@ -22,7 +29,7 @@ export class LineEventHandler implements EventHandlerInterface {
     this.currentState = States.BASE;
   }
 
-  handleEvent(event: MouseEvent, svgCoordinates: Coordinates) {
+  handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     switch (this.currentState) {
       case States.BASE:
         this.handleBaseEvent(event, svgCoordinates);
@@ -33,27 +40,49 @@ export class LineEventHandler implements EventHandlerInterface {
     }
   }
 
-  handleBaseEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.BASE || event.type !== EventTypes.CLICK) {
+  handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    if (this.currentState !== States.BASE) {
       return;
     }
-    this.pointHandler.handleEvent(event, svgCoordinates);
-    this.baseId = getPointIdFromEvent(event);
+    if (
+      event.customType === EventTypes.SELECTED_OBJECT &&
+      event.sourceObject === ObjectTypes.POINT &&
+      event.sourceId
+    ) {
+      this.baseId = event.sourceId;
+    } else if (event.originalEvent.type === EventTypes.CLICK) {
+      this.pointHandler.handleEvent(event, svgCoordinates);
+      this.baseId = getPointIdFromEvent(event.originalEvent);
+    } else {
+      return;
+    }
     this.currentState = States.END;
   }
 
-  handleEndEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.END || event.type !== EventTypes.CLICK) {
+  handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    if (this.currentState !== States.END) {
       return;
     }
     if (!this.baseId) {
       return;
     }
-    this.pointHandler.handleEvent(event, svgCoordinates);
+    let endId;
+    if (
+      event.customType === EventTypes.SELECTED_OBJECT &&
+      event.sourceObject === ObjectTypes.POINT &&
+      event.sourceId
+    ) {
+      endId = event.sourceId;
+    } else if (event.originalEvent.type === EventTypes.CLICK) {
+      this.pointHandler.handleEvent(event, svgCoordinates);
+      endId = getPointIdFromEvent(event.originalEvent);
+    } else {
+      return;
+    }
     const line: Line = {
       p1: this.baseId,
-      p2: getPointIdFromEvent(event),
-      id: getLineIdFromEvent(event),
+      p2: endId,
+      id: getLineIdFromEvent(event.originalEvent),
       selected: false,
     };
     this.$store.commit('svg/addLine', line);

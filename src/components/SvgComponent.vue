@@ -10,7 +10,9 @@
         v-on:mouseup="handleMouseUp"
         v-on:mouseover="handleHover"
       >
-        <PrimitivesComponent></PrimitivesComponent>
+        <PrimitivesComponent
+          v-on:selected-object="handleSelectedObject"
+        ></PrimitivesComponent>
         <SelectionComponent></SelectionComponent>
         <GridComponent
           v-bind:svgHeight="svgHeight"
@@ -67,6 +69,9 @@ import {
   Rotation,
   LineCoordinates,
   Arc,
+  CustomEvent,
+  ObjectTypes,
+  EventTypes,
 } from '@/types/types';
 
 @Component({
@@ -139,26 +144,26 @@ export default class SvgComponent extends Vue {
     return parseFloat((Math.ceil(n * this.scale) / this.scale).toFixed(2));
   }
 
-  handleEvent(event: MouseEvent) {
-    const eventCoords = this.getEventWindowCoordinates(event);
+  handleEvent(event: CustomEvent) {
+    const eventCoords = this.getEventWindowCoordinates(event.originalEvent);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     this.eventHandler.handleEvent(event, svgCoordinates);
   }
 
   handleClick(event: MouseEvent) {
-    this.handleEvent(event);
+    this.handleEvent({ originalEvent: event });
   }
 
   handleMouseDown(event: MouseEvent) {
-    this.handleEvent(event);
+    this.handleEvent({ originalEvent: event });
   }
 
   handleMouseMove(event: MouseEvent) {
-    this.handleEvent(event);
+    this.handleEvent({ originalEvent: event });
   }
 
   handleMouseUp(event: MouseEvent) {
-    this.handleEvent(event);
+    this.handleEvent({ originalEvent: event });
   }
 
   handleHover(event: MouseEvent) {
@@ -168,6 +173,10 @@ export default class SvgComponent extends Vue {
       x: svgCoordinates.x,
       y: this.svgHeight - svgCoordinates.y,
     });
+  }
+
+  handleSelectedObject(event: CustomEvent) {
+    this.handleEvent(event);
   }
 }
 </script>

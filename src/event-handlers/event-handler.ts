@@ -1,4 +1,9 @@
-import { Coordinates, MethodTypes } from '@/types/types';
+import {
+  Coordinates,
+  MethodTypes,
+  CustomEvent,
+  EventTypes,
+} from '@/types/types';
 import { Store } from 'vuex';
 import { RootState } from '@/store/types';
 import { EventHandlerInterface } from '@/event-handlers/types';
@@ -20,7 +25,7 @@ export class EventHandler implements EventHandlerInterface {
     this.$store = store;
   }
 
-  handleEvent(event: MouseEvent, svgCoordinates: Coordinates) {
+  handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     const method = this.$store.getters.getMethod;
     if (!this.method || this.method !== method) {
       this.method = method;

@@ -1,7 +1,12 @@
-import { EventHandlerInterface, EventTypes } from '@/event-handlers/types';
+import { EventHandlerInterface } from './types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
-import { Coordinates, LineCoordinates } from '@/types/types';
+import {
+  Coordinates,
+  LineCoordinates,
+  EventTypes,
+  CustomEvent,
+} from '@/types/types';
 
 export class SelectionEventHandler implements EventHandlerInterface {
   private $store: Store<RootState>;
@@ -11,8 +16,8 @@ export class SelectionEventHandler implements EventHandlerInterface {
     this.$store = store;
   }
 
-  handleEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    switch (event.type) {
+  handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    switch (event.originalEvent.type) {
       case EventTypes.MOUSEDOWN:
         this.handleBaseEvent(event, svgCoordinates);
         return;
@@ -25,16 +30,19 @@ export class SelectionEventHandler implements EventHandlerInterface {
     }
   }
 
-  handleBaseEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (event.type !== EventTypes.MOUSEDOWN) {
+  handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    if (event.originalEvent.type !== EventTypes.MOUSEDOWN) {
       return;
     }
     this.baseCoordinates = svgCoordinates;
     this.$store.commit('selection/setSelectionOrigin', svgCoordinates);
   }
 
-  handleDragEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (event.type !== EventTypes.MOUSEMOVE || !this.baseCoordinates) {
+  handleDragEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    if (
+      event.originalEvent.type !== EventTypes.MOUSEMOVE ||
+      !this.baseCoordinates
+    ) {
       return;
     }
     const x = svgCoordinates.x - this.baseCoordinates.x;
@@ -42,8 +50,11 @@ export class SelectionEventHandler implements EventHandlerInterface {
     this.$store.commit('selection/setSelectionDimensions', { x, y });
   }
 
-  handleEndEvent(event: MouseEvent, svgCoordinates: Coordinates) {
-    if (event.type !== EventTypes.MOUSEUP || !this.baseCoordinates) {
+  handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    if (
+      event.originalEvent.type !== EventTypes.MOUSEUP ||
+      !this.baseCoordinates
+    ) {
       return;
     }
     const lineCoordinates: LineCoordinates = {
