@@ -12,7 +12,7 @@ import { SelectionEventHandler } from '@/event-handlers/selection.event-handler'
 import { MoveEventHandler } from '@/event-handlers/move.event-handler';
 
 export class EventHandler implements EventHandlerInterface {
-  handler: any;
+  handler: EventHandlerInterface;
   method: MethodTypes;
   private $store: Store<RootState>;
 

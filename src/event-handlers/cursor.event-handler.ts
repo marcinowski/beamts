@@ -4,7 +4,6 @@ import { Store } from 'vuex';
 import { Coordinates } from '@/types/types';
 
 export class CursorEventHandler implements EventHandlerInterface {
-  counter = 0;
   private $store: Store<RootState>;
 
   constructor(store: Store<RootState>) {

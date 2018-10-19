@@ -1,7 +1,8 @@
 import { EventHandlerInterface, EventTypes } from '@/event-handlers/types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
-import { Coordinates, Vector, Rotation } from '@/types/types';
+import { Coordinates, Rotation } from '@/types/types';
+import { getAngle } from '@/helpers/helpers';
 
 enum States {
   BASE,
@@ -47,14 +48,10 @@ export class RotateEventHandler implements EventHandlerInterface {
     if (!this.baseCoordinates) {
       return;
     }
-    const angle = this.getAngle(this.baseCoordinates, svgCoordinates);
+    const angle = getAngle(this.baseCoordinates, svgCoordinates);
     const rotation: Rotation = { angle, origin: this.baseCoordinates };
     this.$store.dispatch('svg/rotateSelectedPoints', rotation);
     this.baseCoordinates = undefined;
     this.currentPhase = States.BASE;
-  }
-
-  getAngle(start: Coordinates, end: Coordinates): number {
-    return Math.atan2(end.y - start.y, end.x - start.x);
   }
 }

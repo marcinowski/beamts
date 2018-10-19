@@ -1,8 +1,9 @@
 import { EventHandlerInterface, EventTypes } from '@/event-handlers/types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
-import { Coordinates, Point, Vector, Arc } from '@/types/types';
+import { Coordinates, Point, Arc } from '@/types/types';
 import { PointEventHandler } from '@/event-handlers/point.event-handler';
+import { getVector, getVectorLength } from '@/helpers/helpers';
 
 enum States {
   BASE,
@@ -83,8 +84,8 @@ export class ArcEventHandler implements EventHandlerInterface {
     if (!this.arcStart || !this.baseId || !this.endId) {
       throw Error('Undefined arc variable');
     }
-    const vector = this.getVector(this.arcStart, svgCoordinates);
-    const radius = this.getVectorLength(vector);
+    const vector = getVector(this.arcStart, svgCoordinates);
+    const radius = getVectorLength(vector);
     const arc: Arc = {
       id: event.timeStamp + 2,
       radius,
@@ -98,16 +99,5 @@ export class ArcEventHandler implements EventHandlerInterface {
     this.arcStart = undefined;
     this.currentPhase = States.BASE;
     return;
-  }
-
-  getVector(start: Coordinates, end: Coordinates): Vector {
-    return {
-      x: end.x - start.x,
-      y: end.y - start.y,
-    };
-  }
-
-  getVectorLength(vector: Vector) {
-    return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
   }
 }

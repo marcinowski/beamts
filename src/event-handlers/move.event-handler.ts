@@ -1,7 +1,8 @@
 import { EventHandlerInterface, EventTypes } from '@/event-handlers/types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
-import { Coordinates, Vector } from '@/types/types';
+import { Coordinates } from '@/types/types';
+import { getVector } from '@/helpers/helpers';
 
 enum States {
   BASE,
@@ -47,16 +48,9 @@ export class MoveEventHandler implements EventHandlerInterface {
     if (!this.baseCoordinates) {
       return;
     }
-    const vector = this.getVector(this.baseCoordinates, svgCoordinates);
+    const vector = getVector(this.baseCoordinates, svgCoordinates);
     this.$store.dispatch('svg/moveSelectedPoints', vector);
     this.baseCoordinates = undefined;
     this.currentPhase = States.BASE;
-  }
-
-  getVector(start: Coordinates, end: Coordinates): Vector {
-    return {
-      x: end.x - start.x,
-      y: end.y - start.y,
-    };
   }
 }
