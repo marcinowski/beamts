@@ -1,5 +1,5 @@
 <template>
-  <v-content class="SvgWindow">
+  <v-content>
     <div class="SvgContainer">
       <svg
         id="svg"
@@ -10,8 +10,8 @@
         v-on:mouseup="handleMouseUp"
         v-on:mouseover="handleHover"
       >
-        <PrimitivesComponent ref="primitives"></PrimitivesComponent>
-        <SelectionComponent ref="selection"></SelectionComponent>
+        <PrimitivesComponent></PrimitivesComponent>
+        <SelectionComponent></SelectionComponent>
         <GridComponent
           v-bind:svgHeight="svgHeight"
           v-bind:svgWidth="svgWidth"
@@ -36,9 +36,6 @@ rect {
   fill: rgb(120, 240, 230);
   stroke-dasharray: 3;
   fill-opacity: 0.2;
-}
-.SvgWindow {
-  /* overflow: scroll; */
 }
 .SvgContainer {
   height: 100%;
@@ -150,79 +147,18 @@ export default class SvgComponent extends Vue {
 
   handleClick(event: MouseEvent) {
     this.handleEvent(event);
-    // const method = this.$store.getters.getMethod;
-    // const eventCoords = this.getEventWindowCoordinates(event);
-    // const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    // this.eventHandler.handleEvent(event);
-    // (this.$refs.primitives as PrimitivesComponent).handleClick(
-    //   event,
-    //   svgCoordinates,
-    // );
-    // (this.$refs.selection as SelectionComponent).handleClick(
-    //   event,
-    //   svgCoordinates,
-    // );
-    // switch (method) {
-    //   default:
-    //     break;
-    // }
   }
 
   handleMouseDown(event: MouseEvent) {
     this.handleEvent(event);
-    // const method = this.$store.getters.getMethod;
-    // const eventCoords = this.getEventWindowCoordinates(event);
-    // const svgCoordinates = this.transformWindowToSvgCoordinates(event);
-    // (this.$refs.primitives as PrimitivesComponent).handleMouseDown(
-    //   event,
-    //   svgCoordinates,
-    // );
-    // (this.$refs.selection as SelectionComponent).handleMouseDown(
-    //   event,
-    //   svgCoordinates,
-    // );
-    // switch (method) {
-    //   default:
-    //     break;
-    // }
   }
 
   handleMouseMove(event: MouseEvent) {
     this.handleEvent(event);
-    // const method = this.$store.getters.getMethod;
-    // const eventCoords = this.getEventWindowCoordinates(event);
-    // const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    // (this.$refs.primitives as PrimitivesComponent).handleMouseMove(
-    //   event,
-    //   svgCoordinates,
-    // );
-    // (this.$refs.selection as SelectionComponent).handleMouseMove(
-    //   event,
-    //   svgCoordinates,
-    // );
-    // switch (method) {
-    //   default:
-    //     break;
-    // }
   }
 
   handleMouseUp(event: MouseEvent) {
     this.handleEvent(event);
-    // const method = this.$store.getters.getMethod;
-    // const eventCoords = this.getEventWindowCoordinates(event);
-    // const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    // (this.$refs.primitives as PrimitivesComponent).handleMouseUp(
-    //   event,
-    //   svgCoordinates,
-    // );
-    // (this.$refs.selection as SelectionComponent).handleMouseUp(
-    //   event,
-    //   svgCoordinates,
-    // );
-    // switch (method) {
-    //   default:
-    //     break;
-    // }
   }
 
   handleHover(event: MouseEvent) {

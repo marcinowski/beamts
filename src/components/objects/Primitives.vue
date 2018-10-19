@@ -39,7 +39,6 @@ import {
   Rotation,
   LineCoordinates,
   Arc,
-  EventBasedComponent,
 } from '@/types/types';
 
 @Component({
@@ -49,14 +48,8 @@ import {
     Points,
   },
 })
-export default class PrimitivesComponent extends Vue
-  implements EventBasedComponent {
+export default class PrimitivesComponent extends Vue {
   prevPoint?: Point;
-  prevCoordinates?: Coordinates;
-
-  get baseUnit() {
-    return this.$store.getters['config/getBaseUnit'];
-  }
 
   get arcs() {
     return this.$store.getters['svg/getAllArcs'];
@@ -68,91 +61,6 @@ export default class PrimitivesComponent extends Vue
 
   get points() {
     return this.$store.getters['svg/getAllPoints'];
-  }
-
-  transformCoordinatesToPoint(point: Coordinates, event: MouseEvent): Point {
-    const x = point.x - point.x % this.baseUnit; // FIXME: getters, CONFIG store
-    const y = point.y - point.y % this.baseUnit;
-    return { x, y, id: event.timeStamp };
-  }
-
-  handleClick(event: MouseEvent, svgCoordinates: Coordinates) {
-    return;
-    // const method = this.$store.getters.getMethod;
-    // const point = this.transformCoordinatesToPoint(svgCoordinates, event);
-    // switch (method) {
-    //   case MethodTypes.CURSOR:
-    //     this.prevPoint = undefined; // resetting the line
-    //     break;
-    //   case MethodTypes.POINT:
-    //     this.$store.commit('svg/addPoint', point);
-    //     break;
-    //   case MethodTypes.LINE:
-    //     this.$store.commit('svg/addPoint', point);
-    //     this.addLine(event, point);
-    //     break;
-    //   case MethodTypes.ARC:
-    //     this.$store.commit('svg/addPoint', point);
-    //     this.addArc(event, point);
-    //   default:
-    //     break;
-    // }
-  }
-
-  handleMouseDown(event: MouseEvent, svgCoordinates: Coordinates) {
-    return;
-    // const method = this.$store.getters.getMethod;
-    // switch (method) {
-    //   case MethodTypes.FLIP:
-    //   case MethodTypes.MOVE:
-    //   case MethodTypes.ROTATE:
-    //     this.prevCoordinates = svgCoordinates;
-    //   default:
-    //     break;
-    // }
-  }
-
-  handleMouseMove(event: MouseEvent, svgCoordinates: Coordinates) {
-    return;
-    // const method = this.$store.getters.getMethod;
-    // switch (method) {
-    //   default:
-    //     break;
-    // }
-  }
-
-  handleMouseUp(event: MouseEvent, svgCoordinates: Coordinates) {
-    return;
-    // const method = this.$store.getters.getMethod;
-    // switch (method) {
-    //   case MethodTypes.MOVE:
-    //     if (!this.prevCoordinates) {
-    //       return;
-    //     }
-    //     const vector = this.getVector(this.prevCoordinates, svgCoordinates);
-    //     this.$store.dispatch('svg/moveSelectedPoints', vector);
-    //     this.prevCoordinates = undefined;
-    //   case MethodTypes.ROTATE:
-    //     if (!this.prevCoordinates) {
-    //       return;
-    //     }
-    //     const angle = this.getAngle(this.prevCoordinates, svgCoordinates);
-    //     const rotation: Rotation = { angle, origin: this.prevCoordinates };
-    //     this.$store.dispatch('svg/rotateSelectedPoints', rotation);
-    //     this.prevCoordinates = undefined;
-    //   case MethodTypes.FLIP:
-    //     if (!this.prevCoordinates) {
-    //       return;
-    //     }
-    //     const line: LineCoordinates = {
-    //       start: this.prevCoordinates,
-    //       end: svgCoordinates,
-    //     };
-    //     this.$store.dispatch('svg/flipSelectedPoints', line);
-    //     this.prevCoordinates = undefined;
-    //   default:
-    //     break;
-    // }
   }
 
   handleSelectedPoint(el: { event: MouseEvent; point: Point }) {
@@ -195,17 +103,6 @@ export default class PrimitivesComponent extends Vue
     };
     this.$store.commit('svg/addLine', line);
     this.prevPoint = point;
-  }
-
-  getVector(start: Coordinates, end: Coordinates): Vector {
-    return {
-      x: end.x - start.x,
-      y: end.y - start.y,
-    };
-  }
-
-  getAngle(start: Coordinates, end: Coordinates): number {
-    return Math.atan2(end.y - start.y, end.x - start.x);
   }
 }
 </script>

@@ -63,10 +63,3 @@ export interface Material {
   young: number;
   poisson: number;
 }
-
-export interface EventBasedComponent {
-  handleClick(event: MouseEvent, svgCoordinates: Coordinates): void;
-  handleMouseDown(event: MouseEvent, svgCoordinates: Coordinates): void;
-  handleMouseMove(event: MouseEvent, svgCoordinates: Coordinates): void;
-  handleMouseUp(event: MouseEvent, svgCoordinates: Coordinates): void;
-}
