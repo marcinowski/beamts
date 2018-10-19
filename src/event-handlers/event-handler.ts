@@ -10,7 +10,6 @@ import { FlipEventHandler } from '@/event-handlers/flip.event-handler';
 import { RotateEventHandler } from '@/event-handlers/rotate.event-handler';
 import { SelectionEventHandler } from '@/event-handlers/selection.event-handler';
 import { MoveEventHandler } from '@/event-handlers/move.event-handler';
-import { svg } from '@/store/svg';
 
 export class EventHandler implements EventHandlerInterface {
   handler: any;
