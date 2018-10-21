@@ -8,4 +8,7 @@ export const mutations: MutationTree<ConfigState> = {
   decrementZoom(state) {
     state.scale--;
   },
+  toggleGrid(state) {
+    state.gridOn = !state.gridOn;
+  },
 };

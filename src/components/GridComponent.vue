@@ -7,7 +7,7 @@
       v-bind:x2="line.xEnd"
       v-bind:y1="line.yStart"
       v-bind:y2="line.yEnd"
-      v-bind:class="{bolded: line.bolded}"
+      v-bind:class="{Bolded: line.bolded, Hidden: isGridHidden}"
     ></line>
   </g>
 </template>
@@ -17,8 +17,12 @@ line {
   stroke: #8080804d;
   stroke-width: 1px;
 
-  &.bolded {
+  &.Bolded {
     stroke-width: 2px;
+  }
+
+  &.Hidden {
+    display: none;
   }
 }
 </style>
@@ -38,11 +42,17 @@ interface Line {
 
 @Component({})
 export default class GridComponent extends Vue {
-  @Prop() svgWidth: number;
-  @Prop() svgHeight: number;
+  @Prop()
+  svgWidth: number;
+  @Prop()
+  svgHeight: number;
 
   get unit() {
     return this.$store.getters['config/getUnit'];
+  }
+
+  get isGridHidden() {
+    return !this.$store.getters['config/isGridOn'];
   }
 
   boldConst = 5; // bold each xth line

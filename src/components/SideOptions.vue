@@ -189,14 +189,19 @@ export default class SideOptions extends Vue {
       onClick: () => console.log('Center'),
     },
     {
+      icon: 'border_all',
+      title: 'Show Grid',
+      onClick: () => this.$store.commit('config/toggleGrid'),
+    },
+    {
       icon: 'zoom_in',
       title: 'Zoom in',
-      onClick: () => console.log('Zoom in'),
+      onClick: () => this.$store.commit('config/incrementZoom'),
     },
     {
       icon: 'zoom_out',
       title: 'Zoom out',
-      onClick: () => console.log('Zoom out'),
+      onClick: () => this.$store.commit('config/decrementZoom'),
     },
   ];
 

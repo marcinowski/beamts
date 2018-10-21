@@ -7,6 +7,7 @@ import { mutations } from './mutations';
 const state: ConfigState = {
   baseUnit: 5,
   scale: 10,
+  gridOn: true,
 };
 
 const namespaced: boolean = true;
