@@ -11,9 +11,11 @@ export class CursorEventHandler implements EventHandlerInterface {
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    switch (event.originalEvent.type) {
-      case EventTypes.CLICK:
-        this.$store.dispatch('svg/deselectAll');
+    if (!event.customType) {
+      switch (event.originalEvent.type) {
+        case EventTypes.CLICK:
+          this.$store.dispatch('svg/deselectAll');
+      }
     }
   }
 }

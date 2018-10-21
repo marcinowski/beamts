@@ -4,12 +4,14 @@
       <Arcs
         :key="arc.id"
         v-bind:arc="arc"
+        v-on:selected-arc="handeSelectedObject"
       ></Arcs>
     </template>
     <template v-for="line in lines">
       <Lines
         :key="line.id"
         v-bind:line="line"
+        v-on:selected-line="handleSelectedObject"
       ></Lines>
     </template>
     <template v-for="point in points">
