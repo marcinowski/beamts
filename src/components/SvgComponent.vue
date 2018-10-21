@@ -19,6 +19,11 @@
           v-bind:svgWidth="svgWidth"
         ></GridComponent>
       </svg>
+      <div class="Helpers">
+        <StageInputHelper
+          v-on:helper-submission="handleSubmission"
+        ></StageInputHelper>
+      </div>
       <div class="SvgMouseSvgCoordinates">
         {{ unitMouseCoordinates.x }}, {{ unitMouseCoordinates.y }}
       </div>
@@ -50,6 +55,13 @@ rect {
   left: 0;
   position: absolute;
 }
+.Helpers {
+  bottom: 0;
+  left: 0;
+  position: absolute;
+  background-color: rgba(255, 255, 255, 0.7);
+  width: 100%;
+}
 </style>
 
 <script lang="ts">
@@ -60,6 +72,7 @@ import GridComponent from './GridComponent.vue';
 import CrossComponent from './CrossComponent.vue';
 import PrimitivesComponent from './objects/Primitives.vue';
 import SelectionComponent from './Selection.vue';
+import StageInputHelper from './StageInputHelper.vue';
 import { EventHandler } from '@/event-handlers/event-handler';
 import {
   Coordinates,
@@ -80,6 +93,7 @@ import {
     CrossComponent,
     GridComponent,
     SelectionComponent,
+    StageInputHelper,
   },
 })
 export default class SvgComponent extends Vue {
@@ -164,6 +178,10 @@ export default class SvgComponent extends Vue {
 
   handleMouseUp(event: MouseEvent) {
     this.handleEvent({ originalEvent: event });
+  }
+
+  handleSubmission(event: CustomEvent) {
+    this.handleEvent(event);
   }
 
   handleHover(event: MouseEvent) {

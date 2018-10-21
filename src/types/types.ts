@@ -77,11 +77,18 @@ export enum EventTypes {
   MOUSEMOVE = 'mousemove',
   // Custom events
   SELECTED_OBJECT = 'selectedobject',
+  SUBMITTED_HELPER = 'submittedhelper',
 }
 
 export interface CustomEvent {
   originalEvent: MouseEvent;
-  sourceObject?: ObjectTypes;
-  sourceId?: number;
   customType?: EventTypes;
+  sourceId?: number;
+  sourceObject?: ObjectTypes;
+  sourceValue?: string;
+}
+
+export interface StageHelper {
+  description?: string;
+  showInput?: boolean;
 }

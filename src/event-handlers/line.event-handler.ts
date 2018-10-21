@@ -26,7 +26,7 @@ export class LineEventHandler implements EventHandlerInterface {
   constructor(store: Store<RootState>) {
     this.$store = store;
     this.pointHandler = new PointEventHandler(store);
-    this.currentState = States.BASE;
+    this.initBaseState();
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -56,7 +56,7 @@ export class LineEventHandler implements EventHandlerInterface {
     } else {
       return;
     }
-    this.currentState = States.END;
+    this.initEndState();
   }
 
   handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -64,6 +64,7 @@ export class LineEventHandler implements EventHandlerInterface {
       return;
     }
     if (!this.baseId) {
+      this.initBaseState();
       return;
     }
     let endId;
@@ -87,6 +88,24 @@ export class LineEventHandler implements EventHandlerInterface {
     };
     this.$store.commit('svg/addLine', line);
     this.baseId = undefined;
+    this.initBaseState();
+  }
+
+  initBaseState() {
     this.currentState = States.BASE;
+    this.$store.commit('helpers/addHelper', {
+      description: `Click on the workspace to add the first point of a line.
+        You can also enter coordinates below in an X Y format.`,
+      showInput: true,
+    });
+  }
+
+  initEndState() {
+    this.currentState = States.END;
+    this.$store.commit('helpers/addHelper', {
+      description: `Click on the workspace to add the last point of a line.
+        You can also enter coordinates below in an X Y format.`,
+      showInput: true,
+    });
   }
 }
