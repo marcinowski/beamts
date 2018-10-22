@@ -9,8 +9,8 @@ import {
   CustomEvent,
   ObjectTypes,
 } from '@/types/types';
-import { PointEventHandler } from './point.event-handler';
 import { getPointIdFromEvent, getLineIdFromEvent } from '@/helpers/helpers';
+import { StoreApi } from '@/event-handlers/store-api';
 
 enum States {
   BASE,
@@ -19,13 +19,13 @@ enum States {
 
 export class LineEventHandler implements EventHandlerInterface {
   private $store: Store<RootState>;
+  private storeApi: StoreApi;
   private currentState: States;
-  private pointHandler: PointEventHandler;
   private baseId?: Point['id'];
 
   constructor(store: Store<RootState>) {
     this.$store = store;
-    this.pointHandler = new PointEventHandler(store);
+    this.storeApi = new StoreApi(store);
     this.initBaseState();
   }
 
@@ -51,7 +51,7 @@ export class LineEventHandler implements EventHandlerInterface {
     ) {
       this.baseId = event.sourceId;
     } else if (event.originalEvent.type === EventTypes.CLICK) {
-      this.pointHandler.handleEvent(event, svgCoordinates);
+      this.storeApi.drawPoint(svgCoordinates, event);
       this.baseId = getPointIdFromEvent(event.originalEvent);
     } else {
       return;
@@ -75,7 +75,7 @@ export class LineEventHandler implements EventHandlerInterface {
     ) {
       endId = event.sourceId;
     } else if (event.originalEvent.type === EventTypes.CLICK) {
-      this.pointHandler.handleEvent(event, svgCoordinates);
+      this.storeApi.drawPoint(svgCoordinates, event);
       endId = getPointIdFromEvent(event.originalEvent);
     } else {
       return;

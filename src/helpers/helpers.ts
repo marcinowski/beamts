@@ -1,4 +1,4 @@
-import { Coordinates, Vector } from '@/types/types';
+import { Coordinates, Vector, Point, CustomEvent } from '@/types/types';
 
 export function getVector(start: Coordinates, end: Coordinates): Vector {
   return {
@@ -26,4 +26,16 @@ export function getLineIdFromEvent(event: Event): number {
 
 export function getArcIdFromEvent(event: Event): number {
   return getPointIdFromEvent(event) + 2;
+}
+
+export function transformCoordinatesToPoint(
+  point: Coordinates,
+  event: CustomEvent,
+  baseUnit: number,
+): Point {
+  return {
+    x: point.x - (point.x % baseUnit),
+    y: point.y - (point.y % baseUnit),
+    id: getPointIdFromEvent(event.originalEvent),
+  };
 }

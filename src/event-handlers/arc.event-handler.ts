@@ -16,6 +16,7 @@ import {
   getPointIdFromEvent,
   getArcIdFromEvent,
 } from '@/helpers/helpers';
+import { StoreApi } from '@/event-handlers/store-api';
 
 enum States {
   BASE,
@@ -27,15 +28,15 @@ enum States {
 export class ArcEventHandler implements EventHandlerInterface {
   private $store: Store<RootState>;
   private currentState: States;
-  private pointHandler: PointEventHandler;
   private arcStart?: Coordinates;
   private baseId?: Point['id'];
   private endId?: Point['id'];
+  private storeApi: StoreApi;
 
   constructor(store: Store<RootState>) {
     this.$store = store;
-    this.pointHandler = new PointEventHandler(store);
     this.currentState = States.BASE;
+    this.storeApi = new StoreApi(store);
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -66,7 +67,7 @@ export class ArcEventHandler implements EventHandlerInterface {
     ) {
       this.baseId = event.sourceId;
     } else if (event.originalEvent.type === EventTypes.CLICK) {
-      this.pointHandler.handleEvent(event, svgCoordinates);
+      this.storeApi.drawPoint(svgCoordinates, event);
       this.baseId = getPointIdFromEvent(event.originalEvent);
     } else {
       return;
@@ -89,7 +90,7 @@ export class ArcEventHandler implements EventHandlerInterface {
     ) {
       this.endId = event.sourceId;
     } else if (event.originalEvent.type === EventTypes.CLICK) {
-      this.pointHandler.handleEvent(event, svgCoordinates);
+      this.storeApi.drawPoint(svgCoordinates, event);
       this.endId = getPointIdFromEvent(event.originalEvent);
     } else {
       return;
