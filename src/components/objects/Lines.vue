@@ -1,14 +1,11 @@
 <template>
   <g>
-    <line
-      v-if="start && end"
+    <path
+      v-if="path"
       v-on:click.stop="handleClick"
-      v-bind:x1="start.x"
-      v-bind:x2="end.x"
-      v-bind:y1="start.y"
-      v-bind:y2="end.y"
+      v-bind:d="path"
       v-bind:class="{Selected: line.selected}"
-    ></line>
+    ></path>
     <Handle
       v-if="middle"
       v-on:selected-handle="handleMiddleClick"
@@ -55,6 +52,14 @@ export default class Lines extends Vue {
     return end;
   }
 
+  get path() {
+    if (!this.start || !this.end) {
+      this.$store.commit('svg/removeLine', this.line); // FIXME: this adds UNDO action
+      return undefined;
+    }
+    return `M${this.start.x} ${this.start.y} L ${this.end.x} ${this.end.y}`;
+  }
+
   get middle(): Coordinates | undefined {
     if (this.start && this.end) {
       return {
@@ -91,7 +96,7 @@ circle {
   }
   cursor: pointer;
 }
-line {
+path {
   stroke: black;
   cursor: pointer;
   &.Selected {
