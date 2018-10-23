@@ -5,7 +5,7 @@ import {
   getArcIdFromEvent,
   getLineIdFromEvent,
 } from '@/helpers/helpers';
-import { Coordinates, CustomEvent, Line, Arc } from '@/types/types';
+import { Coordinates, CustomEvent, Line, Arc, ObjectId } from '@/types/types';
 
 export class StoreApi {
   private $store: Store<RootState>;
@@ -20,7 +20,7 @@ export class StoreApi {
     this.$store.commit('svg/addPoint', point);
   }
 
-  drawLine(event: CustomEvent, p1: number, p2: number) {
+  drawLine(event: CustomEvent, p1: ObjectId, p2: ObjectId) {
     const line: Line = {
       id: getLineIdFromEvent(event.originalEvent),
       p1,
@@ -30,7 +30,7 @@ export class StoreApi {
     this.$store.commit('svg/addLine', line);
   }
 
-  drawArc(event: CustomEvent, radius: number, p1: number, p2: number) {
+  drawArc(event: CustomEvent, radius: number, p1: ObjectId, p2: ObjectId) {
     const arc: Arc = {
       id: getArcIdFromEvent(event.originalEvent),
       radius,

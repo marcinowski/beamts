@@ -1,7 +1,14 @@
 import { GetterTree } from 'vuex';
 import { SvgState, UndoAction } from './types';
 import { RootState } from '../types';
-import { Point, Line, LineCoordinates, Coordinates, Arc } from '@/types/types';
+import {
+  Point,
+  Line,
+  LineCoordinates,
+  Coordinates,
+  Arc,
+  ObjectId,
+} from '@/types/types';
 
 export const svgGetters: GetterTree<SvgState, RootState> = {
   pointsCount: (state) => state.points.length,
@@ -9,19 +16,19 @@ export const svgGetters: GetterTree<SvgState, RootState> = {
   getAllArcs: (state) => state.arcs,
   getAllLines: (state) => state.lines,
   getAllPoints: (state) => state.points,
-  getPoints: (state) => (ids: number[]): ReadonlyArray<Point> =>
+  getPoints: (state) => (ids: ObjectId[]): ReadonlyArray<Point> =>
     state.points.filter((p) => ids.includes(p.id)),
-  getPoint: (state, getters) => (id: number): Point =>
+  getPoint: (state, getters) => (id: ObjectId): Point =>
     getters.getPoints([id]).pop(),
-  getLines: (state) => (ids: number[]): ReadonlyArray<Line> =>
+  getLines: (state) => (ids: ObjectId[]): ReadonlyArray<Line> =>
     state.lines.filter((l) => ids.includes(l.id)),
-  getLine: (state, getters) => (id: number): Line =>
+  getLine: (state, getters) => (id: ObjectId): Line =>
     getters.getLines([id]).pop(),
-  getLinePoints: (state, getters) => (id: number): ReadonlyArray<Point> => {
+  getLinePoints: (state, getters) => (id: ObjectId): ReadonlyArray<Point> => {
     const line = getters.getLine(id);
     return getters.getPoints([line.p1, line.p2]);
   },
-  getLinesConnectedToPoint: (state) => (id: number): ReadonlyArray<Line> =>
+  getLinesConnectedToPoint: (state) => (id: ObjectId): ReadonlyArray<Line> =>
     state.lines.filter((l) => [l.p2, l.p1].includes(id)),
   checkPointInsideSelection: () => (
     c: Coordinates,

@@ -2,12 +2,12 @@ import { MutationTree } from 'vuex';
 import { SvgState, UndoAction } from './types';
 import {
   Point,
-  Coordinates,
   Line,
   Vector,
   Rotation,
   LineCoordinates,
   Arc,
+  ObjectId,
 } from '@/types/types';
 
 export const mutations: MutationTree<SvgState> = {
@@ -90,7 +90,7 @@ export const mutations: MutationTree<SvgState> = {
       ids,
       selected,
     }: {
-      ids: Array<Point['id']>;
+      ids: ObjectId[];
       selected: boolean;
     },
   ) {
@@ -106,7 +106,7 @@ export const mutations: MutationTree<SvgState> = {
       ids,
       selected,
     }: {
-      ids: Array<Line['id']>;
+      ids: ObjectId[];
       selected: boolean;
     },
   ) {
@@ -122,7 +122,7 @@ export const mutations: MutationTree<SvgState> = {
       ids,
       selected,
     }: {
-      ids: Array<Arc['id']>;
+      ids: ObjectId[];
       selected: boolean;
     },
   ) {
@@ -141,7 +141,7 @@ export const mutations: MutationTree<SvgState> = {
   changeSelectionStateAllArcs(state, selected: boolean) {
     state.arcs = [...state.arcs.map((a) => ({ ...a, selected }))];
   },
-  removeSelectedPoints(state, ids: Array<Point['id']>) {
+  removeSelectedPoints(state, ids: ObjectId[]) {
     const selectedPoints = state.points.filter((p) => ids.includes(p.id));
     const otherPoints = state.points.filter((p) => !ids.includes(p.id));
     state.points = [...otherPoints];

@@ -7,6 +7,7 @@ import {
   EventTypes,
   CustomEvent,
   ObjectTypes,
+  ObjectId,
 } from '@/types/types';
 import { getPointIdFromEvent } from '@/helpers/helpers';
 import { StoreApi } from '@/event-handlers/store-api';
@@ -19,7 +20,7 @@ enum States {
 export class LineEventHandler implements EventHandlerInterface {
   private storeApi: StoreApi;
   private currentState: States;
-  private baseId?: Point['id'];
+  private baseId?: ObjectId;
 
   constructor(store: Store<RootState>) {
     this.storeApi = new StoreApi(store);

@@ -9,6 +9,8 @@ export enum MethodTypes {
   SELECTION = 'selection',
 }
 
+export type ObjectId = number;
+
 export enum ObjectTypes {
   POINT = 'point',
   LINE = 'line',
@@ -31,7 +33,7 @@ export interface Rotation {
 }
 
 export interface Point extends Coordinates {
-  id: number;
+  id: ObjectId;
   selected?: boolean;
 }
 
@@ -41,9 +43,9 @@ export interface LineCoordinates {
 }
 
 export interface Line {
-  id: number;
-  p1: Point['id'];
-  p2: Point['id'];
+  id: ObjectId;
+  p1: ObjectId;
+  p2: ObjectId;
   selected: boolean;
 }
 
@@ -59,13 +61,13 @@ export interface Selection {
 }
 
 export interface Section {
-  id: number;
+  id: ObjectId;
   area: number;
   inertia: Coordinates;
 }
 
 export interface Material {
-  id: number;
+  id: ObjectId;
   young: number;
   poisson: number;
 }
@@ -83,7 +85,7 @@ export enum EventTypes {
 export interface CustomEvent {
   originalEvent: MouseEvent;
   customType?: EventTypes;
-  sourceId?: number;
+  sourceId?: ObjectId;
   sourceObject?: ObjectTypes;
   sourceValue?: string;
 }

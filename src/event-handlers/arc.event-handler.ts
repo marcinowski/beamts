@@ -7,6 +7,7 @@ import {
   EventTypes,
   CustomEvent,
   ObjectTypes,
+  ObjectId,
 } from '@/types/types';
 import {
   getVector,
@@ -25,8 +26,8 @@ enum States {
 export class ArcEventHandler implements EventHandlerInterface {
   private currentState: States;
   private arcStart?: Coordinates;
-  private baseId?: Point['id'];
-  private endId?: Point['id'];
+  private baseId?: ObjectId;
+  private endId?: ObjectId;
   private storeApi: StoreApi;
 
   constructor(store: Store<RootState>) {

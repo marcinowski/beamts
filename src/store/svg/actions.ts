@@ -9,33 +9,34 @@ import {
   Vector,
   LineCoordinates,
   Arc,
+  ObjectId,
 } from '@/types/types';
 
 export const actions: ActionTree<SvgState, RootState> = {
-  selectPoints(context, ids: Array<Point['id']>) {
+  selectPoints(context, ids: ObjectId[]) {
     context.commit('changeSelectionStatePoints', { ids, selected: true });
   },
-  deselectPoints(context, ids: Array<Point['id']>) {
+  deselectPoints(context, ids: ObjectId[]) {
     context.commit('changeSelectionStatePoints', { ids, selected: true });
   },
-  selectLines(context, ids: Array<Line['id']>) {
+  selectLines(context, ids: ObjectId[]) {
     context.commit('changeSelectionStateLines', { ids, selected: true });
   },
-  deselectLines(context, ids: Array<Line['id']>) {
+  deselectLines(context, ids: ObjectId[]) {
     context.commit('changeSelectionStateLines', { ids, selected: false });
   },
-  selectArcs(context, ids: Array<Arc['id']>) {
+  selectArcs(context, ids: ObjectId[]) {
     context.commit('changeSelectionStateArcs', { ids, selected: true });
   },
-  deselectArcs(context, ids: Array<Arc['id']>) {
+  deselectArcs(context, ids: ObjectId[]) {
     context.commit('changeSelectionStateArcs', { ids, selected: false });
   },
-  selectObjects(context, ids: Array<Point['id']>) {
+  selectObjects(context, ids: ObjectId[]) {
     context.dispatch('selectPoints', ids);
     context.dispatch('selectLines', ids);
     context.dispatch('selectArcs', ids);
   },
-  deselectObjects(context, ids: Array<Point['id']>) {
+  deselectObjects(context, ids: ObjectId[]) {
     context.dispatch('deselectPoints', ids);
     context.dispatch('deselectLines', ids);
   },

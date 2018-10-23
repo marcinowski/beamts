@@ -1,6 +1,7 @@
 <template>
   <g>
     <line
+      v-if="start && end"
       v-on:click.stop="handleClick"
       v-bind:x1="start.x"
       v-bind:x2="end.x"
@@ -9,6 +10,7 @@
       v-bind:class="{Selected: line.selected}"
     ></line>
     <Handle
+      v-if="middle"
       v-on:selected-handle="handleMiddleClick"
       v-bind:isHidden="!line.selected"
       v-bind:coordinates="middle"
@@ -37,18 +39,28 @@ export default class Lines extends Vue {
   line: Line;
 
   get start() {
-    return this.$store.getters['svg/getPoint'](this.line.p1);
+    const start = this.$store.getters['svg/getPoint'](this.line.p1);
+    if (!start) {
+      this.$store.commit('svg/removeLine', this.line); // FIXME: this adds a UNDO action
+    }
+    return start;
   }
 
   get end() {
-    return this.$store.getters['svg/getPoint'](this.line.p2);
+    const end = this.$store.getters['svg/getPoint'](this.line.p2);
+    if (!end) {
+      this.$store.commit('svg/removeLine', this.line); // FIXME: this adds a UNDO action
+    }
+    return end;
   }
 
-  get middle(): Coordinates {
-    return {
-      x: (this.end.x + this.start.x) / 2,
-      y: (this.end.y + this.start.y) / 2,
-    };
+  get middle(): Coordinates | undefined {
+    if (this.start && this.end) {
+      return {
+        x: (this.end.x + this.start.x) / 2,
+        y: (this.end.y + this.start.y) / 2,
+      };
+    }
   }
 
   handleClick(event: MouseEvent) {
