@@ -17,7 +17,7 @@ export class SelectionEventHandler implements EventHandlerInterface {
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    switch (event.originalEvent.type) {
+    switch (event.type) {
       case EventTypes.MOUSEDOWN:
         this.handleBaseEvent(event, svgCoordinates);
         return;
@@ -31,7 +31,7 @@ export class SelectionEventHandler implements EventHandlerInterface {
   }
 
   handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (event.originalEvent.type !== EventTypes.MOUSEDOWN) {
+    if (event.type !== EventTypes.MOUSEDOWN) {
       return;
     }
     this.baseCoordinates = svgCoordinates;
@@ -39,10 +39,7 @@ export class SelectionEventHandler implements EventHandlerInterface {
   }
 
   handleDragEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (
-      event.originalEvent.type !== EventTypes.MOUSEMOVE ||
-      !this.baseCoordinates
-    ) {
+    if (event.type !== EventTypes.MOUSEMOVE || !this.baseCoordinates) {
       return;
     }
     const x = svgCoordinates.x - this.baseCoordinates.x;
@@ -51,10 +48,7 @@ export class SelectionEventHandler implements EventHandlerInterface {
   }
 
   handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (
-      event.originalEvent.type !== EventTypes.MOUSEUP ||
-      !this.baseCoordinates
-    ) {
+    if (event.type !== EventTypes.MOUSEUP || !this.baseCoordinates) {
       return;
     }
     const lineCoordinates: LineCoordinates = {

@@ -86,6 +86,7 @@ import {
   ObjectTypes,
   EventTypes,
 } from '@/types/types';
+import { transformEventToCustomEvent } from '@/helpers/helpers';
 
 @Component({
   components: {
@@ -135,7 +136,7 @@ export default class SvgComponent extends Vue {
     };
   }
 
-  getEventWindowCoordinates(event: MouseEvent): Coordinates {
+  getEventWindowCoordinates(event: CustomEvent): Coordinates {
     return {
       x: event.clientX,
       y: event.clientY,
@@ -159,25 +160,25 @@ export default class SvgComponent extends Vue {
   }
 
   handleEvent(event: CustomEvent) {
-    const eventCoords = this.getEventWindowCoordinates(event.originalEvent);
+    const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     this.eventHandler.handleEvent(event, svgCoordinates);
   }
 
   handleClick(event: MouseEvent) {
-    this.handleEvent({ originalEvent: event });
+    this.handleEvent(transformEventToCustomEvent(event));
   }
 
   handleMouseDown(event: MouseEvent) {
-    this.handleEvent({ originalEvent: event });
+    this.handleEvent(transformEventToCustomEvent(event));
   }
 
   handleMouseMove(event: MouseEvent) {
-    this.handleEvent({ originalEvent: event });
+    this.handleEvent(transformEventToCustomEvent(event));
   }
 
   handleMouseUp(event: MouseEvent) {
-    this.handleEvent({ originalEvent: event });
+    this.handleEvent(transformEventToCustomEvent(event));
   }
 
   handleSubmission(event: CustomEvent) {
@@ -185,7 +186,9 @@ export default class SvgComponent extends Vue {
   }
 
   handleHover(event: MouseEvent) {
-    const eventCoords = this.getEventWindowCoordinates(event);
+    const eventCoords = this.getEventWindowCoordinates(
+      transformEventToCustomEvent(event),
+    );
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     this.unitMouseCoordinates = this.transformSvgToUnitCoordinates({
       x: svgCoordinates.x,

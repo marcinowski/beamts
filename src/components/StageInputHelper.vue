@@ -25,6 +25,7 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { StageHelper, CustomEvent, EventTypes } from '@/types/types';
+import { transformEventToCustomEvent } from '@/helpers/helpers';
 
 @Component({})
 export default class StageInputHelper extends Vue {
@@ -34,11 +35,11 @@ export default class StageInputHelper extends Vue {
     return this.$store.getters['helpers/getHelper'];
   }
 
-  handleSubmit(event: any) {
+  handleSubmit(event: MouseEvent) {
     const customEvent: CustomEvent = {
-      originalEvent: event,
-      customType: EventTypes.SUBMITTED_HELPER,
+      ...transformEventToCustomEvent(event),
       sourceValue: this.userInput,
+      type: EventTypes.SUBMITTED_HELPER,
     };
     this.$emit('helper-submission', customEvent);
   }

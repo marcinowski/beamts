@@ -22,7 +22,7 @@ export class StoreApi {
 
   drawLine(event: CustomEvent, p1: ObjectId, p2: ObjectId) {
     const line: Line = {
-      id: getLineIdFromEvent(event.originalEvent),
+      id: getLineIdFromEvent(event),
       p1,
       p2,
       selected: false,
@@ -32,7 +32,7 @@ export class StoreApi {
 
   drawArc(event: CustomEvent, radius: number, p1: ObjectId, p2: ObjectId) {
     const arc: Arc = {
-      id: getArcIdFromEvent(event.originalEvent),
+      id: getArcIdFromEvent(event),
       radius,
       p1,
       p2,

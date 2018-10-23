@@ -35,7 +35,7 @@ export class FlipEventHandler implements EventHandlerInterface {
   }
 
   handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.BASE || event.originalEvent.type !== EventTypes.CLICK) {
+    if (this.currentState !== States.BASE || event.type !== EventTypes.CLICK) {
       return;
     }
     this.baseCoordinates = svgCoordinates;
@@ -43,7 +43,7 @@ export class FlipEventHandler implements EventHandlerInterface {
   }
 
   handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.END || event.originalEvent.type !== EventTypes.CLICK) {
+    if (this.currentState !== States.END || event.type !== EventTypes.CLICK) {
       return;
     }
     if (!this.baseCoordinates) {

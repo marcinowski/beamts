@@ -43,14 +43,14 @@ export class LineEventHandler implements EventHandlerInterface {
       return;
     }
     if (
-      event.customType === EventTypes.SELECTED_OBJECT &&
+      event.type === EventTypes.SELECTED_OBJECT &&
       event.sourceObject === ObjectTypes.POINT &&
       event.sourceId
     ) {
       this.baseId = event.sourceId;
-    } else if (event.originalEvent.type === EventTypes.CLICK) {
+    } else if (event.type === EventTypes.CLICK) {
       this.storeApi.drawPoint(svgCoordinates, event);
-      this.baseId = getPointIdFromEvent(event.originalEvent);
+      this.baseId = getPointIdFromEvent(event);
     } else {
       return;
     }
@@ -67,14 +67,14 @@ export class LineEventHandler implements EventHandlerInterface {
     }
     let endId;
     if (
-      event.customType === EventTypes.SELECTED_OBJECT &&
+      event.type === EventTypes.SELECTED_OBJECT &&
       event.sourceObject === ObjectTypes.POINT &&
       event.sourceId
     ) {
       endId = event.sourceId;
-    } else if (event.originalEvent.type === EventTypes.CLICK) {
+    } else if (event.type === EventTypes.CLICK) {
       this.storeApi.drawPoint(svgCoordinates, event);
-      endId = getPointIdFromEvent(event.originalEvent);
+      endId = getPointIdFromEvent(event);
     } else {
       return;
     }

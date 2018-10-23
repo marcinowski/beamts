@@ -31,6 +31,7 @@ import {
   CustomEvent,
   Coordinates,
 } from '@/types/types';
+import { transformEventToCustomEvent } from '@/helpers/helpers';
 
 @Component({})
 export default class Handle extends Vue {
@@ -44,7 +45,7 @@ export default class Handle extends Vue {
   }
 
   handleClick(event: MouseEvent) {
-    this.$emit('selected-handle', event);
+    this.$emit('selected-handle', transformEventToCustomEvent(event));
   }
 }
 </script>

@@ -30,6 +30,7 @@ import {
   CustomEvent,
   Coordinates,
 } from '@/types/types';
+import { transformEventToCustomEvent } from '@/helpers/helpers';
 
 @Component({
   components: { Handle },
@@ -66,15 +67,15 @@ export default class Lines extends Vue {
   handleClick(event: MouseEvent) {
     this.$store.dispatch('svg/selectLines', [this.line.id]);
     const customEvent: CustomEvent = {
-      originalEvent: event,
+      ...transformEventToCustomEvent(event),
       sourceId: this.line.id,
       sourceObject: ObjectTypes.LINE,
-      customType: EventTypes.SELECTED_OBJECT,
+      type: EventTypes.SELECTED_OBJECT,
     };
     this.$emit('selected-line', customEvent);
   }
 
-  handleMiddleClick() {
+  handleMiddleClick(event: CustomEvent) {
     console.log('TODO');
   }
 }

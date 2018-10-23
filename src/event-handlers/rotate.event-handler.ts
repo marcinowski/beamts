@@ -33,7 +33,7 @@ export class RotateEventHandler implements EventHandlerInterface {
   handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     if (
       this.currentState !== States.BASE ||
-      event.originalEvent.type !== EventTypes.MOUSEDOWN
+      event.type !== EventTypes.MOUSEDOWN
     ) {
       return;
     }
@@ -42,7 +42,7 @@ export class RotateEventHandler implements EventHandlerInterface {
   }
 
   handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.END || event.originalEvent.type !== EventTypes.CLICK) {
+    if (this.currentState !== States.END || event.type !== EventTypes.CLICK) {
       return;
     }
     if (!this.baseCoordinates) {

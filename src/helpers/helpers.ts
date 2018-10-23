@@ -4,6 +4,7 @@ import {
   Point,
   CustomEvent,
   ObjectId,
+  EventTypes,
 } from '@/types/types';
 
 export function getVector(start: Coordinates, end: Coordinates): Vector {
@@ -21,16 +22,16 @@ export function getAngle(start: Coordinates, end: Coordinates): ObjectId {
   return Math.atan2(end.y - start.y, end.x - start.x);
 }
 
-export function getPointIdFromEvent(event: Event): ObjectId {
+export function getPointIdFromEvent(event: CustomEvent): ObjectId {
   return event.timeStamp;
 }
 
 // TODO: This approach doesn't scale well, how about string based ids or UUID?
-export function getLineIdFromEvent(event: Event): ObjectId {
+export function getLineIdFromEvent(event: CustomEvent): ObjectId {
   return getPointIdFromEvent(event) + 1;
 }
 
-export function getArcIdFromEvent(event: Event): ObjectId {
+export function getArcIdFromEvent(event: CustomEvent): ObjectId {
   return getPointIdFromEvent(event) + 2;
 }
 
@@ -42,6 +43,18 @@ export function transformCoordinatesToPoint(
   return {
     x: point.x - (point.x % baseUnit),
     y: point.y - (point.y % baseUnit),
-    id: getPointIdFromEvent(event.originalEvent),
+    id: getPointIdFromEvent(event),
+  };
+}
+
+export function transformEventToCustomEvent(event: MouseEvent): CustomEvent {
+  if (!Object.values(EventTypes).includes(event.type)) {
+    throw new Error(`Unsupported event type ${event.type}`);
+  }
+  return {
+    clientX: event.clientX,
+    clientY: event.clientY,
+    timeStamp: event.timeStamp,
+    type: event.type as EventTypes,
   };
 }

@@ -13,18 +13,20 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
 import { Point, CustomEvent, ObjectTypes, EventTypes } from '@/types/types';
+import { transformEventToCustomEvent } from '@/helpers/helpers';
 
 @Component({})
 export default class Points extends Vue {
-  @Prop() point: Point;
+  @Prop()
+  point: Point;
 
   handleClick(event: MouseEvent) {
     this.$store.dispatch('svg/selectPoints', [this.point.id]);
     const customEvent: CustomEvent = {
-      originalEvent: event,
+      ...transformEventToCustomEvent(event),
       sourceId: this.point.id,
       sourceObject: ObjectTypes.POINT,
-      customType: EventTypes.SELECTED_OBJECT,
+      type: EventTypes.SELECTED_OBJECT,
     };
     this.$emit('selected-point', customEvent);
   }

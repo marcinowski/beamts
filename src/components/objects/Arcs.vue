@@ -12,6 +12,7 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
 import { Arc, CustomEvent, ObjectTypes, EventTypes } from '@/types/types';
+import { transformEventToCustomEvent } from '@/helpers/helpers';
 
 @Component({})
 export default class Arcs extends Vue {
@@ -33,10 +34,10 @@ export default class Arcs extends Vue {
   handleClick(event: MouseEvent) {
     this.$store.dispatch('svg/selectArcs', [this.arc.id]);
     const customEvent: CustomEvent = {
-      originalEvent: event,
+      ...transformEventToCustomEvent(event),
       sourceId: this.arc.id,
       sourceObject: ObjectTypes.LINE,
-      customType: EventTypes.SELECTED_OBJECT,
+      type: EventTypes.SELECTED_OBJECT,
     };
     this.$emit('selected-arc', customEvent);
   }

@@ -57,14 +57,14 @@ export class ArcEventHandler implements EventHandlerInterface {
       return;
     }
     if (
-      event.customType === EventTypes.SELECTED_OBJECT &&
+      event.type === EventTypes.SELECTED_OBJECT &&
       event.sourceObject === ObjectTypes.POINT &&
       event.sourceId
     ) {
       this.baseId = event.sourceId;
-    } else if (event.originalEvent.type === EventTypes.CLICK) {
+    } else if (event.type === EventTypes.CLICK) {
       this.storeApi.drawPoint(svgCoordinates, event);
-      this.baseId = getPointIdFromEvent(event.originalEvent);
+      this.baseId = getPointIdFromEvent(event);
     } else {
       return;
     }
@@ -80,14 +80,14 @@ export class ArcEventHandler implements EventHandlerInterface {
       return;
     }
     if (
-      event.customType === EventTypes.SELECTED_OBJECT &&
+      event.type === EventTypes.SELECTED_OBJECT &&
       event.sourceObject === ObjectTypes.POINT &&
       event.sourceId
     ) {
       this.endId = event.sourceId;
-    } else if (event.originalEvent.type === EventTypes.CLICK) {
+    } else if (event.type === EventTypes.CLICK) {
       this.storeApi.drawPoint(svgCoordinates, event);
-      this.endId = getPointIdFromEvent(event.originalEvent);
+      this.endId = getPointIdFromEvent(event);
     } else {
       return;
     }
@@ -97,7 +97,7 @@ export class ArcEventHandler implements EventHandlerInterface {
   handleBaseArcEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     if (
       this.currentState !== States.BASEARC ||
-      event.originalEvent.type !== EventTypes.MOUSEDOWN
+      event.type !== EventTypes.MOUSEDOWN
     ) {
       return;
     }
@@ -108,7 +108,7 @@ export class ArcEventHandler implements EventHandlerInterface {
   handleEndArcEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     if (
       this.currentState !== States.ENDARC ||
-      event.originalEvent.type !== EventTypes.MOUSEUP
+      event.type !== EventTypes.MOUSEUP
     ) {
       // FIXME: There's an issue that the `click` event is immediately after
       // MOUSEUP, so the phase1 gets triggered immediately as well

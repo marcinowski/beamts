@@ -83,8 +83,10 @@ export enum EventTypes {
 }
 
 export interface CustomEvent {
-  originalEvent: MouseEvent;
-  customType?: EventTypes;
+  clientX: number;
+  clientY: number;
+  timeStamp: number;
+  type: EventTypes;
   sourceId?: ObjectId;
   sourceObject?: ObjectTypes;
   sourceValue?: string;
