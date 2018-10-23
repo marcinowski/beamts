@@ -1,6 +1,7 @@
 <template>
   <path
-    v-on:click="handleClick"
+    v-if="path"
+    v-on:click.stop="handleClick"
     v-bind:d="path"
     v-bind:class="{selected: arc.selected}"
   ></path>
@@ -10,22 +11,34 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
-import { Arc } from '@/types/types';
+import { Arc, CustomEvent, ObjectTypes, EventTypes } from '@/types/types';
 
 @Component({})
 export default class Arcs extends Vue {
-  @Prop() arc: Arc;
+  @Prop()
+  arc: Arc;
 
-  get path() {
+  get path(): string | undefined {
     const p1 = this.$store.getters['svg/getPoint'](this.arc.p1);
     const p2 = this.$store.getters['svg/getPoint'](this.arc.p2);
+    if (!p1 || !p2) {
+      this.$store.commit('svg/removeArc', this.arc); // FIXME: this adds UNDO action
+      return undefined;
+    }
     return `M${p1.x} ${p1.y} A ${this.arc.radius} ${this.arc.radius} 0 0 0 ${
       p2.x
     } ${p2.y}`;
   }
 
-  handleClick() {
-    console.warn('Selecting Arcs: Not implemented');
+  handleClick(event: MouseEvent) {
+    this.$store.dispatch('svg/selectArcs', [this.arc.id]);
+    const customEvent: CustomEvent = {
+      originalEvent: event,
+      sourceId: this.arc.id,
+      sourceObject: ObjectTypes.LINE,
+      customType: EventTypes.SELECTED_OBJECT,
+    };
+    this.$emit('selected-arc', customEvent);
   }
 }
 </script>

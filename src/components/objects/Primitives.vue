@@ -4,7 +4,7 @@
       <Arcs
         :key="arc.id"
         v-bind:arc="arc"
-        v-on:selected-arc="handeSelectedObject"
+        v-on:selected-arc="handleSelectedObject"
       ></Arcs>
     </template>
     <template v-for="line in lines">
