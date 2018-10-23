@@ -4,12 +4,11 @@ import { Store } from 'vuex';
 import {
   Coordinates,
   Point,
-  Line,
   EventTypes,
   CustomEvent,
   ObjectTypes,
 } from '@/types/types';
-import { getPointIdFromEvent, getLineIdFromEvent } from '@/helpers/helpers';
+import { getPointIdFromEvent } from '@/helpers/helpers';
 import { StoreApi } from '@/event-handlers/store-api';
 
 enum States {
@@ -18,13 +17,11 @@ enum States {
 }
 
 export class LineEventHandler implements EventHandlerInterface {
-  private $store: Store<RootState>;
   private storeApi: StoreApi;
   private currentState: States;
   private baseId?: Point['id'];
 
   constructor(store: Store<RootState>) {
-    this.$store = store;
     this.storeApi = new StoreApi(store);
     this.initBaseState();
   }
@@ -80,32 +77,26 @@ export class LineEventHandler implements EventHandlerInterface {
     } else {
       return;
     }
-    const line: Line = {
-      p1: this.baseId,
-      p2: endId,
-      id: getLineIdFromEvent(event.originalEvent),
-      selected: false,
-    };
-    this.$store.commit('svg/addLine', line);
+    this.storeApi.drawLine(event, this.baseId, endId);
     this.baseId = undefined;
     this.initBaseState();
   }
 
   initBaseState() {
     this.currentState = States.BASE;
-    this.$store.commit('helpers/addHelper', {
-      description: `Click on the workspace to add the first point of a line.
+    this.storeApi.addHelper(
+      `Click on the workspace to add the first point of a line.
         You can also enter coordinates below in an X Y format.`,
-      showInput: true,
-    });
+      true,
+    );
   }
 
   initEndState() {
     this.currentState = States.END;
-    this.$store.commit('helpers/addHelper', {
-      description: `Click on the workspace to add the last point of a line.
+    this.storeApi.addHelper(
+      `Click on the workspace to add the last point of a line.
         You can also enter coordinates below in an X Y format.`,
-      showInput: true,
-    });
+      true,
+    );
   }
 }

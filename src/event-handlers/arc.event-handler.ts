@@ -4,17 +4,14 @@ import { Store } from 'vuex';
 import {
   Coordinates,
   Point,
-  Arc,
   EventTypes,
   CustomEvent,
   ObjectTypes,
 } from '@/types/types';
-import { PointEventHandler } from '@/event-handlers/point.event-handler';
 import {
   getVector,
   getVectorLength,
   getPointIdFromEvent,
-  getArcIdFromEvent,
 } from '@/helpers/helpers';
 import { StoreApi } from '@/event-handlers/store-api';
 
@@ -26,7 +23,6 @@ enum States {
 }
 
 export class ArcEventHandler implements EventHandlerInterface {
-  private $store: Store<RootState>;
   private currentState: States;
   private arcStart?: Coordinates;
   private baseId?: Point['id'];
@@ -34,9 +30,8 @@ export class ArcEventHandler implements EventHandlerInterface {
   private storeApi: StoreApi;
 
   constructor(store: Store<RootState>) {
-    this.$store = store;
-    this.currentState = States.BASE;
     this.storeApi = new StoreApi(store);
+    this.initBaseState();
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -72,7 +67,7 @@ export class ArcEventHandler implements EventHandlerInterface {
     } else {
       return;
     }
-    this.currentState = States.END;
+    this.initEndState();
   }
 
   handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -80,7 +75,7 @@ export class ArcEventHandler implements EventHandlerInterface {
       return;
     }
     if (!this.baseId) {
-      this.currentState = States.BASE;
+      this.initBaseState();
       return;
     }
     if (
@@ -95,7 +90,7 @@ export class ArcEventHandler implements EventHandlerInterface {
     } else {
       return;
     }
-    this.currentState = States.BASEARC;
+    this.initBaseArcState();
   }
 
   handleBaseArcEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -106,7 +101,7 @@ export class ArcEventHandler implements EventHandlerInterface {
       return;
     }
     this.arcStart = svgCoordinates;
-    this.currentState = States.ENDARC;
+    this.initEndArcState();
   }
 
   handleEndArcEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -123,18 +118,54 @@ export class ArcEventHandler implements EventHandlerInterface {
     }
     const vector = getVector(this.arcStart, svgCoordinates);
     const radius = getVectorLength(vector);
-    const arc: Arc = {
-      id: getArcIdFromEvent(event.originalEvent),
-      radius,
-      p1: this.baseId,
-      p2: this.endId,
-      selected: false,
-    };
-    this.$store.commit('svg/addArc', arc);
+    this.storeApi.drawArc(event, radius, this.baseId, this.endId);
     this.baseId = undefined;
     this.endId = undefined;
     this.arcStart = undefined;
-    this.currentState = States.BASE;
+    this.initBaseState();
     return;
+  }
+
+  initBaseState() {
+    this.changeCurrentState(
+      States.BASE,
+      `Click on the workspace to add a first point of an arc.
+        You can also enter coordinates below in an X Y format.`,
+      true,
+    );
+  }
+
+  initEndState() {
+    this.changeCurrentState(
+      States.END,
+      `Click on the workspace to add a second point of an arc.
+        You can also enter coordinates below in an X Y format`,
+      true,
+    );
+  }
+
+  initBaseArcState() {
+    this.changeCurrentState(
+      States.BASEARC,
+      `Click on the workspace and drag to specify the length of arc's radius.
+        You can also enter the radius below.`,
+      true,
+    );
+  }
+
+  initEndArcState() {
+    this.changeCurrentState(
+      States.ENDARC,
+      `Finish the drag to specify the length of arc's radius.`,
+    );
+  }
+
+  changeCurrentState(
+    state: States,
+    helperText: string,
+    helperShowInput: boolean = false,
+  ) {
+    this.currentState = state;
+    this.storeApi.addHelper(helperText, helperShowInput);
   }
 }

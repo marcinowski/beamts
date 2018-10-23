@@ -14,6 +14,7 @@ export class PointEventHandler implements EventHandlerInterface {
 
   constructor(store: Store<RootState>) {
     this.storeApi = new StoreApi(store);
+    this.showHelper();
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -25,5 +26,13 @@ export class PointEventHandler implements EventHandlerInterface {
     } else if (event.originalEvent.type === EventTypes.CLICK) {
       this.storeApi.drawPoint(svgCoordinates, event);
     }
+  }
+
+  showHelper() {
+    this.storeApi.addHelper(
+      `Click on the workspace to add a point.
+        You can also enter coordinates below in an X Y format.`,
+      true,
+    );
   }
 }
