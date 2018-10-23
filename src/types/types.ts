@@ -77,6 +77,7 @@ export enum EventTypes {
   MOUSEUP = 'mouseup',
   MOUSEDOWN = 'mousedown',
   MOUSEMOVE = 'mousemove',
+  MOUSEOVER = 'mouseover',
   // Custom events
   SELECTED_OBJECT = 'selectedobject',
   SUBMITTED_HELPER = 'submittedhelper',
