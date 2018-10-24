@@ -86,7 +86,10 @@ import {
   ObjectTypes,
   EventTypes,
 } from '@/types/types';
-import { transformEventToCustomEvent } from '@/helpers/helpers';
+import {
+  transformEventToCustomEvent,
+  transformCoordinatesToScaled,
+} from '@/helpers/helpers';
 
 @Component({
   components: {
@@ -107,10 +110,10 @@ export default class SvgComponent extends Vue {
   svgHeight: number = 0;
 
   get unit() {
-    return this.$store.getters['config/getUnit'];
+    return this.$store.getters['config/getScaledUnit'];
   }
-  get scale() {
-    return this.$store.getters['config/getScale'];
+  get density() {
+    return this.$store.getters['config/getScaledDensity'];
   }
 
   constructor() {
@@ -149,16 +152,6 @@ export default class SvgComponent extends Vue {
     return { x, y };
   }
 
-  transformSvgToUnitCoordinates(svgCoords: Coordinates): Coordinates {
-    const x = this.roundUnitCoordinates(svgCoords.x / this.unit);
-    const y = this.roundUnitCoordinates(svgCoords.y / this.unit);
-    return { x, y };
-  }
-
-  roundUnitCoordinates(n: number): number {
-    return parseFloat((Math.ceil(n * this.scale) / this.scale).toFixed(2));
-  }
-
   handleEvent(event: CustomEvent) {
     const eventCoords = this.getEventWindowCoordinates(event);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
@@ -190,10 +183,11 @@ export default class SvgComponent extends Vue {
       transformEventToCustomEvent(event),
     );
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    this.unitMouseCoordinates = this.transformSvgToUnitCoordinates({
-      x: svgCoordinates.x,
-      y: this.svgHeight - svgCoordinates.y,
-    });
+    this.unitMouseCoordinates = transformCoordinatesToScaled(
+      svgCoordinates,
+      this.density,
+      this.unit,
+    );
   }
 
   handleSelectedObject(event: CustomEvent) {

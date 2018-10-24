@@ -19,6 +19,14 @@ export class MoveEventHandler implements EventHandlerInterface {
     this.currentState = States.BASE;
   }
 
+  get unit() {
+    return this.$store.getters['config/getScaledUnit'];
+  }
+
+  get density() {
+    return this.$store.getters['config/getScaledDensity'];
+  }
+
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     switch (this.currentState) {
       case States.BASE:
@@ -48,7 +56,12 @@ export class MoveEventHandler implements EventHandlerInterface {
     if (!this.baseCoordinates) {
       return;
     }
-    const vector = getVector(this.baseCoordinates, svgCoordinates);
+    const vector = getVector(
+      this.baseCoordinates,
+      svgCoordinates,
+      this.density,
+      this.unit,
+    );
     this.$store.dispatch('svg/moveSelectedPoints', vector);
     this.baseCoordinates = undefined;
     this.currentState = States.BASE;

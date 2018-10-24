@@ -7,11 +7,20 @@ import {
   EventTypes,
 } from '@/types/types';
 
-export function getVector(start: Coordinates, end: Coordinates): Vector {
-  return {
-    x: end.x - start.x,
-    y: end.y - start.y,
-  };
+export function getVector(
+  start: Coordinates,
+  end: Coordinates,
+  density: number,
+  unit: number,
+): Vector {
+  return transformCoordinatesToScaled(
+    {
+      x: end.x - start.x,
+      y: end.y - start.y,
+    },
+    density,
+    unit,
+  );
 }
 
 export function getVectorLength(vector: Vector) {
@@ -35,14 +44,25 @@ export function getArcIdFromEvent(event: CustomEvent): ObjectId {
   return getPointIdFromEvent(event) + 2;
 }
 
+export function transformCoordinatesToScaled(
+  coords: Coordinates,
+  density: number,
+  unit: number,
+): Coordinates {
+  return {
+    x: (coords.x - (coords.x % density)) / unit,
+    y: (coords.y - (coords.y % density)) / unit,
+  };
+}
+
 export function transformCoordinatesToPoint(
   point: Coordinates,
   event: CustomEvent,
-  baseUnit: number,
+  density: number,
+  unit: number,
 ): Point {
   return {
-    x: point.x - (point.x % baseUnit),
-    y: point.y - (point.y % baseUnit),
+    ...transformCoordinatesToScaled(point, density, unit),
     id: getPointIdFromEvent(event),
   };
 }

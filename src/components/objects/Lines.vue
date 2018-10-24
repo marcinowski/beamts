@@ -36,6 +36,10 @@ export default class Lines extends Vue {
   @Prop()
   line: Line;
 
+  get scale() {
+    return this.$store.getters['config/getScaledUnit'];
+  }
+
   get start() {
     const start = this.$store.getters['svg/getPoint'](this.line.p1);
     if (!start) {
@@ -57,14 +61,15 @@ export default class Lines extends Vue {
       this.$store.commit('svg/removeLine', this.line); // FIXME: this adds UNDO action
       return undefined;
     }
-    return `M${this.start.x} ${this.start.y} L ${this.end.x} ${this.end.y}`;
+    return `M${this.start.x * this.scale} ${this.start.y * this.scale}
+     L ${this.end.x * this.scale} ${this.end.y * this.scale}`;
   }
 
   get middle(): Coordinates | undefined {
     if (this.start && this.end) {
       return {
-        x: (this.end.x + this.start.x) / 2,
-        y: (this.end.y + this.start.y) / 2,
+        x: ((this.end.x + this.start.x) / 2) * this.scale,
+        y: ((this.end.y + this.start.y) / 2) * this.scale,
       };
     }
   }

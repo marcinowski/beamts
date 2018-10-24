@@ -14,9 +14,21 @@ export class StoreApi {
     this.$store = store;
   }
 
+  get unit() {
+    return this.$store.getters['config/getScaledUnit'];
+  }
+
+  get density() {
+    return this.$store.getters['config/getScaledDensity'];
+  }
+
   drawPoint(coordinates: Coordinates, event: CustomEvent) {
-    const baseUnit = this.$store.getters['config/getBaseUnit'];
-    const point = transformCoordinatesToPoint(coordinates, event, baseUnit);
+    const point = transformCoordinatesToPoint(
+      coordinates,
+      event,
+      this.density,
+      this.unit,
+    );
     this.$store.commit('svg/addPoint', point);
   }
 

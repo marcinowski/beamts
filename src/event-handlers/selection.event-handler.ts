@@ -7,6 +7,7 @@ import {
   EventTypes,
   CustomEvent,
 } from '@/types/types';
+import { transformCoordinatesToScaled } from '@/helpers/helpers';
 
 export class SelectionEventHandler implements EventHandlerInterface {
   private $store: Store<RootState>;
@@ -14,6 +15,14 @@ export class SelectionEventHandler implements EventHandlerInterface {
 
   constructor(store: Store<RootState>) {
     this.$store = store;
+  }
+
+  get unit() {
+    return this.$store.getters['config/getScaledUnit'];
+  }
+
+  get density() {
+    return this.$store.getters['config/getScaledDensity'];
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -52,8 +61,12 @@ export class SelectionEventHandler implements EventHandlerInterface {
       return;
     }
     const lineCoordinates: LineCoordinates = {
-      start: this.baseCoordinates,
-      end: svgCoordinates,
+      start: transformCoordinatesToScaled(
+        this.baseCoordinates,
+        this.density,
+        this.unit,
+      ),
+      end: transformCoordinatesToScaled(svgCoordinates, this.density, this.unit),
     };
     this.$store.dispatch('svg/selectObjectsInRange', lineCoordinates);
     this.baseCoordinates = undefined;

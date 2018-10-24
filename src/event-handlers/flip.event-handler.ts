@@ -7,6 +7,7 @@ import {
   EventTypes,
   CustomEvent,
 } from '@/types/types';
+import { transformCoordinatesToScaled } from '@/helpers/helpers';
 
 enum States {
   BASE,
@@ -21,6 +22,14 @@ export class FlipEventHandler implements EventHandlerInterface {
   constructor(store: Store<RootState>) {
     this.$store = store;
     this.currentState = States.BASE;
+  }
+
+  get unit() {
+    return this.$store.getters['config/getScaledUnit'];
+  }
+
+  get density() {
+    return this.$store.getters['config/getScaledDensity'];
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -50,8 +59,12 @@ export class FlipEventHandler implements EventHandlerInterface {
       return;
     }
     const line: LineCoordinates = {
-      start: this.baseCoordinates,
-      end: svgCoordinates,
+      start: transformCoordinatesToScaled(
+        this.baseCoordinates,
+        this.density,
+        this.unit,
+      ),
+      end: transformCoordinatesToScaled(svgCoordinates, this.density, this.unit),
     };
     this.$store.dispatch('svg/flipSelectedPoints', line);
     this.baseCoordinates = undefined;

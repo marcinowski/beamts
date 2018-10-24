@@ -1,8 +1,8 @@
 <template>
   <circle
     v-on:click.stop="handleClick"
-    v-bind:cx="point.x"
-    v-bind:cy="point.y"
+    v-bind:cx="point.x * scale"
+    v-bind:cy="point.y * scale"
     v-bind:class="{selected: point.selected}"
     r="3"
   ></circle>
@@ -19,6 +19,10 @@ import { transformEventToCustomEvent } from '@/helpers/helpers';
 export default class Points extends Vue {
   @Prop()
   point: Point;
+
+  get scale() {
+    return this.$store.getters['config/getScaledUnit'];
+  }
 
   handleClick(event: MouseEvent) {
     this.$store.dispatch('svg/selectPoints', [this.point.id]);

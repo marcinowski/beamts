@@ -2,7 +2,7 @@ import { EventHandlerInterface } from './types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
 import { Coordinates, Rotation, EventTypes, CustomEvent } from '@/types/types';
-import { getAngle } from '@/helpers/helpers';
+import { getAngle, transformCoordinatesToScaled } from '@/helpers/helpers';
 
 enum States {
   BASE,
@@ -17,6 +17,14 @@ export class RotateEventHandler implements EventHandlerInterface {
   constructor(store: Store<RootState>) {
     this.$store = store;
     this.currentState = States.BASE;
+  }
+
+  get unit() {
+    return this.$store.getters['config/getScaledUnit'];
+  }
+
+  get density() {
+    return this.$store.getters['config/getScaledDensity'];
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -49,7 +57,14 @@ export class RotateEventHandler implements EventHandlerInterface {
       return;
     }
     const angle = getAngle(this.baseCoordinates, svgCoordinates);
-    const rotation: Rotation = { angle, origin: this.baseCoordinates };
+    const rotation: Rotation = {
+      angle,
+      origin: transformCoordinatesToScaled(
+        this.baseCoordinates,
+        this.density,
+        this.unit,
+      ),
+    };
     this.$store.dispatch('svg/rotateSelectedPoints', rotation);
     this.baseCoordinates = undefined;
     this.currentState = States.BASE;

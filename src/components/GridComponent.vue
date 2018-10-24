@@ -2,7 +2,7 @@
   <g id="gridLines">
     <path
       v-for="line in lines" 
-      :key="`${line.xStart}-${line.yStart}`"
+      :key="line.path"
       v-bind:d="line.path"
       v-bind:class="{Bolded: line.bolded, Hidden: isGridHidden}"
     ></path>
@@ -45,7 +45,7 @@ export default class GridComponent extends Vue {
   svgHeight: number;
 
   get unit() {
-    return this.$store.getters['config/getUnit'];
+    return this.$store.getters['config/getScaledUnit'];
   }
 
   get isGridHidden() {
@@ -64,7 +64,7 @@ export default class GridComponent extends Vue {
     const horizontals = Array(Math.ceil(this.svgHeight / this.unit))
       .fill(0)
       .map((v, i) => ({
-        path: `M0 ${this.svgHeight - this.unit * (i + 1)} h ${this.svgWidth}`,
+        path: `M0 ${this.unit * (i + 1)} h ${this.svgWidth}`,
         bolded: (i + 1) % 5 === 0,
       }));
     return [...verticals, ...horizontals];

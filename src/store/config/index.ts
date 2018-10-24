@@ -5,8 +5,9 @@ import { configGetters } from './getters';
 import { mutations } from './mutations';
 
 const state: ConfigState = {
-  baseUnit: 5,
-  scale: 10,
+  density: 6,
+  unit: 10,
+  scale: 1,
   gridOn: true,
 };
 

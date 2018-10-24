@@ -3,10 +3,10 @@ import { ConfigState } from './types';
 
 export const mutations: MutationTree<ConfigState> = {
   incrementZoom(state) {
-    state.scale++;
+    state.scale *= 2;
   },
   decrementZoom(state) {
-    state.scale--;
+    state.scale /= 2;
   },
   toggleGrid(state) {
     state.gridOn = !state.gridOn;

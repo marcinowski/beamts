@@ -19,6 +19,10 @@ export default class Arcs extends Vue {
   @Prop()
   arc: Arc;
 
+  get scale() {
+    return this.$store.getters['config/getScaledUnit'];
+  }
+
   get path(): string | undefined {
     const p1 = this.$store.getters['svg/getPoint'](this.arc.p1);
     const p2 = this.$store.getters['svg/getPoint'](this.arc.p2);
@@ -26,9 +30,9 @@ export default class Arcs extends Vue {
       this.$store.commit('svg/removeArc', this.arc); // FIXME: this adds UNDO action
       return undefined;
     }
-    return `M${p1.x} ${p1.y} A ${this.arc.radius} ${this.arc.radius} 0 0 0 ${
-      p2.x
-    } ${p2.y}`;
+    return `M${p1.x * this.scale} ${p1.y * this.scale}
+     A ${this.arc.radius * this.scale} ${this.arc.radius * this.scale}
+     0 0 0 ${p2.x * this.scale} ${p2.y * this.scale}`;
   }
 
   handleClick(event: MouseEvent) {
