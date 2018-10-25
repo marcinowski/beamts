@@ -25,19 +25,26 @@
 import Vue from 'vue';
 import Component from 'vue-class-component';
 import { StageHelper, CustomEvent, EventTypes } from '@/types/types';
-import { transformEventToCustomEvent } from '@/helpers/helpers';
+import { createCustomEventFromMouseEvent } from '@/helpers/helpers';
+import { StoreApi } from '@/event-handlers/store-api';
 
 @Component({})
 export default class StageInputHelper extends Vue {
-  userInput = '';
+  private storeApi: StoreApi;
+  private userInput = '';
+
+  constructor() {
+    super();
+    this.storeApi = new StoreApi(this.$store);
+  }
 
   get helper() {
-    return this.$store.getters['helpers/getHelper'];
+    return this.storeApi.getHelper();
   }
 
   handleSubmit(event: MouseEvent) {
     const customEvent: CustomEvent = {
-      ...transformEventToCustomEvent(event),
+      ...createCustomEventFromMouseEvent(event),
       sourceValue: this.userInput,
       type: EventTypes.SUBMITTED_HELPER,
     };
@@ -45,7 +52,7 @@ export default class StageInputHelper extends Vue {
   }
 
   handleClose() {
-    this.$store.commit('helpers/clearHelper');
+    this.storeApi.clearHelper();
   }
 }
 </script>

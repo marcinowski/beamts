@@ -12,11 +12,19 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop, Watch } from 'vue-property-decorator';
 import { Coordinates, MethodTypes, LineCoordinates } from '@/types/types';
+import { StoreApi } from '@/event-handlers/store-api';
 
 @Component({})
 export default class SelectionComponent extends Vue {
+  private storeApi: StoreApi;
+
+  constructor() {
+    super();
+    this.storeApi = new StoreApi(this.$store);
+  }
+
   get selection() {
-    return this.$store.getters['selection/getSelection'];
+    return this.storeApi.getSelection();
   }
 }
 </script>

@@ -12,33 +12,38 @@ import Vue from 'vue';
 import Component from 'vue-class-component';
 import { Prop } from 'vue-property-decorator';
 import { Arc, CustomEvent, ObjectTypes, EventTypes } from '@/types/types';
-import { transformEventToCustomEvent } from '@/helpers/helpers';
+import { createCustomEventFromMouseEvent } from '@/helpers/helpers';
+import { StoreApi } from '@/event-handlers/store-api';
 
 @Component({})
 export default class Arcs extends Vue {
   @Prop()
   arc: Arc;
 
-  get scale() {
-    return this.$store.getters['config/getScaledUnit'];
+  private storeApi: StoreApi;
+
+  constructor() {
+    super();
+    this.storeApi = new StoreApi(this.$store);
   }
 
   get path(): string | undefined {
-    const p1 = this.$store.getters['svg/getPoint'](this.arc.p1);
-    const p2 = this.$store.getters['svg/getPoint'](this.arc.p2);
+    const arc = this.storeApi.getArc(this.arc.id); // rethink passing a whole object
+    const p1 = this.storeApi.getPoint(arc.p1);
+    const p2 = this.storeApi.getPoint(arc.p2);
     if (!p1 || !p2) {
-      this.$store.commit('svg/removeArc', this.arc); // FIXME: this adds UNDO action
+      this.storeApi.removeArc(arc); // FIXME: this adds UNDO action
       return undefined;
     }
-    return `M${p1.x * this.scale} ${p1.y * this.scale}
-     A ${this.arc.radius * this.scale} ${this.arc.radius * this.scale}
-     0 0 0 ${p2.x * this.scale} ${p2.y * this.scale}`;
+    return `M${p1.x} ${p1.y}
+     A ${arc.radius} ${arc.radius}
+     0 0 0 ${p2.x} ${p2.y}`;
   }
 
   handleClick(event: MouseEvent) {
     this.$store.dispatch('svg/selectArcs', [this.arc.id]);
     const customEvent: CustomEvent = {
-      ...transformEventToCustomEvent(event),
+      ...createCustomEventFromMouseEvent(event),
       sourceId: this.arc.id,
       sourceObject: ObjectTypes.LINE,
       type: EventTypes.SELECTED_OBJECT,

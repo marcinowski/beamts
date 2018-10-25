@@ -46,7 +46,7 @@ export interface Line {
   id: ObjectId;
   p1: ObjectId;
   p2: ObjectId;
-  selected: boolean;
+  selected?: boolean;
 }
 
 export interface Arc extends Line {

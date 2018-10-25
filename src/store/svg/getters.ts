@@ -24,6 +24,10 @@ export const svgGetters: GetterTree<SvgState, RootState> = {
     state.lines.filter((l) => ids.includes(l.id)),
   getLine: (state, getters) => (id: ObjectId): Line =>
     getters.getLines([id]).pop(),
+  getArcs: (state, getters) => (ids: ObjectId[]) =>
+    state.arcs.filter((a) => ids.includes(a.id)),
+  getArc: (state, getters) => (id: ObjectId): Arc =>
+    getters.getArcs([id]).pop(),
   getLinePoints: (state, getters) => (id: ObjectId): ReadonlyArray<Point> => {
     const line = getters.getLine(id);
     return getters.getPoints([line.p1, line.p2]);

@@ -3,6 +3,7 @@ import { RootState } from '@/store/types';
 import { Store } from 'vuex';
 import { Coordinates, EventTypes, CustomEvent } from '@/types/types';
 import { getVector } from '@/helpers/helpers';
+import { StoreApi } from '@/event-handlers/store-api';
 
 enum States {
   BASE,
@@ -10,21 +11,13 @@ enum States {
 }
 
 export class MoveEventHandler implements EventHandlerInterface {
-  private $store: Store<RootState>;
+  private storeApi: StoreApi;
   private baseCoordinates?: Coordinates;
   private currentState: States;
 
   constructor(store: Store<RootState>) {
-    this.$store = store;
+    this.storeApi = new StoreApi(store);
     this.currentState = States.BASE;
-  }
-
-  get unit() {
-    return this.$store.getters['config/getScaledUnit'];
-  }
-
-  get density() {
-    return this.$store.getters['config/getScaledDensity'];
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -56,13 +49,8 @@ export class MoveEventHandler implements EventHandlerInterface {
     if (!this.baseCoordinates) {
       return;
     }
-    const vector = getVector(
-      this.baseCoordinates,
-      svgCoordinates,
-      this.density,
-      this.unit,
-    );
-    this.$store.dispatch('svg/moveSelectedPoints', vector);
+    const vector = getVector(this.baseCoordinates, svgCoordinates);
+    this.storeApi.moveSelected(vector);
     this.baseCoordinates = undefined;
     this.currentState = States.BASE;
   }

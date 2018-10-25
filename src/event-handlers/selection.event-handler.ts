@@ -7,22 +7,15 @@ import {
   EventTypes,
   CustomEvent,
 } from '@/types/types';
-import { transformCoordinatesToScaled } from '@/helpers/helpers';
+import { getVector } from '@/helpers/helpers';
+import { StoreApi } from '@/event-handlers/store-api';
 
 export class SelectionEventHandler implements EventHandlerInterface {
-  private $store: Store<RootState>;
+  private storeApi: StoreApi;
   private baseCoordinates?: Coordinates;
 
   constructor(store: Store<RootState>) {
-    this.$store = store;
-  }
-
-  get unit() {
-    return this.$store.getters['config/getScaledUnit'];
-  }
-
-  get density() {
-    return this.$store.getters['config/getScaledDensity'];
+    this.storeApi = new StoreApi(store);
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -44,16 +37,15 @@ export class SelectionEventHandler implements EventHandlerInterface {
       return;
     }
     this.baseCoordinates = svgCoordinates;
-    this.$store.commit('selection/setSelectionOrigin', svgCoordinates);
+    this.storeApi.setSelectionOrigin(svgCoordinates);
   }
 
   handleDragEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     if (event.type !== EventTypes.MOUSEMOVE || !this.baseCoordinates) {
       return;
     }
-    const x = svgCoordinates.x - this.baseCoordinates.x;
-    const y = svgCoordinates.y - this.baseCoordinates.y;
-    this.$store.commit('selection/setSelectionDimensions', { x, y });
+    const vector = getVector(this.baseCoordinates, svgCoordinates);
+    this.storeApi.setSelectionEnd(vector);
   }
 
   handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -61,15 +53,10 @@ export class SelectionEventHandler implements EventHandlerInterface {
       return;
     }
     const lineCoordinates: LineCoordinates = {
-      start: transformCoordinatesToScaled(
-        this.baseCoordinates,
-        this.density,
-        this.unit,
-      ),
-      end: transformCoordinatesToScaled(svgCoordinates, this.density, this.unit),
+      start: this.baseCoordinates,
+      end: svgCoordinates,
     };
-    this.$store.dispatch('svg/selectObjectsInRange', lineCoordinates);
+    this.storeApi.selectObjects(lineCoordinates);
     this.baseCoordinates = undefined;
-    this.$store.commit('selection/clearSelection');
   }
 }

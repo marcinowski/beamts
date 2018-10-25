@@ -27,7 +27,8 @@ import {
   CustomEvent,
   Coordinates,
 } from '@/types/types';
-import { transformEventToCustomEvent } from '@/helpers/helpers';
+import { createCustomEventFromMouseEvent } from '@/helpers/helpers';
+import { StoreApi } from '@/event-handlers/store-api';
 
 @Component({
   components: { Handle },
@@ -36,40 +37,43 @@ export default class Lines extends Vue {
   @Prop()
   line: Line;
 
-  get scale() {
-    return this.$store.getters['config/getScaledUnit'];
+  private storeApi: StoreApi;
+
+  constructor() {
+    super();
+    this.storeApi = new StoreApi(this.$store);
   }
 
   get start() {
-    const start = this.$store.getters['svg/getPoint'](this.line.p1);
+    const start = this.storeApi.getPoint(this.line.p1);
     if (!start) {
-      this.$store.commit('svg/removeLine', this.line); // FIXME: this adds a UNDO action
+      this.storeApi.removeLine(this.line); // FIXME: this adds a UNDO action
     }
     return start;
   }
 
   get end() {
-    const end = this.$store.getters['svg/getPoint'](this.line.p2);
+    const end = this.storeApi.getPoint(this.line.p2);
     if (!end) {
-      this.$store.commit('svg/removeLine', this.line); // FIXME: this adds a UNDO action
+      this.storeApi.removeLine(this.line); // FIXME: this adds a UNDO action
     }
     return end;
   }
 
   get path() {
     if (!this.start || !this.end) {
-      this.$store.commit('svg/removeLine', this.line); // FIXME: this adds UNDO action
+      this.storeApi.removeLine(this.line); // FIXME: this adds UNDO action
       return undefined;
     }
-    return `M${this.start.x * this.scale} ${this.start.y * this.scale}
-     L ${this.end.x * this.scale} ${this.end.y * this.scale}`;
+    return `M${this.start.x} ${this.start.y}
+     L ${this.end.x} ${this.end.y}`;
   }
 
   get middle(): Coordinates | undefined {
     if (this.start && this.end) {
       return {
-        x: ((this.end.x + this.start.x) / 2) * this.scale,
-        y: ((this.end.y + this.start.y) / 2) * this.scale,
+        x: (this.end.x + this.start.x) / 2,
+        y: (this.end.y + this.start.y) / 2,
       };
     }
   }
@@ -77,7 +81,7 @@ export default class Lines extends Vue {
   handleClick(event: MouseEvent) {
     this.$store.dispatch('svg/selectLines', [this.line.id]);
     const customEvent: CustomEvent = {
-      ...transformEventToCustomEvent(event),
+      ...createCustomEventFromMouseEvent(event),
       sourceId: this.line.id,
       sourceObject: ObjectTypes.LINE,
       type: EventTypes.SELECTED_OBJECT,

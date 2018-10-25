@@ -87,9 +87,10 @@ import {
   EventTypes,
 } from '@/types/types';
 import {
-  transformEventToCustomEvent,
+  createCustomEventFromMouseEvent,
   transformCoordinatesToScaled,
 } from '@/helpers/helpers';
+import { Transform } from '@/event-handlers/transform';
 
 @Component({
   components: {
@@ -105,20 +106,15 @@ export default class SvgComponent extends Vue {
   eventHandler: EventHandler;
   svg: SVGElement;
   svgWindowCoordinates: Coordinates = { x: 0, y: 0 };
+  transformer: Transform;
   unitMouseCoordinates = { x: 0.0, y: 0.0 };
   svgWidth: number = 0;
   svgHeight: number = 0;
 
-  get unit() {
-    return this.$store.getters['config/getScaledUnit'];
-  }
-  get density() {
-    return this.$store.getters['config/getScaledDensity'];
-  }
-
   constructor() {
     super();
     this.eventHandler = new EventHandler(this.$store);
+    this.transformer = new Transform(this.$store);
   }
 
   mounted() {
@@ -159,19 +155,19 @@ export default class SvgComponent extends Vue {
   }
 
   handleClick(event: MouseEvent) {
-    this.handleEvent(transformEventToCustomEvent(event));
+    this.handleEvent(createCustomEventFromMouseEvent(event));
   }
 
   handleMouseDown(event: MouseEvent) {
-    this.handleEvent(transformEventToCustomEvent(event));
+    this.handleEvent(createCustomEventFromMouseEvent(event));
   }
 
   handleMouseMove(event: MouseEvent) {
-    this.handleEvent(transformEventToCustomEvent(event));
+    this.handleEvent(createCustomEventFromMouseEvent(event));
   }
 
   handleMouseUp(event: MouseEvent) {
-    this.handleEvent(transformEventToCustomEvent(event));
+    this.handleEvent(createCustomEventFromMouseEvent(event));
   }
 
   handleSubmission(event: CustomEvent) {
@@ -180,13 +176,11 @@ export default class SvgComponent extends Vue {
 
   handleHover(event: MouseEvent) {
     const eventCoords = this.getEventWindowCoordinates(
-      transformEventToCustomEvent(event),
+      createCustomEventFromMouseEvent(event),
     );
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
-    this.unitMouseCoordinates = transformCoordinatesToScaled(
+    this.unitMouseCoordinates = this.transformer.coordinatesToAbsolute(
       svgCoordinates,
-      this.density,
-      this.unit,
     );
   }
 

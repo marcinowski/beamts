@@ -7,20 +7,11 @@ import {
   EventTypes,
 } from '@/types/types';
 
-export function getVector(
-  start: Coordinates,
-  end: Coordinates,
-  density: number,
-  unit: number,
-): Vector {
-  return transformCoordinatesToScaled(
-    {
-      x: end.x - start.x,
-      y: end.y - start.y,
-    },
-    density,
-    unit,
-  );
+export function getVector(start: Coordinates, end: Coordinates): Vector {
+  return {
+    x: end.x - start.x,
+    y: end.y - start.y,
+  };
 }
 
 export function getVectorLength(vector: Vector) {
@@ -55,7 +46,7 @@ export function transformCoordinatesToScaled(
   };
 }
 
-export function transformCoordinatesToPoint(
+export function createPointFromEventCoordinates(
   point: Coordinates,
   event: CustomEvent,
   density: number,
@@ -67,7 +58,9 @@ export function transformCoordinatesToPoint(
   };
 }
 
-export function transformEventToCustomEvent(event: MouseEvent): CustomEvent {
+export function createCustomEventFromMouseEvent(
+  event: MouseEvent,
+): CustomEvent {
   if (!Object.values(EventTypes).includes(event.type)) {
     throw new Error(`Unsupported event type ${event.type}`);
   }

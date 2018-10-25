@@ -3,7 +3,6 @@ import { RootState } from '@/store/types';
 import { Store } from 'vuex';
 import {
   Coordinates,
-  Point,
   EventTypes,
   CustomEvent,
   ObjectTypes,
@@ -24,7 +23,6 @@ enum States {
 }
 
 export class ArcEventHandler implements EventHandlerInterface {
-  private $store: Store<RootState>;
   private currentState: States;
   private arcStart?: Coordinates;
   private baseId?: ObjectId;
@@ -32,17 +30,8 @@ export class ArcEventHandler implements EventHandlerInterface {
   private storeApi: StoreApi;
 
   constructor(store: Store<RootState>) {
-    this.$store = store;
     this.storeApi = new StoreApi(store);
     this.initBaseState();
-  }
-
-  get unit() {
-    return this.$store.getters['config/getScaledUnit'];
-  }
-
-  get density() {
-    return this.$store.getters['config/getScaledDensity'];
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -127,12 +116,7 @@ export class ArcEventHandler implements EventHandlerInterface {
     if (!this.arcStart || !this.baseId || !this.endId) {
       throw Error('Undefined arc variable');
     }
-    const vector = getVector(
-      this.arcStart,
-      svgCoordinates,
-      this.density,
-      this.unit,
-    );
+    const vector = getVector(this.arcStart, svgCoordinates);
     const radius = getVectorLength(vector);
     this.storeApi.drawArc(event, radius, this.baseId, this.endId);
     this.baseId = undefined;
