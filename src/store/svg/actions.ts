@@ -64,9 +64,20 @@ export const actions: ActionTree<SvgState, RootState> = {
     context.dispatch('selectArcs', selectedArcs);
   },
   selectObjectsInRange(context, points: LineCoordinates) {
-    context.dispatch('selectArcsInRange', points);
-    context.dispatch('selectLinesInRange', points);
-    context.dispatch('selectPointsInRange', points);
+    // we do this cause we always compare the min < n < max range
+    const transformedCoordinates: LineCoordinates = {
+      start: {
+        x: Math.min(points.start.x, points.end.x),
+        y: Math.min(points.start.y, points.end.y),
+      },
+      end: {
+        x: Math.max(points.start.x, points.end.x),
+        y: Math.max(points.start.y, points.end.y),
+      },
+    };
+    context.dispatch('selectArcsInRange', transformedCoordinates);
+    context.dispatch('selectLinesInRange', transformedCoordinates);
+    context.dispatch('selectPointsInRange', transformedCoordinates);
   },
   changeSelectionStateAll(context, selected: boolean) {
     context.commit('changeSelectionStateAllPoints', selected);
