@@ -122,7 +122,7 @@ export class ArcEventHandler implements EventHandlerInterface {
     this.baseId = undefined;
     this.endId = undefined;
     this.arcStart = undefined;
-    this.initBaseState();
+    setTimeout(() => this.initBaseState(), 10);
     return;
   }
 
