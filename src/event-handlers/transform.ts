@@ -131,24 +131,4 @@ export class Transform {
       origin: this.coordinatesFromAbsolute(rotation.origin),
     };
   }
-
-  selectionToAbsolute(selection: Selection) {
-    const { x, y } = selection;
-    return {
-      ...selection,
-      ...this.coordinatesToAbsolute({ x, y }),
-      height: this.numberToAbsolute(selection.height),
-      width: this.numberToAbsolute(selection.width),
-    };
-  }
-
-  selectionFromAbsolute(selection: Selection) {
-    const { x, y } = selection;
-    return {
-      ...selection,
-      ...this.coordinatesFromAbsolute({ x, y }),
-      height: this.numberFromAbsolute(selection.height),
-      width: this.numberFromAbsolute(selection.width),
-    };
-  }
 }

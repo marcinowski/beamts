@@ -37,15 +37,14 @@ export class SelectionEventHandler implements EventHandlerInterface {
       return;
     }
     this.baseCoordinates = svgCoordinates;
-    this.storeApi.setSelectionOrigin(svgCoordinates);
+    this.storeApi.setSelectionStart(svgCoordinates);
   }
 
   handleDragEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     if (event.type !== EventTypes.MOUSEMOVE || !this.baseCoordinates) {
       return;
     }
-    const vector = getVector(this.baseCoordinates, svgCoordinates);
-    this.storeApi.setSelectionEnd(vector);
+    this.storeApi.setSelectionEnd(svgCoordinates);
   }
 
   handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {

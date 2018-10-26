@@ -1,10 +1,7 @@
 <template>
-  <rect
-    v-bind:x="selection.x"
-    v-bind:y="selection.y"
-    v-bind:width="selection.width"
-    v-bind:height="selection.height"
-  ></rect>
+  <path
+    v-bind:d="path"
+  ></path>
 </template>
 
 <script lang="ts">
@@ -23,14 +20,17 @@ export default class SelectionComponent extends Vue {
     this.storeApi = new StoreApi(this.$store);
   }
 
-  get selection() {
-    return this.storeApi.getSelection();
+  get path() {
+    const selection = this.storeApi.getSelection();
+    return `M ${selection.start.x} ${selection.start.y}
+      H ${selection.end.x} V ${selection.end.y}
+      H ${selection.start.x} Z`;
   }
 }
 </script>
 
 <style lang="scss" scoped>
-rect {
+path {
   stroke: black;
   fill: rgb(120, 240, 230);
   stroke-dasharray: 3;

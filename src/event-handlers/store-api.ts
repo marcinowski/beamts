@@ -114,14 +114,16 @@ export class StoreApi {
     this.$store.dispatch('svg/rotateSelectedPoints', transformedRotation);
   }
 
-  setSelectionOrigin(coordinates: Coordinates) {
+  setSelectionStart(coordinates: Coordinates) {
     const transformedCoords = this.transform.coordinatesToAbsolute(coordinates);
-    this.$store.commit('selection/setSelectionOrigin', transformedCoords);
+    this.$store.commit('selection/setSelectionStart', transformedCoords);
+    this.$store.commit('selection/setSelectionEnd', transformedCoords);
+    // otherwise this goes from 0 to origin
   }
 
-  setSelectionEnd(vector: Vector) {
-    const transformedVector = this.transform.vectorToAbsolute(vector);
-    this.$store.commit('selection/setSelectionDimensions', transformedVector);
+  setSelectionEnd(coordinates: Coordinates) {
+    const transformedCoords = this.transform.coordinatesToAbsolute(coordinates);
+    this.$store.commit('selection/setSelectionEnd', transformedCoords);
   }
 
   selectObjects(line: LineCoordinates) {
@@ -132,6 +134,6 @@ export class StoreApi {
 
   getSelection() {
     const selection = this.$store.getters['selection/getSelection'];
-    return this.transform.selectionFromAbsolute(selection);
+    return this.transform.lineCoordinatesFromAbsolute(selection);
   }
 }

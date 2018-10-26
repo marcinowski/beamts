@@ -5,11 +5,13 @@ import { selectionGetters } from './getters';
 import { mutations } from './mutations';
 
 const state: SelectionState = {
-  selection: {
+  start: {
     x: 0,
     y: 0,
-    height: 0,
-    width: 0,
+  },
+  end: {
+    x: 0,
+    y: 0,
   },
 };
 

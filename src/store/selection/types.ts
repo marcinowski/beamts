@@ -1,5 +1,6 @@
-import { Selection } from '@/types/types';
+import { Coordinates } from '@/types/types';
 
 export interface SelectionState {
-  selection: Selection;
+  start: Coordinates;
+  end: Coordinates;
 }

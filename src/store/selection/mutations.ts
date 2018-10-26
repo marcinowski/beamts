@@ -3,17 +3,13 @@ import { SelectionState } from '@/store/selection/types';
 import { Coordinates } from '@/types/types';
 
 export const mutations: MutationTree<SelectionState> = {
-  setSelectionOrigin(state, coords: Coordinates) {
-    state.selection = { ...state.selection, x: coords.x, y: coords.y };
+  setSelectionStart(state, coords: Coordinates) {
+    state.start = coords;
   },
-  setSelectionDimensions(state, coords: Coordinates) {
-    state.selection = {
-      ...state.selection,
-      width: coords.x,
-      height: coords.y,
-    };
+  setSelectionEnd(state, coords: Coordinates) {
+    state.end = coords;
   },
   clearSelection(state) {
-    state.selection = { x: 0, y: 0, height: 0, width: 0 };
+    state.start = state.end = { x: 0, y: 0 };
   },
 };
