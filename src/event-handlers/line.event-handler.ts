@@ -3,7 +3,6 @@ import { RootState } from '@/store/types';
 import { Store } from 'vuex';
 import {
   Coordinates,
-  Point,
   EventTypes,
   CustomEvent,
   ObjectTypes,

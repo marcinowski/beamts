@@ -1,7 +1,6 @@
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
 import {
-  createPointFromEventCoordinates,
   getArcIdFromEvent,
   getLineIdFromEvent,
   getPointIdFromEvent,

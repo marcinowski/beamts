@@ -2,7 +2,7 @@ import { EventHandlerInterface } from './types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
 import { Coordinates, Rotation, EventTypes, CustomEvent } from '@/types/types';
-import { getAngle, transformCoordinatesToScaled } from '@/helpers/helpers';
+import { getAngle } from '@/helpers/helpers';
 import { StoreApi } from '@/event-handlers/store-api';
 
 enum States {

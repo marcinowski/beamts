@@ -1,9 +1,4 @@
-import {
-  Coordinates,
-  MethodTypes,
-  CustomEvent,
-  EventTypes,
-} from '@/types/types';
+import { Coordinates, MethodTypes, CustomEvent } from '@/types/types';
 import { Store } from 'vuex';
 import { RootState } from '@/store/types';
 import { EventHandlerInterface } from '@/event-handlers/types';

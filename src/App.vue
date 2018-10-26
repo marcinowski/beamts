@@ -36,7 +36,6 @@
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
-import { Prop } from 'vue-property-decorator';
 import SideOptions from './components/SideOptions.vue';
 import SvgComponent from './components/SvgComponent.vue';
 import RightDrawer from './components/RightDrawer.vue';

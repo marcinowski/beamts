@@ -3,7 +3,6 @@ import { SvgState } from './types';
 import { RootState } from '../types';
 import {
   Point,
-  Coordinates,
   Line,
   Rotation,
   Vector,
