@@ -1,22 +1,31 @@
 <template>
-  <circle
-    v-on:click.stop="handleClick"
-    v-bind:cx="transformedPoint.x"
-    v-bind:cy="transformedPoint.y"
-    v-bind:class="{selected: point.selected}"
-    r="3"
-  ></circle>
+  <g>
+    <circle
+      v-on:click.stop="handleClick"
+      v-bind:cx="transformedPoint.x"
+      v-bind:cy="transformedPoint.y"
+      v-bind:class="{selected: point.selected}"
+      r="3"
+    ></circle>
+    <Handle
+      v-bind:coordinates="transformedPoint"
+      v-on:selected-handle="handleClick"
+    ></Handle>
+  </g>
 </template>
 
 <script lang="ts">
 import Vue from 'vue';
 import Component from 'vue-class-component';
+import Handle from './Handle.vue';
 import { Prop } from 'vue-property-decorator';
 import { Point, CustomEvent, ObjectTypes, EventTypes } from '@/types/types';
 import { createCustomEventFromMouseEvent } from '@/helpers/helpers';
 import { StoreApi } from '@/event-handlers/store-api';
 
-@Component({})
+@Component({
+  components: { Handle },
+})
 export default class Points extends Vue {
   @Prop()
   point: Point;

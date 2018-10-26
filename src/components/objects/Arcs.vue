@@ -42,6 +42,7 @@ export default class Arcs extends Vue {
 
   handleClick(event: MouseEvent) {
     this.$store.dispatch('svg/selectArcs', [this.arc.id]);
+    this.$store.dispatch('svg/selectPoints', [this.arc.p1, this.arc.p2]);
     const customEvent: CustomEvent = {
       ...createCustomEventFromMouseEvent(event),
       sourceId: this.arc.id,

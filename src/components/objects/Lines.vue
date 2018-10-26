@@ -8,8 +8,7 @@
     ></path>
     <Handle
       v-if="middle"
-      v-on:selected-handle="handleMiddleClick"
-      v-bind:isHidden="!line.selected"
+      v-on:selected-handle="handleClick"
       v-bind:coordinates="middle"
     ></Handle>
   </g>
@@ -66,7 +65,7 @@ export default class Lines extends Vue {
       return undefined;
     }
     return `M${this.start.x} ${this.start.y}
-     L ${this.end.x} ${this.end.y}`;
+      L ${this.end.x} ${this.end.y}`;
   }
 
   get middle(): Coordinates | undefined {
@@ -80,6 +79,7 @@ export default class Lines extends Vue {
 
   handleClick(event: MouseEvent) {
     this.$store.dispatch('svg/selectLines', [this.line.id]);
+    this.$store.dispatch('svg/selectPoints', [this.line.p1, this.line.p2]);
     const customEvent: CustomEvent = {
       ...createCustomEventFromMouseEvent(event),
       sourceId: this.line.id,
@@ -87,10 +87,6 @@ export default class Lines extends Vue {
       type: EventTypes.SELECTED_OBJECT,
     };
     this.$emit('selected-line', customEvent);
-  }
-
-  handleMiddleClick(event: CustomEvent) {
-    console.log('TODO');
   }
 }
 </script>

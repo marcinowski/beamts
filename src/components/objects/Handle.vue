@@ -1,7 +1,6 @@
 <template>
-  <circle 
+  <circle class="Handle"
     v-on:click.stop="handleClick"
-    v-bind:class="{Hidden: hide}"
     v-bind:cx="coordinates.x"
     v-bind:cy="coordinates.y"
     v-bind:r="10"
@@ -9,14 +8,15 @@
 </template>
 
 <style lang="scss" scoped>
-circle {
+circle.Handle {
   fill: rgba(0, 255, 255, 0.5);
   stroke: blue;
   stroke-dasharray: 5;
-  &.Hidden {
-    display: none;
-  }
+  opacity: 0;
   cursor: pointer;
+  &:hover {
+    opacity: 1;
+  }
 }
 </style>
 
@@ -36,13 +36,7 @@ import { createCustomEventFromMouseEvent } from '@/helpers/helpers';
 @Component({})
 export default class Handle extends Vue {
   @Prop()
-  isHidden: boolean = true;
-  @Prop()
   coordinates: Coordinates;
-
-  get hide() {
-    return this.isHidden;
-  }
 
   handleClick(event: MouseEvent) {
     this.$emit('selected-handle', createCustomEventFromMouseEvent(event));
