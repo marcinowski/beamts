@@ -129,7 +129,14 @@ export class StoreApi {
   selectObjects(line: LineCoordinates) {
     const transformed = this.transform.lineCoordinatesToAbsolute(line);
     this.$store.dispatch('svg/selectObjectsInRange', transformed);
+  }
+
+  clearSelection() {
     this.$store.commit('selection/clearSelection');
+  }
+
+  removeSelected() {
+    this.$store.dispatch('svg/removeSelected');
   }
 
   getSelection() {

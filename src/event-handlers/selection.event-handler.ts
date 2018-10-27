@@ -7,7 +7,6 @@ import {
   EventTypes,
   CustomEvent,
 } from '@/types/types';
-import { getVector } from '@/helpers/helpers';
 import { StoreApi } from '@/event-handlers/store-api';
 
 export class SelectionEventHandler implements EventHandlerInterface {
@@ -20,35 +19,33 @@ export class SelectionEventHandler implements EventHandlerInterface {
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
     switch (event.type) {
+      case EventTypes.KEY_ESC:
+        return this.handleEscEvent();
+      case EventTypes.KEY_DELETE:
+        return this.handleDeleteEvent();
       case EventTypes.MOUSEDOWN:
-        this.handleBaseEvent(event, svgCoordinates);
-        return;
+        return this.handleBaseEvent(svgCoordinates);
       case EventTypes.MOUSEMOVE:
-        this.handleDragEvent(event, svgCoordinates);
-        return;
+        return this.handleDragEvent(svgCoordinates);
       case EventTypes.MOUSEUP:
-        this.handleEndEvent(event, svgCoordinates);
-        return;
+        return this.handleEndEvent(svgCoordinates);
     }
   }
 
-  handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (event.type !== EventTypes.MOUSEDOWN) {
-      return;
-    }
+  handleBaseEvent(svgCoordinates: Coordinates) {
     this.baseCoordinates = svgCoordinates;
     this.storeApi.setSelectionStart(svgCoordinates);
   }
 
-  handleDragEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (event.type !== EventTypes.MOUSEMOVE || !this.baseCoordinates) {
+  handleDragEvent(svgCoordinates: Coordinates) {
+    if (!this.baseCoordinates) {
       return;
     }
     this.storeApi.setSelectionEnd(svgCoordinates);
   }
 
-  handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (event.type !== EventTypes.MOUSEUP || !this.baseCoordinates) {
+  handleEndEvent(svgCoordinates: Coordinates) {
+    if (!this.baseCoordinates) {
       return;
     }
     const lineCoordinates: LineCoordinates = {
@@ -56,6 +53,15 @@ export class SelectionEventHandler implements EventHandlerInterface {
       end: svgCoordinates,
     };
     this.storeApi.selectObjects(lineCoordinates);
+    this.storeApi.clearSelection();
     this.baseCoordinates = undefined;
+  }
+
+  handleEscEvent() {
+    this.storeApi.clearSelection();
+  }
+
+  handleDeleteEvent() {
+    this.storeApi.removeSelected();
   }
 }

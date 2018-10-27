@@ -81,13 +81,16 @@ export enum EventTypes {
   // Custom events
   SELECTED_OBJECT = 'selectedobject',
   SUBMITTED_HELPER = 'submittedhelper',
+  KEY_DELETE = 'keydelete',
+  KEY_ENTER = 'keyenter',
+  KEY_ESC = 'keyesc',
 }
 
 export interface CustomEvent {
-  clientX: number;
-  clientY: number;
   timeStamp: number;
   type: EventTypes;
+  clientX?: number;
+  clientY?: number;
   sourceId?: ObjectId;
   sourceObject?: ObjectTypes;
   sourceValue?: string;

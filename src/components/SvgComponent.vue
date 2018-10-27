@@ -89,6 +89,7 @@ import {
 import {
   createCustomEventFromMouseEvent,
   transformCoordinatesToScaled,
+  createCustomEventFromKeyboardEvent,
 } from '@/helpers/helpers';
 import { Transform } from '@/event-handlers/transform';
 
@@ -123,6 +124,11 @@ export default class SvgComponent extends Vue {
       // small hack to run the update as late as possible
       this.updateSvgWindowCoordinates();
     }, 0);
+    document.addEventListener('keyup', this.handleKeyUp);
+  }
+
+  beforeDestroy() {
+    document.removeEventListener('keyup', this.handleKeyUp);
   }
 
   updateSvgWindowCoordinates() {
@@ -137,8 +143,8 @@ export default class SvgComponent extends Vue {
 
   getEventWindowCoordinates(event: CustomEvent): Coordinates {
     return {
-      x: event.clientX,
-      y: event.clientY,
+      x: event.clientX || 0,
+      y: event.clientY || 0,
     };
   }
 
@@ -172,6 +178,19 @@ export default class SvgComponent extends Vue {
 
   handleSubmission(event: CustomEvent) {
     this.handleEvent(event);
+  }
+
+  handleKeyUp(event: KeyboardEvent) {
+    const { timeStamp } = event;
+    switch (event.keyCode) {
+      case 27: // escape
+        return this.handleEvent({ timeStamp, type: EventTypes.KEY_ESC });
+      case 8: // backspace
+      case 46: // delete
+        return this.handleEvent({ timeStamp, type: EventTypes.KEY_DELETE });
+      case 13: // enter
+        return this.handleEvent({ timeStamp, type: EventTypes.KEY_ENTER });
+    }
   }
 
   handleHover(event: MouseEvent) {

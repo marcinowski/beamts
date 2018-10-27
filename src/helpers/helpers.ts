@@ -58,12 +58,26 @@ export function createPointFromEventCoordinates(
   };
 }
 
-export function createCustomEventFromMouseEvent(
-  event: MouseEvent,
-): CustomEvent {
+function validateEventType(event: Event) {
   if (!Object.values(EventTypes).includes(event.type)) {
     throw new Error(`Unsupported event type ${event.type}`);
   }
+}
+
+export function createCustomEventFromKeyboardEvent(
+  event: KeyboardEvent,
+): CustomEvent {
+  validateEventType(event);
+  return {
+    timeStamp: event.timeStamp,
+    type: event.type as EventTypes,
+  };
+}
+
+export function createCustomEventFromMouseEvent(
+  event: MouseEvent,
+): CustomEvent {
+  validateEventType(event);
   return {
     clientX: event.clientX,
     clientY: event.clientY,
