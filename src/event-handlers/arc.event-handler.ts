@@ -81,7 +81,8 @@ export class ArcEventHandler implements EventHandlerInterface {
     if (
       event.type === EventTypes.SELECTED_OBJECT &&
       event.sourceObject === ObjectTypes.POINT &&
-      event.sourceId
+      event.sourceId &&
+      event.sourceId !== this.baseId
     ) {
       this.endId = event.sourceId;
     } else if (event.type === EventTypes.CLICK) {
@@ -109,8 +110,6 @@ export class ArcEventHandler implements EventHandlerInterface {
       this.currentState !== States.ENDARC ||
       event.type !== EventTypes.MOUSEUP
     ) {
-      // FIXME: There's an issue that the `click` event is immediately after
-      // MOUSEUP, so the phase1 gets triggered immediately as well
       return;
     }
     if (!this.arcStart || !this.baseId || !this.endId) {

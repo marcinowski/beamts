@@ -68,7 +68,8 @@ export class LineEventHandler implements EventHandlerInterface {
     if (
       event.type === EventTypes.SELECTED_OBJECT &&
       event.sourceObject === ObjectTypes.POINT &&
-      event.sourceId
+      event.sourceId &&
+      event.sourceId !== this.baseId
     ) {
       endId = event.sourceId;
     } else if (event.type === EventTypes.CLICK) {
