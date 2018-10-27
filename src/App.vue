@@ -16,16 +16,17 @@
       </v-btn>
       <v-toolbar-title v-text="title"></v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn icon @click.stop="rightDrawer = !rightDrawer">
+      <!-- <v-btn icon @click.stop="rightDrawer = !rightDrawer">
         <v-icon>menu</v-icon>
-      </v-btn>
+      </v-btn> -->
     </v-toolbar>
     <svg-component>
     </svg-component>
     <v-navigation-drawer
-      :right="true"
-      v-model="rightDrawer"
       app
+      :right="true"
+      :mini-variant="true"
+      :clipped="true"
     >
       <RightDrawer>
       </RightDrawer>
@@ -49,7 +50,7 @@ import RightDrawer from './components/RightDrawer.vue';
 })
 export default class App extends Vue {
   miniVariant = false;
-  rightDrawer = false;
+  // rightDrawer = true;
   title = 'Beam';
 }
 </script>

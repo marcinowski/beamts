@@ -11,4 +11,10 @@ export const mutations: MutationTree<ConfigState> = {
   toggleGrid(state) {
     state.gridOn = !state.gridOn;
   },
+  toggleContinuousLine(state) {
+    state.continuousLine = !state.continuousLine;
+  },
+  toggleOrthogonalMode(state) {
+    state.orthogonalMode = !state.orthogonalMode;
+  },
 };

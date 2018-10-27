@@ -6,4 +6,6 @@ export const configGetters: GetterTree<ConfigState, RootState> = {
   getScaledDensity: (state) => state.scale * state.density,
   getScaledUnit: (state) => state.scale * state.density * state.unit,
   isGridOn: (state) => state.gridOn,
+  isContinuousLine: (state) => state.continuousLine,
+  isOrthogonalMode: (state) => state.orthogonalMode,
 };

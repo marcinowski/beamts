@@ -9,6 +9,8 @@ const state: ConfigState = {
   unit: 10,
   scale: 1,
   gridOn: true,
+  continuousLine: false,
+  orthogonalMode: false,
 };
 
 const namespaced: boolean = true;
