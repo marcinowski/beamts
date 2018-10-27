@@ -112,12 +112,6 @@ export default class SvgComponent extends Vue {
   svgWidth: number = 0;
   svgHeight: number = 0;
 
-  constructor() {
-    super();
-    this.eventHandler = new EventHandler(this.$store);
-    this.transformer = new Transform(this.$store);
-  }
-
   mounted() {
     this.svg = this.$refs.svg as SVGElement;
     setTimeout(() => {
@@ -125,6 +119,8 @@ export default class SvgComponent extends Vue {
       this.updateSvgWindowCoordinates();
     }, 0);
     document.addEventListener('keyup', this.handleKeyUp);
+    this.eventHandler = new EventHandler(this.$store);
+    this.transformer = new Transform(this.$store);
   }
 
   beforeDestroy() {

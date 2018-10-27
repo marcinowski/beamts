@@ -20,11 +20,13 @@ export default class Arcs extends Vue {
   @Prop()
   arc: Arc;
 
-  private storeApi: StoreApi;
+  private storeApiInstance: StoreApi;
 
-  constructor() {
-    super();
-    this.storeApi = new StoreApi(this.$store);
+  get storeApi(): StoreApi {
+    if (!this.storeApiInstance) {
+      this.storeApiInstance = new StoreApi(this.$store);
+    }
+    return this.storeApiInstance;
   }
 
   get path(): string | undefined {

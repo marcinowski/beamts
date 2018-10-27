@@ -30,12 +30,14 @@ import { StoreApi } from '@/event-handlers/store-api';
 
 @Component({})
 export default class StageInputHelper extends Vue {
-  private storeApi: StoreApi;
   private userInput = '';
+  private storeApiInstance: StoreApi;
 
-  constructor() {
-    super();
-    this.storeApi = new StoreApi(this.$store);
+  get storeApi(): StoreApi {
+    if (!this.storeApiInstance) {
+      this.storeApiInstance = new StoreApi(this.$store);
+    }
+    return this.storeApiInstance;
   }
 
   get helper() {

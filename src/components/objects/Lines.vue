@@ -36,11 +36,13 @@ export default class Lines extends Vue {
   @Prop()
   line: Line;
 
-  private storeApi: StoreApi;
+  private storeApiInstance: StoreApi;
 
-  constructor() {
-    super();
-    this.storeApi = new StoreApi(this.$store);
+  get storeApi(): StoreApi {
+    if (!this.storeApiInstance) {
+      this.storeApiInstance = new StoreApi(this.$store);
+    }
+    return this.storeApiInstance;
   }
 
   get start() {
