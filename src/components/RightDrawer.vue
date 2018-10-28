@@ -68,6 +68,12 @@ export default class RightDrawer extends Vue {
         value: this.continuousLine,
         onClick: () => this.toggleContinuousLine(),
       },
+      {
+        icon: 'control_camera',
+        tooltip: 'Toggle handles',
+        value: false,
+        onClick: () => console.log('TODO: toggle handles'),
+      },
     ];
   }
 
