@@ -53,13 +53,6 @@ export interface Arc extends Line {
   radius: number;
 }
 
-export interface Selection {
-  x: number;
-  y: number;
-  height: number;
-  width: number;
-}
-
 export interface Section {
   id: ObjectId;
   area: number;

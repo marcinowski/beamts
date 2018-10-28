@@ -143,9 +143,11 @@ export default class SvgComponent extends Vue {
     return { x, y };
   }
 
-  handleEvent(event: CustomEvent) {
+  handleEvent(event: CustomEvent, transformWindow: boolean = true) {
     const eventCoords = this.getEventWindowCoordinates(event);
-    const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
+    const svgCoordinates = transformWindow
+      ? this.transformWindowToSvgCoordinates(eventCoords)
+      : eventCoords;
     this.eventHandler.handleEvent(event, svgCoordinates);
   }
 
@@ -193,7 +195,7 @@ export default class SvgComponent extends Vue {
   }
 
   handleSelectedObject(event: CustomEvent) {
-    this.handleEvent(event);
+    this.handleEvent(event, false);
   }
 }
 </script>

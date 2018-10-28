@@ -8,7 +8,6 @@ import {
   Line,
   Vector,
   Rotation,
-  Selection,
 } from '@/types/types';
 
 export class Transform {

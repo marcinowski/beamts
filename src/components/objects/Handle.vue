@@ -39,7 +39,12 @@ export default class Handle extends Vue {
   coordinates: Coordinates;
 
   handleClick(event: MouseEvent) {
-    this.$emit('selected-handle', createCustomEventFromMouseEvent(event));
+    const customEvent: CustomEvent = {
+      ...createCustomEventFromMouseEvent(event),
+      clientX: this.coordinates.x,
+      clientY: this.coordinates.y,
+    };
+    this.$emit('selected-handle', customEvent);
   }
 }
 </script>

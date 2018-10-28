@@ -53,6 +53,7 @@ export class LineEventHandler implements EventHandlerInterface {
     } else {
       return;
     }
+    this.storeApi.setHelperLineStart(svgCoordinates);
     this.initEndState();
   }
 
@@ -79,12 +80,16 @@ export class LineEventHandler implements EventHandlerInterface {
       this.baseId = undefined;
       this.initBaseState();
       return;
+    } else if (event.type === EventTypes.MOUSEMOVE) {
+      this.storeApi.setHelperLineEnd(svgCoordinates);
+      return;
     } else {
       return;
     }
     this.storeApi.drawLine(event, this.baseId, endId);
     if (this.storeApi.isContinuousLine()) {
       this.baseId = endId;
+      this.storeApi.setHelperLineStart(svgCoordinates);
     } else {
       this.baseId = undefined;
       this.initBaseState();
@@ -98,6 +103,7 @@ export class LineEventHandler implements EventHandlerInterface {
         You can also enter coordinates below in an X Y format.`,
       true,
     );
+    this.storeApi.clearHelperLine();
   }
 
   initEndState() {

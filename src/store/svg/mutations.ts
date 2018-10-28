@@ -273,4 +273,10 @@ export const mutations: MutationTree<SvgState> = {
     };
     state.undoAction = undoAction;
   },
+  setHelperLine(state, coords: LineCoordinates) {
+    state.helperLine = coords;
+  },
+  clearHelperLine(state) {
+    state.helperLine = {start: {x: 0, y: 0}, end: {x: 0, y: 0}};
+  },
 };

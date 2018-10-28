@@ -80,9 +80,6 @@ export const svgGetters: GetterTree<SvgState, RootState> = {
   getSelectedPoints: (state) => state.points.filter((p) => p.selected),
   getSelectedLines: (state) => state.lines.filter((l) => l.selected),
   getSelectedArcs: (state) => state.arcs.filter((a) => a.selected),
-  getSelectedElements: (state, getters) => ({
-    lines: getters.getSelectedLines,
-    points: getters.getSelectedPoints,
-  }),
   getUndoAction: (state): UndoAction => state.undoAction,
+  getHelperLine: (state): LineCoordinates => state.helperLine,
 };

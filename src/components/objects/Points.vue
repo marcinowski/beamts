@@ -44,6 +44,7 @@ export default class Points extends Vue {
   }
 
   handleClick(event: MouseEvent) {
+    // there's a small lie here, the handle emits the CustomEvent
     this.$store.dispatch('svg/selectPoints', [this.point.id]);
     const customEvent: CustomEvent = {
       ...createCustomEventFromMouseEvent(event),

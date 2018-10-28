@@ -80,6 +80,7 @@ export default class Lines extends Vue {
   }
 
   handleClick(event: MouseEvent) {
+    // there's a small lie here, the handle emits the CustomEvent
     this.$store.dispatch('svg/selectLines', [this.line.id]);
     this.$store.dispatch('svg/selectPoints', [this.line.p1, this.line.p2]);
     const customEvent: CustomEvent = {

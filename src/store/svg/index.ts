@@ -9,13 +9,17 @@ export const state: SvgState = {
   arcs: [],
   lines: [],
   points: [],
-  selection: {
-    x: 0,
-    y: 0,
-    height: 0,
-    width: 0,
-  },
   undoAction: { action: 'removeAll' },
+  helperLine: {
+    start: {
+      x: 0,
+      y: 0,
+    },
+    end: {
+      x: 0,
+      y: 0,
+    },
+  },
 };
 
 const namespaced: boolean = true;

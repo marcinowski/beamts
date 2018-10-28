@@ -21,6 +21,7 @@
         v-on:selected-point="handleSelectedObject"
       ></Points>
     </template>
+    <Helpers></Helpers>
   </g>
 </template>
 
@@ -33,6 +34,7 @@ import Component from 'vue-class-component';
 import Arcs from './Arcs.vue';
 import Lines from './Lines.vue';
 import Points from './Points.vue';
+import Helpers from './Helpers.vue';
 import { CustomEvent } from '@/types/types';
 
 @Component({
@@ -40,6 +42,7 @@ import { CustomEvent } from '@/types/types';
     Arcs,
     Lines,
     Points,
+    Helpers,
   },
 })
 export default class PrimitivesComponent extends Vue {

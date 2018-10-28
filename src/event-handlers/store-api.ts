@@ -147,4 +147,30 @@ export class StoreApi {
     const selection = this.$store.getters['selection/getSelection'];
     return this.transform.lineCoordinatesFromAbsolute(selection);
   }
+
+  setHelperLineStart(coords: Coordinates) {
+    const transformed = this.transform.coordinatesToAbsolute(coords);
+    return this.$store.commit('svg/setHelperLine', {
+      start: transformed,
+      end: transformed,
+    });
+  }
+
+  setHelperLineEnd(coords: Coordinates) {
+    const transformed = this.transform.coordinatesToAbsolute(coords);
+    const helperLine = this.$store.getters['svg/getHelperLine'];
+    return this.$store.commit('svg/setHelperLine', {
+      ...helperLine,
+      end: transformed,
+    });
+  }
+
+  getHelperLine() {
+    const line = this.$store.getters['svg/getHelperLine'];
+    return this.transform.lineCoordinatesFromAbsolute(line);
+  }
+
+  clearHelperLine() {
+    this.$store.commit('svg/clearHelperLine');
+  }
 }
