@@ -1,5 +1,5 @@
 <template>
-  <g id="gridLines">
+  <g>
     <path
       v-for="line in lines" 
       :key="line.path"

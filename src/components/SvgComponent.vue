@@ -8,7 +8,6 @@
         v-on:mousedown="handleMouseDown"
         v-on:mousemove="handleMouseMove"
         v-on:mouseup="handleMouseUp"
-        v-on:mouseover="handleHover"
       >
         <PrimitivesComponent
           v-on:selected-object="handleSelectedObject"
@@ -31,18 +30,12 @@
   </v-content>
 </template>
 
-<style scoped>
+<style lang="scss" scoped>
 svg {
   width: 100%;
   height: 100%;
   position: absolute;
   background-color: white;
-}
-rect {
-  stroke: black;
-  fill: rgb(120, 240, 230);
-  stroke-dasharray: 3;
-  fill-opacity: 0.2;
 }
 .SvgContainer {
   height: 100%;
@@ -165,7 +158,9 @@ export default class SvgComponent extends Vue {
   }
 
   handleMouseMove(event: MouseEvent) {
-    this.handleEvent(createCustomEventFromMouseEvent(event));
+    const customEvent = createCustomEventFromMouseEvent(event);
+    this.updateCoordinates(customEvent);
+    this.handleEvent(customEvent);
   }
 
   handleMouseUp(event: MouseEvent) {
@@ -189,10 +184,8 @@ export default class SvgComponent extends Vue {
     }
   }
 
-  handleHover(event: MouseEvent) {
-    const eventCoords = this.getEventWindowCoordinates(
-      createCustomEventFromMouseEvent(event),
-    );
+  updateCoordinates(customEvent: CustomEvent) {
+    const eventCoords = this.getEventWindowCoordinates(customEvent);
     const svgCoordinates = this.transformWindowToSvgCoordinates(eventCoords);
     this.unitMouseCoordinates = this.transformer.coordinatesToAbsolute(
       svgCoordinates,
