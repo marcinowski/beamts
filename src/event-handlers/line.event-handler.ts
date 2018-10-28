@@ -75,12 +75,20 @@ export class LineEventHandler implements EventHandlerInterface {
     } else if (event.type === EventTypes.CLICK) {
       this.storeApi.drawPoint(svgCoordinates, event);
       endId = getPointIdFromEvent(event);
+    } else if (event.type === EventTypes.KEY_ESC) {
+      this.baseId = undefined;
+      this.initBaseState();
+      return;
     } else {
       return;
     }
     this.storeApi.drawLine(event, this.baseId, endId);
-    this.baseId = undefined;
-    this.initBaseState();
+    if (this.storeApi.isContinuousLine()) {
+      this.baseId = endId;
+    } else {
+      this.baseId = undefined;
+      this.initBaseState();
+    }
   }
 
   initBaseState() {

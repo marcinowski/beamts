@@ -139,6 +139,10 @@ export class StoreApi {
     this.$store.dispatch('svg/removeSelected');
   }
 
+  isContinuousLine() {
+    return this.$store.getters['config/isContinuousLine'];
+  }
+
   getSelection() {
     const selection = this.$store.getters['selection/getSelection'];
     return this.transform.lineCoordinatesFromAbsolute(selection);
