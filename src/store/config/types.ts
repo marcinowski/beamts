@@ -6,4 +6,5 @@ export interface ConfigState {
   gridOn: boolean;
   continuousLine: boolean;
   orthogonalMode: boolean;
+  helpersOn: boolean;
 }

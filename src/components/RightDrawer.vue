@@ -48,6 +48,10 @@ export default class RightDrawer extends Vue {
     return this.$store.getters['config/isOrthogonalMode'];
   }
 
+  get isHelpersOn() {
+    return this.$store.getters['config/isHelpersOn'];
+  }
+
   get items(): ToggleIcons[] {
     return [
       {
@@ -74,6 +78,12 @@ export default class RightDrawer extends Vue {
         value: false,
         onClick: () => console.log('TODO: toggle handles'),
       },
+      {
+        icon: 'help_outline',
+        tooltip: 'Toggle helpers',
+        value: this.isHelpersOn,
+        onClick: () => this.toggleHelpers(),
+      },
     ];
   }
 
@@ -87,6 +97,10 @@ export default class RightDrawer extends Vue {
 
   toggleContinuousLine() {
     this.$store.commit('config/toggleContinuousLine');
+  }
+
+  toggleHelpers() {
+    this.$store.commit('config/toggleHelpers');
   }
 }
 </script>

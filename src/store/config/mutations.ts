@@ -17,4 +17,7 @@ export const mutations: MutationTree<ConfigState> = {
   toggleOrthogonalMode(state) {
     state.orthogonalMode = !state.orthogonalMode;
   },
+  toggleHelpers(state) {
+    state.helpersOn = !state.helpersOn;
+  },
 };

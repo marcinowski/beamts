@@ -8,4 +8,5 @@ export const configGetters: GetterTree<ConfigState, RootState> = {
   isGridOn: (state) => state.gridOn,
   isContinuousLine: (state) => state.continuousLine,
   isOrthogonalMode: (state) => state.orthogonalMode,
+  isHelpersOn: (state) => state.helpersOn,
 };

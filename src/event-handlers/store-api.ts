@@ -143,6 +143,10 @@ export class StoreApi {
     return this.$store.getters['config/isContinuousLine'];
   }
 
+  isHelpersOn() {
+    return this.$store.getters['config/isHelpersOn'];
+  }
+
   getSelection() {
     const selection = this.$store.getters['selection/getSelection'];
     return this.transform.lineCoordinatesFromAbsolute(selection);

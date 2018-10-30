@@ -1,5 +1,5 @@
 <template>
-  <div class="Helpers" v-if="helper.description">
+  <div class="Helpers" v-if="helperOn">
     <p v-if="helper.description">{{ helper.description }}</p>
     <div v-if="helper.showInput" class="d-flex InputControl">
       <v-text-field
@@ -42,6 +42,10 @@ export default class StageInputHelper extends Vue {
 
   get helper() {
     return this.storeApi.getHelper();
+  }
+
+  get helperOn() {
+    return this.storeApi.isHelpersOn();
   }
 
   handleSubmit(event: MouseEvent) {

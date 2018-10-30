@@ -11,6 +11,7 @@ const state: ConfigState = {
   gridOn: true,
   continuousLine: false,
   orthogonalMode: false,
+  helpersOn: true,
 };
 
 const namespaced: boolean = true;
