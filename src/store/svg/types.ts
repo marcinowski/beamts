@@ -1,4 +1,10 @@
-import { Line, Point, Arc, LineCoordinates } from '@/types/types';
+import {
+  Line,
+  Point,
+  Arc,
+  LineCoordinates,
+  ArcCoordinates,
+} from '@/types/types';
 
 export interface UndoAction {
   action: string;
@@ -12,4 +18,5 @@ export interface SvgState {
   points: Point[];
   undoAction: UndoAction;
   helperLine: LineCoordinates;
+  helperArc: ArcCoordinates;
 }

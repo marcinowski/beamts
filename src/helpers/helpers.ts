@@ -18,6 +18,10 @@ export function getVectorLength(vector: Vector) {
   return Math.sqrt(vector.x * vector.x + vector.y * vector.y);
 }
 
+export function get2DCrossProduct(start: Vector, end: Vector) {
+  return start.x * end.y - start.y * end.x;
+}
+
 export function getAngle(start: Coordinates, end: Coordinates): ObjectId {
   return Math.atan2(end.y - start.y, end.x - start.x);
 }

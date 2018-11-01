@@ -39,7 +39,8 @@ export default class Arcs extends Vue {
     }
     return `M${p1.x} ${p1.y}
      A ${arc.radius} ${arc.radius}
-     0 0 0 ${p2.x} ${p2.y}`;
+     ${arc.xAxisRotation} ${arc.largeArc} ${arc.sweep}
+     ${p2.x} ${p2.y}`;
   }
 
   handleClick(event: MouseEvent) {

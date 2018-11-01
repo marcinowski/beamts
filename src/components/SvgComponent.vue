@@ -74,7 +74,6 @@ import {
   Vector,
   Rotation,
   LineCoordinates,
-  Arc,
   CustomEvent,
   ObjectTypes,
   EventTypes,

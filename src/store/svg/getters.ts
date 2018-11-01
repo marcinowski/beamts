@@ -8,6 +8,7 @@ import {
   Coordinates,
   Arc,
   ObjectId,
+  ArcCoordinates,
 } from '@/types/types';
 
 export const svgGetters: GetterTree<SvgState, RootState> = {
@@ -82,4 +83,5 @@ export const svgGetters: GetterTree<SvgState, RootState> = {
   getSelectedArcs: (state) => state.arcs.filter((a) => a.selected),
   getUndoAction: (state): UndoAction => state.undoAction,
   getHelperLine: (state): LineCoordinates => state.helperLine,
+  getHelperArc: (state): ArcCoordinates => state.helperArc,
 };

@@ -42,6 +42,15 @@ export interface LineCoordinates {
   end: Coordinates;
 }
 
+export interface ArcCoordinates {
+  start: Coordinates;
+  end: Coordinates;
+  radius: number;
+  xAxisRotation: number; // 0 for circles
+  sweep: 0 | 1;
+  largeArc: 0 | 1;
+}
+
 export interface Line {
   id: ObjectId;
   p1: ObjectId;
@@ -51,6 +60,9 @@ export interface Line {
 
 export interface Arc extends Line {
   radius: number;
+  xAxisRotation: number; // 0 for circles
+  sweep: 0 | 1;
+  largeArc: 0 | 1;
 }
 
 export interface Section {

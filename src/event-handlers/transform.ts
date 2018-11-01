@@ -8,6 +8,7 @@ import {
   Line,
   Vector,
   Rotation,
+  ArcCoordinates,
 } from '@/types/types';
 
 export class Transform {
@@ -128,6 +129,24 @@ export class Transform {
     return {
       ...rotation,
       origin: this.coordinatesFromAbsolute(rotation.origin),
+    };
+  }
+
+  arcCoordinatesToAbsolute(coords: ArcCoordinates): ArcCoordinates {
+    return {
+      ...coords,
+      start: this.coordinatesToAbsolute(coords.start),
+      end: this.coordinatesToAbsolute(coords.end),
+      radius: this.numberToAbsolute(coords.radius),
+    };
+  }
+
+  arcCoordinatesFromAbsolute(coords: ArcCoordinates): ArcCoordinates {
+    return {
+      ...coords,
+      start: this.coordinatesFromAbsolute(coords.start),
+      end: this.coordinatesFromAbsolute(coords.end),
+      radius: this.numberFromAbsolute(coords.radius),
     };
   }
 }

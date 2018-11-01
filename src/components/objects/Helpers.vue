@@ -1,7 +1,12 @@
 <template>
-  <path
-    v-bind:d="path"
-  ></path>
+  <g>
+    <path
+      v-bind:d="linePath"
+    ></path>
+    <path
+      v-bind:d="arcPath"
+    ></path>
+  </g>
 </template>
 
 <script lang="ts">
@@ -20,10 +25,17 @@ export default class HelpersComponent extends Vue {
     return this.storeApiInstance;
   }
 
-  get path() {
+  get linePath() {
     const line = this.storeApi.getHelperLine();
     return `M ${line.start.x} ${line.start.y}
       L ${line.end.x} ${line.end.y}`;
+  }
+
+  get arcPath() {
+    const arc = this.storeApi.getHelperArc();
+    return `M ${arc.start.x} ${arc.start.y}
+      A ${arc.radius} ${arc.radius} ${arc.xAxisRotation}
+      ${arc.largeArc} ${arc.sweep} ${arc.end.x} ${arc.end.y}`;
   }
 }
 </script>
@@ -32,5 +44,6 @@ export default class HelpersComponent extends Vue {
 path {
   stroke: rgb(120, 240, 230);
   stroke-dasharray: 3;
+  fill: none;
 }
 </style>

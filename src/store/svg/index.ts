@@ -20,6 +20,20 @@ export const state: SvgState = {
       y: 0,
     },
   },
+  helperArc: {
+    start: {
+      x: 0,
+      y: 0,
+    },
+    end: {
+      x: 0,
+      y: 0,
+    },
+    radius: 1,
+    xAxisRotation: 0,
+    sweep: 0,
+    largeArc: 0,
+  },
 };
 
 const namespaced: boolean = true;

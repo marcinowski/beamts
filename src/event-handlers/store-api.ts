@@ -64,12 +64,23 @@ export class StoreApi {
     this.$store.dispatch('svg/removeLine', line);
   }
 
-  drawArc(event: CustomEvent, radius: number, p1: ObjectId, p2: ObjectId) {
+  drawArc(
+    event: CustomEvent,
+    radius: number,
+    p1: ObjectId,
+    p2: ObjectId,
+    sweep: 0 | 1 = 0,
+    largeArc: 0 | 1 = 0,
+    xAxisRotation: number = 0,
+  ) {
     const arc: Arc = {
       id: getArcIdFromEvent(event),
       radius,
       p1,
       p2,
+      xAxisRotation,
+      sweep,
+      largeArc,
     };
     const transformedArc = this.transform.arcToAbsolute(arc);
     this.$store.commit('svg/addArc', transformedArc);
@@ -153,20 +164,20 @@ export class StoreApi {
   }
 
   setHelperLineStart(coords: Coordinates) {
-    const transformed = this.transform.coordinatesToAbsolute(coords);
-    return this.$store.commit('svg/setHelperLine', {
-      start: transformed,
-      end: transformed,
+    const transformed = this.transform.lineCoordinatesToAbsolute({
+      start: coords,
+      end: coords,
     });
+    return this.$store.commit('svg/setHelperLine', transformed);
   }
 
   setHelperLineEnd(coords: Coordinates) {
-    const transformed = this.transform.coordinatesToAbsolute(coords);
-    const helperLine = this.$store.getters['svg/getHelperLine'];
-    return this.$store.commit('svg/setHelperLine', {
-      ...helperLine,
-      end: transformed,
+    const helperLine = this.getHelperLine();
+    const newHelperLine = this.transform.lineCoordinatesToAbsolute({
+      start: helperLine.start,
+      end: coords,
     });
+    return this.$store.commit('svg/setHelperLine', newHelperLine);
   }
 
   getHelperLine() {
@@ -176,5 +187,42 @@ export class StoreApi {
 
   clearHelperLine() {
     this.$store.commit('svg/clearHelperLine');
+  }
+
+  setHelperArcBase(coords: LineCoordinates) {
+    const helperArc = this.getHelperArc();
+    const transformedArc = this.transform.arcCoordinatesToAbsolute({
+      ...helperArc,
+      start: coords.start,
+      end: coords.end,
+    });
+    return this.$store.commit('svg/setHelperArc', transformedArc);
+  }
+
+  setHelperArcEnd(
+    radius: number,
+    xAxisRotation: number,
+    sweep: 0 | 1,
+    largeArc: 0 | 1,
+  ) {
+    const arc = this.getHelperArc();
+    const transformedArc = this.transform.arcCoordinatesToAbsolute({
+      start: arc.start,
+      end: arc.end,
+      radius,
+      xAxisRotation,
+      sweep,
+      largeArc,
+    });
+    return this.$store.commit('svg/setHelperArc', transformedArc);
+  }
+
+  getHelperArc() {
+    const arc = this.$store.getters['svg/getHelperArc'];
+    return this.transform.arcCoordinatesFromAbsolute(arc);
+  }
+
+  clearHelperArc() {
+    this.$store.commit('svg/clearHelperArc');
   }
 }

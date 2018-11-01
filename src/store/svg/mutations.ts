@@ -8,6 +8,7 @@ import {
   LineCoordinates,
   Arc,
   ObjectId,
+  ArcCoordinates,
 } from '@/types/types';
 
 export const mutations: MutationTree<SvgState> = {
@@ -277,6 +278,19 @@ export const mutations: MutationTree<SvgState> = {
     state.helperLine = coords;
   },
   clearHelperLine(state) {
-    state.helperLine = {start: {x: 0, y: 0}, end: {x: 0, y: 0}};
+    state.helperLine = { start: { x: 0, y: 0 }, end: { x: 0, y: 0 } };
+  },
+  setHelperArc(state, coords: ArcCoordinates) {
+    state.helperArc = coords;
+  },
+  clearHelperArc(state) {
+    state.helperArc = {
+      start: { x: 0, y: 0 },
+      end: { x: 0, y: 0 },
+      radius: 1,
+      sweep: 0,
+      xAxisRotation: 0,
+      largeArc: 0,
+    };
   },
 };
