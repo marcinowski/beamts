@@ -1,23 +1,36 @@
 import { EventHandlerInterface } from './types';
 import { RootState } from '@/store/types';
 import { Store } from 'vuex';
-import { Coordinates, Rotation, EventTypes, CustomEvent } from '@/types/types';
-import { getAngle } from '@/helpers/helpers';
+import {
+  Coordinates,
+  Rotation,
+  EventTypes,
+  CustomEvent,
+  LineCoordinates,
+} from '@/types/types';
+import {
+  getAngle,
+  getVector,
+  getVectorLength,
+  get2DCrossProduct,
+} from '@/helpers/helpers';
 import { StoreApi } from '@/event-handlers/store-api';
 
 enum States {
   BASE,
   END,
+  ARC,
 }
 
 export class RotateEventHandler implements EventHandlerInterface {
   private storeApi: StoreApi;
-  private baseCoordinates?: Coordinates;
   private currentState: States;
+  private baseCoordinates?: Coordinates;
+  private endCoordinates?: Coordinates;
 
   constructor(store: Store<RootState>) {
     this.storeApi = new StoreApi(store);
-    this.currentState = States.BASE;
+    this.initBaseState();
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -28,34 +41,97 @@ export class RotateEventHandler implements EventHandlerInterface {
       case States.END:
         this.handleEndEvent(event, svgCoordinates);
         return;
+      case States.ARC:
+        this.handleArcEvent(event, svgCoordinates);
+        return;
     }
   }
 
   handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (
-      this.currentState !== States.BASE ||
-      event.type !== EventTypes.MOUSEDOWN
-    ) {
+    if (this.currentState !== States.BASE) {
       return;
     }
-    this.baseCoordinates = svgCoordinates;
-    this.currentState = States.END;
+    if (
+      event.type === EventTypes.CLICK ||
+      event.type === EventTypes.SELECTED_OBJECT
+    ) {
+      this.baseCoordinates = svgCoordinates;
+      this.storeApi.setHelperLineStart(svgCoordinates);
+      this.currentState = States.END;
+    }
   }
 
   handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.END || event.type !== EventTypes.CLICK) {
+    if (this.currentState !== States.END || !this.baseCoordinates) {
       return;
     }
-    if (!this.baseCoordinates) {
+    if (
+      event.type === EventTypes.CLICK ||
+      event.type === EventTypes.SELECTED_OBJECT
+    ) {
+      this.endCoordinates = svgCoordinates;
+      this.storeApi.setHelperLineEnd(svgCoordinates);
+      this.currentState = States.ARC;
+    } else if (event.type === EventTypes.MOUSEMOVE) {
+      this.storeApi.setHelperLineEnd(svgCoordinates);
+    } else if (event.type === EventTypes.KEY_ESC) {
+      return this.initBaseState();
+    }
+  }
+
+  handleArcEvent(event: CustomEvent, svgCoordinates: Coordinates) {
+    if (
+      this.currentState !== States.ARC ||
+      !this.baseCoordinates ||
+      !this.endCoordinates
+    ) {
       return;
     }
-    const angle = getAngle(this.baseCoordinates, svgCoordinates);
-    const rotation: Rotation = {
-      angle,
-      origin: this.baseCoordinates,
-    };
-    this.storeApi.rotateSelected(rotation);
-    this.baseCoordinates = undefined;
+    if (
+      event.type === EventTypes.CLICK ||
+      event.type === EventTypes.SELECTED_OBJECT ||
+      event.type === EventTypes.MOUSEMOVE
+    ) {
+      const baseAngleVector = getVector(
+        this.baseCoordinates,
+        this.endCoordinates,
+      );
+      const radVector = getVector(this.baseCoordinates, svgCoordinates);
+      const angle = getAngle(baseAngleVector, radVector);
+      if (
+        event.type === EventTypes.CLICK ||
+        event.type === EventTypes.SELECTED_OBJECT
+      ) {
+        const sign = Math.sign(get2DCrossProduct(baseAngleVector, radVector));
+        const rotation: Rotation = {
+          angle: sign * angle,
+          origin: this.baseCoordinates,
+        };
+        this.storeApi.rotateSelected(rotation);
+        this.initBaseState();
+      } else if (event.type === EventTypes.MOUSEMOVE) {
+        const arcBase: LineCoordinates = {
+          start: this.endCoordinates,
+          end: svgCoordinates,
+        };
+        this.storeApi.setHelperArcBase(arcBase);
+        const baseVector = getVector(this.endCoordinates, this.baseCoordinates);
+        const radius = getVectorLength(baseVector);
+        const arcVector = getVector(this.baseCoordinates, svgCoordinates);
+        const sweep = get2DCrossProduct(baseVector, arcVector) < 0 ? 1 : 0;
+        const largeArc = Math.abs(angle) > Math.PI ? 1 : 0;
+        this.storeApi.setHelperArcEnd(radius, 0, sweep, largeArc);
+      }
+    } else if (event.type === EventTypes.KEY_ESC) {
+      return this.initBaseState();
+    }
+  }
+
+  initBaseState() {
     this.currentState = States.BASE;
+    this.baseCoordinates = undefined;
+    this.endCoordinates = undefined;
+    this.storeApi.clearHelperArc();
+    this.storeApi.clearHelperLine();
   }
 }
