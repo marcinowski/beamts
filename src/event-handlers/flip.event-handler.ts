@@ -21,7 +21,7 @@ export class FlipEventHandler implements EventHandlerInterface {
 
   constructor(store: Store<RootState>) {
     this.storeApi = new StoreApi(store);
-    this.currentState = States.BASE;
+    this.initBaseState();
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -36,26 +36,54 @@ export class FlipEventHandler implements EventHandlerInterface {
   }
 
   handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.BASE || event.type !== EventTypes.CLICK) {
-      return;
+    if (
+      this.currentState !== States.BASE ||
+      (event.type !== EventTypes.CLICK &&
+        event.type !== EventTypes.SELECTED_OBJECT)
+    ) {
+      return this.initBaseState();
     }
     this.baseCoordinates = svgCoordinates;
-    this.currentState = States.END;
+    this.storeApi.setHelperLineStart(svgCoordinates);
+    this.initEndState();
   }
 
   handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.END || event.type !== EventTypes.CLICK) {
+    if (this.currentState !== States.END || !this.baseCoordinates) {
+      return this.initBaseState();
+    }
+    if (
+      event.type === EventTypes.CLICK ||
+      event.type === EventTypes.SELECTED_OBJECT
+    ) {
+      const line: LineCoordinates = {
+        start: this.baseCoordinates,
+        end: svgCoordinates,
+      };
+      this.storeApi.flipSelected(line);
+      this.initBaseState();
+    } else if (event.type === EventTypes.MOUSEMOVE) {
+      this.storeApi.setHelperLineEnd(svgCoordinates);
+    } else {
       return;
     }
-    if (!this.baseCoordinates) {
-      return;
-    }
-    const line: LineCoordinates = {
-      start: this.baseCoordinates,
-      end: svgCoordinates,
-    };
-    this.storeApi.flipSelected(line);
+  }
+
+  initBaseState() {
     this.baseCoordinates = undefined;
+    this.storeApi.clearHelperLine();
     this.currentState = States.BASE;
+    this.storeApi.addHelper(
+      `Click on the workspace to set a first point of a reflection line.`,
+      false,
+    );
+  }
+
+  initEndState() {
+    this.currentState = States.END;
+    this.storeApi.addHelper(
+      `Click on the workspace to set a second point of a reflection line.`,
+      false,
+    );
   }
 }
