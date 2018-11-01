@@ -17,7 +17,7 @@ export class MoveEventHandler implements EventHandlerInterface {
 
   constructor(store: Store<RootState>) {
     this.storeApi = new StoreApi(store);
-    this.currentState = States.BASE;
+    this.initBaseState();
   }
 
   handleEvent(event: CustomEvent, svgCoordinates: Coordinates) {
@@ -32,26 +32,42 @@ export class MoveEventHandler implements EventHandlerInterface {
   }
 
   handleBaseEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (
-      this.currentState !== States.BASE ||
-      event.type !== EventTypes.MOUSEDOWN
-    ) {
+    if (this.currentState !== States.BASE) {
       return;
     }
-    this.baseCoordinates = svgCoordinates;
-    this.currentState = States.END;
+    if (
+      event.type === EventTypes.CLICK ||
+      event.type === EventTypes.SELECTED_OBJECT
+    ) {
+      this.baseCoordinates = svgCoordinates;
+      this.storeApi.setHelperLineStart(svgCoordinates);
+      this.initEndState();
+    }
   }
 
   handleEndEvent(event: CustomEvent, svgCoordinates: Coordinates) {
-    if (this.currentState !== States.END || event.type !== EventTypes.CLICK) {
+    if (this.currentState !== States.END || !this.baseCoordinates) {
       return;
     }
-    if (!this.baseCoordinates) {
-      return;
+    if (
+      event.type === EventTypes.CLICK ||
+      event.type === EventTypes.SELECTED_OBJECT
+    ) {
+      const vector = getVector(this.baseCoordinates, svgCoordinates);
+      this.storeApi.moveSelected(vector);
+      this.initBaseState();
+    } else if (event.type === EventTypes.MOUSEMOVE) {
+      this.storeApi.setHelperLineEnd(svgCoordinates);
     }
-    const vector = getVector(this.baseCoordinates, svgCoordinates);
-    this.storeApi.moveSelected(vector);
+  }
+
+  initBaseState() {
+    this.storeApi.clearHelperLine();
     this.baseCoordinates = undefined;
     this.currentState = States.BASE;
+  }
+
+  initEndState() {
+    this.currentState = States.END;
   }
 }
