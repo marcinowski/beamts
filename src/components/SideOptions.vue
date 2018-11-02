@@ -87,6 +87,9 @@ export default class SideOptions extends Vue {
       tooltip: 'Draw arcs',
       onClick: () => this.handleMethodClick(MethodTypes.ARC),
     },
+  ];
+
+  edits: Method[] = [
     {
       icon: 'tab_unselected',
       title: 'Select',
@@ -112,10 +115,46 @@ export default class SideOptions extends Vue {
       onClick: () => this.handleMethodClick(MethodTypes.FLIP),
     },
     {
-      icon: 'straighten',
-      title: 'Measure',
-      tooltip: 'Measure selected objects',
-      onClick: () => console.log('Measure'),
+      icon: 'done_all',
+      title: 'Select All',
+      tooltip: 'Select all objects',
+      onClick: () => this.$store.dispatch('svg/selectAll'),
+    },
+    {
+      icon: 'group_work',
+      title: 'Group',
+      tooltip: 'Group selected objects',
+      onClick: () => console.log('Group'),
+    },
+    {
+      icon: 'file_copy',
+      title: 'Copy',
+      tooltip: 'Copy selected objects',
+      onClick: () => console.log('Copy'),
+    },
+    {
+      icon: 'insert_drive_file',
+      title: 'Paste',
+      tooltip: 'Paste copied objects',
+      onClick: () => console.log('Paste'),
+    },
+    {
+      icon: 'undo',
+      title: 'Undo',
+      tooltip: 'Undo last action',
+      onClick: () => this.$store.dispatch('svg/undo'),
+    },
+    {
+      icon: 'clear',
+      title: 'Clear Selected',
+      tooltip: 'Remove selected objects',
+      onClick: () => this.$store.dispatch('svg/removeSelected'),
+    },
+    {
+      icon: 'delete_forever',
+      title: 'Clear All',
+      tooltip: 'Remove all objects',
+      onClick: () => this.$store.commit('svg/removeAll'),
     },
   ];
 
@@ -205,6 +244,12 @@ export default class SideOptions extends Vue {
       onClick: () => this.check(),
     },
     {
+      icon: 'straighten',
+      title: 'Measure',
+      tooltip: 'Measure selected objects',
+      onClick: () => console.log('Measure'),
+    },
+    {
       icon: 'perm_data_settings',
       title: 'Calculate',
       tooltip: 'Start calculations',
@@ -241,54 +286,6 @@ export default class SideOptions extends Vue {
 
   actions: Method[] = [
     {
-      icon: 'edit',
-      title: 'Edit',
-      tooltip: 'Edit elements',
-      onClick: () => console.log('Edit'),
-    },
-    {
-      icon: 'done_all',
-      title: 'Select All',
-      tooltip: 'Select all objects',
-      onClick: () => this.$store.dispatch('svg/selectAll'),
-    },
-    {
-      icon: 'group_work',
-      title: 'Group',
-      tooltip: 'Group selected objects',
-      onClick: () => console.log('Group'),
-    },
-    {
-      icon: 'file_copy',
-      title: 'Copy',
-      tooltip: 'Copy selected objects',
-      onClick: () => console.log('Copy'),
-    },
-    {
-      icon: 'insert_drive_file',
-      title: 'Paste',
-      tooltip: 'Paste copied objects',
-      onClick: () => console.log('Paste'),
-    },
-    {
-      icon: 'undo',
-      title: 'Undo',
-      tooltip: 'Undo last action',
-      onClick: () => this.$store.dispatch('svg/undo'),
-    },
-    {
-      icon: 'clear',
-      title: 'Clear Selected',
-      tooltip: 'Remove selected objects',
-      onClick: () => this.$store.dispatch('svg/removeSelected'),
-    },
-    {
-      icon: 'delete_forever',
-      title: 'Clear All',
-      tooltip: 'Remove all objects',
-      onClick: () => this.$store.commit('svg/removeAll'),
-    },
-    {
       icon: 'backup',
       title: 'Save',
       tooltip: 'Save session',
@@ -302,6 +299,11 @@ export default class SideOptions extends Vue {
       title: 'Draw',
       active: true,
       actions: this.methods,
+    },
+    {
+      icon: 'format_color_fill',
+      title: 'Edit',
+      actions: this.edits,
     },
     {
       icon: 'fitness_center',
