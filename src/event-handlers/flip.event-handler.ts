@@ -64,6 +64,8 @@ export class FlipEventHandler implements EventHandlerInterface {
       this.initBaseState();
     } else if (event.type === EventTypes.MOUSEMOVE) {
       this.storeApi.setHelperLineEnd(svgCoordinates);
+    } else if (event.type === EventTypes.KEY_ESC) {
+      this.initBaseState();
     } else {
       return;
     }

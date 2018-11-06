@@ -58,6 +58,8 @@ export class MoveEventHandler implements EventHandlerInterface {
       this.initBaseState();
     } else if (event.type === EventTypes.MOUSEMOVE) {
       this.storeApi.setHelperLineEnd(svgCoordinates);
+    } else if (event.type === EventTypes.KEY_ESC) {
+      this.initBaseState();
     }
   }
 
@@ -65,9 +67,17 @@ export class MoveEventHandler implements EventHandlerInterface {
     this.storeApi.clearHelperLine();
     this.baseCoordinates = undefined;
     this.currentState = States.BASE;
+    this.storeApi.addHelper(
+      'Click to set the first point of the vector',
+      false,
+    );
   }
 
   initEndState() {
     this.currentState = States.END;
+    this.storeApi.addHelper(
+      'Click to set the final point of the vector',
+      false,
+    );
   }
 }

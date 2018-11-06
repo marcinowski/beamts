@@ -57,7 +57,9 @@ export class RotateEventHandler implements EventHandlerInterface {
     ) {
       this.baseCoordinates = svgCoordinates;
       this.storeApi.setHelperLineStart(svgCoordinates);
-      this.currentState = States.END;
+      this.initEndState();
+    } else if (event.type === EventTypes.KEY_ESC) {
+      return this.initBaseState();
     }
   }
 
@@ -71,7 +73,7 @@ export class RotateEventHandler implements EventHandlerInterface {
     ) {
       this.endCoordinates = svgCoordinates;
       this.storeApi.setHelperLineEnd(svgCoordinates);
-      this.currentState = States.ARC;
+      this.initArcState();
     } else if (event.type === EventTypes.MOUSEMOVE) {
       this.storeApi.setHelperLineEnd(svgCoordinates);
     } else if (event.type === EventTypes.KEY_ESC) {
@@ -133,5 +135,16 @@ export class RotateEventHandler implements EventHandlerInterface {
     this.endCoordinates = undefined;
     this.storeApi.clearHelperArc();
     this.storeApi.clearHelperLine();
+    this.storeApi.addHelper('Click to set an origin of rotation', false);
+  }
+
+  initEndState() {
+    this.currentState = States.END;
+    this.storeApi.addHelper('Click to set a radius of rotation', false);
+  }
+
+  initArcState() {
+    this.currentState = States.ARC;
+    this.storeApi.addHelper('Click to set an angle of rotation', false);
   }
 }
