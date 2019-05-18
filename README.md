@@ -1,5 +1,8 @@
 # beam
 
+This project is about designing engineering structures in the browser app and submitting the schema for backend calculations to determine materials and cross-sections of the structure.
+Most of this things can already be done on heavy desktop applications, but afaik there's no solution for doing that online.
+
 ## Project setup
 ```
 yarn install
@@ -7,20 +10,20 @@ yarn install
 
 ### Compiles and hot-reloads for development
 ```
-yarn run serve
+yarn serve
 ```
 
 ### Compiles and minifies for production
 ```
-yarn run build
+yarn build
 ```
 
 ### Lints and fixes files
 ```
-yarn run lint
+yarn lint
 ```
 
 ### Run your unit tests
 ```
-yarn run test:unit
+yarn test
 ```
